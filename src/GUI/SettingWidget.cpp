@@ -193,8 +193,11 @@ SettingWidget::SettingWidget(QWidget *parent)
         Setting::saveToFile();
 #endif // Q_OS_ANDROID
     });
-    connect(smallFontPointSizeSpinBox, &QSpinBox::valueChanged, [](int i)
+    connect(smallFontPointSizeSpinBox, &QSpinBox::valueChanged, [this](int i)
     {
+        testFont.setPointSize(i);
+        resultTestLabel->setFont(testFont);
+        resultTestLabel->setFixedHeight(QFontMetrics(testFont).height());
         Setting::smallFontPointSize = i;
 #ifdef Q_OS_ANDROID
         Setting::saveToFile();
