@@ -39,14 +39,14 @@ SearchWidget::SearchWidget(QWidget *parent)
         auto tempTemplateList{data.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
         for (auto j{ 0 }; j < tempTemplateList.size(); ++j)
         {
-            if(0 == (j & 1))
+            if(j & 1)
             {
-                templateNameList.append(tempTemplateList.at(j));
-                tempListWidget->addItem(tempTemplateList.at(j));
+                templateCodeList.append(tempTemplateList.at(j));
             }
             else
             {
-                templateCodeList.append(tempTemplateList.at(j));
+                templateNameList.append(tempTemplateList.at(j));
+                tempListWidget->addItem(tempTemplateList.at(j));
             }
         }
         QScroller::grabGesture(tempListWidget->viewport(), QScroller::TouchGesture);

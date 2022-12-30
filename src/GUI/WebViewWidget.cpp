@@ -12,6 +12,16 @@ WebViewWidget::WebViewWidget(AnalysisWebRawData &analysisWebRawData, QWidget *pa
     pagesSwitch = new QListWidget(this);
 #ifdef Q_OS_ANDROID
     fullScreenButton = new QPushButton("全屏", this);
+    connect(fullScreenButton, &QPushButton::clicked, [this]
+    {
+        const auto tempWidget{new QWidget};
+        tempWidget->setAttribute(Qt::WA_DeleteOnClose);
+        const auto tempLayout{new QVBoxLayout(tempWidget)};
+        const auto tempWebView{new WebView};
+        tempWebView->setHtml(this->webView->getHtml());
+        tempLayout->addWidget(tempWebView);
+        tempWidget->showFullScreen();
+    });
 #else
     saveButton = new QPushButton("另存为", this);
     connect(saveButton, &QPushButton::clicked, [this]
