@@ -1,8 +1,8 @@
 #include "WebViewWidget.h"
+#include "ShowFullScreenWidget.h"
 #include "../Logic/AnalysisWebRawData.h"
 #include "../StaticClass/Global.h"
 #include "../StaticClass/Setting.h"
-
 
 WebViewWidget::WebViewWidget(AnalysisWebRawData &analysisWebRawData, QWidget *parent)
     : QWidget{parent}, analysisWebRawData(analysisWebRawData)
@@ -14,13 +14,10 @@ WebViewWidget::WebViewWidget(AnalysisWebRawData &analysisWebRawData, QWidget *pa
     fullScreenButton = new QPushButton("全屏", this);
     connect(fullScreenButton, &QPushButton::clicked, [this]
     {
-        const auto tempWidget{new QWidget};
-        tempWidget->setAttribute(Qt::WA_DeleteOnClose);
-        const auto tempLayout{new QVBoxLayout(tempWidget)};
         const auto tempWebView{new WebView};
         tempWebView->setHtml(this->webView->getHtml());
-        tempLayout->addWidget(tempWebView);
-        tempWidget->showFullScreen();
+        const auto showFullScreenWidget{new ShowFullScreenWidget(tempWebView)};
+        showFullScreenWidget->showFullScreen();
     });
 #else
     saveButton = new QPushButton("另存为", this);

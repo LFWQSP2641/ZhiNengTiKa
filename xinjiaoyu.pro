@@ -63,6 +63,7 @@ HEADERS += \
     src/GUI/QuestionWidget.h \
     src/GUI/SearchWidget.h \
     src/GUI/SettingWidget.h \
+    src/GUI/ShowFullScreenWidget.h \
     src/GUI/UploadChildWidget.h \
     src/GUI/UploadWidget.h \
     src/GUI/WebViewWidget.h \
@@ -83,6 +84,7 @@ SOURCES += \
     src/GUI/QuestionWidget.cpp \
     src/GUI/SearchWidget.cpp \
     src/GUI/SettingWidget.cpp \
+    src/GUI/ShowFullScreenWidget.cpp \
     src/GUI/UploadChildWidget.cpp \
     src/GUI/UploadWidget.cpp \
     src/GUI/WebViewWidget.cpp \
