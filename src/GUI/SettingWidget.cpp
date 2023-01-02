@@ -126,14 +126,14 @@ SettingWidget::SettingWidget(QWidget *parent)
         connect(&OKButton, &QPushButton::clicked, [&usernameLineEdit, &passwordLineEdit, &OKButton, this, &dialog]
         {
             OKButton.setEnabled(false);
-            const auto userUsername{usernameLineEdit.text().trimmed()};
-            const auto userPassword{passwordLineEdit.text().trimmed()};
-            if(!(userUsername.isEmpty() || userPassword.isEmpty()))
+            const auto username{usernameLineEdit.text().trimmed()};
+            const auto password{passwordLineEdit.text().trimmed()};
+            if(!(username.isEmpty() || password.isEmpty()))
             {
-                switch (Login::refreshUserData(userUsername.toUtf8(), userPassword.toUtf8()))
+                switch (Login::refreshUserData(username.toUtf8(), password.toUtf8()))
                 {
                 case Login::loginState::Success:
-                    QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("导入成功\n当前账号:").append(Setting::userData.value(QStringLiteral("realName")).toString()));
+                    QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(Setting::userData.value(QStringLiteral("realName")).toString()));
                     dialog.close();
                     loginStateLabel->setText(QStringLiteral("当前账号:").append(Setting::userData.value(QStringLiteral("realName")).toString()));
                     break;
@@ -149,13 +149,20 @@ SettingWidget::SettingWidget(QWidget *parent)
             }
             else
             {
-                QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("导入失败,请检查输入是否正确"));
+                QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败,请检查输入是否正确"));
                 OKButton.setEnabled(true);
             }
         });
         connect(&cancelButton, &QPushButton::clicked, [&dialog] {dialog.close(); });
 
         dialog.exec();
+    });
+
+    connect(this->logoutButton, &QPushButton::clicked, [this]
+    {
+        Login::userLogout();
+        QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登出成功"));
+        loginStateLabel->setText(QStringLiteral("未登录"));
     });
 
     auto askRestart{[]
@@ -209,13 +216,6 @@ SettingWidget::SettingWidget(QWidget *parent)
         Setting::listAllTemplate = (state == Qt::CheckState::Checked);
         Setting::saveToFile();
         askRestart();
-    });
-
-    connect(this->logoutButton, &QPushButton::clicked, [this]
-    {
-        Login::userLogout();
-        QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登出成功"));
-        loginStateLabel->setText(QStringLiteral("未登录"));
     });
 
     connect(this->commonProblemButton, &QPushButton::clicked, [this]

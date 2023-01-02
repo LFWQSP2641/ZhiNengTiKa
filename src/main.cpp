@@ -39,10 +39,11 @@ int main(int argc, char *argv[])
     if(Setting::fontPointSize < 1 || Setting::font.isEmpty())
     {
         Setting::fontPointSize = a.font().pointSize();
-        if(Setting::smallFontPointSize == 0)
-        {
-            Setting::smallFontPointSize = Setting::fontPointSize / 2;
-        }
+#ifdef Q_OS_ANDROID
+        Setting::smallFontPointSize = Setting::fontPointSize / 2;
+#else
+        Setting::smallFontPointSize = Setting::fontPointSize;
+#endif
         Setting::font = a.font().family();
         Setting::saveToFile();
     }

@@ -217,7 +217,7 @@ void SearchWidget::selectTemplateIdButtonPushed()
     templateCode = templateCodeLineEdit->text().trimmed();
     if(templateCode.isEmpty())
     {
-        QMessageBox::critical(this, QStringLiteral("critical"), QStringLiteral("不能为空"));
+        QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("不能为空"));
         return;
     }
 #ifdef Q_OS_ANDROID
@@ -240,7 +240,7 @@ void SearchWidget::selectTemplateIdButtonPushed()
     }
     else
     {
-        webRawData = XinjiaoyuNetwork::getTemplateCodeData(templateCode, false);
+        webRawData = XinjiaoyuNetwork::getTemplateCodeData(templateCode);
         if(!webRawData.isEmpty())
         {
             fileTemp.open(QFile::WriteOnly);

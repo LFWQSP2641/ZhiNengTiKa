@@ -11,12 +11,11 @@ enum loginState
     error = -1
 };
 extern QByteArray login(const QByteArray &username, const QByteArray &password);
-extern loginState refreshAuthorization();
+
 extern loginState refreshUserData();
 extern loginState refreshUserData(const QByteArray &username, const QByteArray &password);
-extern void refreshUserClientSession();
+extern void refreshClientSession();
 extern void userLogout();
-
 extern bool userLogined;
 };
 

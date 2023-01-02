@@ -3,59 +3,12 @@
 #include "Network.h"
 #include "Login.h"
 #include "XinjiaoyuEncryptioner.h"
-#include "Global.h"
 
 QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url)
 {
-    if(Setting::Authorization.isEmpty())
+    if(Setting::userAuthorization.isEmpty())
     {
-        Login::refreshAuthorization();
-    }
-    QNetworkRequest requestInfo;
-    requestInfo.setUrl(QUrl(url));
-    requestInfo.setRawHeader(QByteArrayLiteral("Accept-Encoding"), QByteArrayLiteral("gzip"));
-    requestInfo.setRawHeader(QByteArrayLiteral("client"), QByteArrayLiteral("android"));
-    requestInfo.setRawHeader(QByteArrayLiteral("app"), QByteArrayLiteral("student"));
-    requestInfo.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("okhttp/4.9.3"));
-    requestInfo.setRawHeader(QByteArrayLiteral("Content-Type"), QByteArrayLiteral("application/json"));
-    requestInfo.setRawHeader(QByteArrayLiteral("Authorization"), Setting::Authorization);
-    requestInfo.setRawHeader(QByteArrayLiteral("accessToken"), Setting::accessToken);
-    requestInfo.setRawHeader(QByteArrayLiteral("clientSession"), Setting::clientSession);
-
-    const auto tVal{QString::number(QDateTime::currentMSecsSinceEpoch()).toUtf8()};
-
-    requestInfo.setRawHeader(QByteArrayLiteral("t"), tVal);
-
-    const auto encryptVal{XinjiaoyuEncryptioner::getXinjiaoyuMD5(tVal, Setting::clientSession)};
-
-    requestInfo.setRawHeader(QByteArrayLiteral("encrypt"), encryptVal);
-    return requestInfo;
-}
-
-QNetworkRequest XinjiaoyuNetwork::setUserRequest(const QUrl &url)
-{
-    if(!Login::userLogined)
-    {
-        QMessageBox::warning(Q_NULLPTR, QStringLiteral("warning"), QStringLiteral("未登录"));
-        return QNetworkRequest();
-    }
-    if(Setting::userAuthorization.isEmpty() || Setting::userAccessToken.isEmpty())
-    {
-        switch (Login::refreshUserData())
-        {
-        case Login::loginState::Success:
-            break;
-        case Login::loginState::SomethingIsWrong:
-            QMessageBox::warning(Q_NULLPTR, QStringLiteral("warning"), QStringLiteral("登录失败,账号或密码错误"));
-            break;
-        case Login::loginState::SomethingIsEmpty:
-            QMessageBox::warning(Q_NULLPTR, QStringLiteral("warning"), QStringLiteral("登录失败,账号或密码为空"));
-            break;
-        default:
-            QMessageBox::warning(Q_NULLPTR, QStringLiteral("warning"), QStringLiteral("登录失败"));
-            break;
-        }
-        return QNetworkRequest();
+        Login::refreshUserData();
     }
     QNetworkRequest requestInfo;
     requestInfo.setUrl(QUrl(url));
@@ -65,35 +18,31 @@ QNetworkRequest XinjiaoyuNetwork::setUserRequest(const QUrl &url)
     requestInfo.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("okhttp/4.9.3"));
     requestInfo.setRawHeader(QByteArrayLiteral("Content-Type"), QByteArrayLiteral("application/json"));
     requestInfo.setRawHeader(QByteArrayLiteral("Authorization"), Setting::userAuthorization);
-    requestInfo.setRawHeader("accessToken", Setting::userAccessToken);
-    requestInfo.setRawHeader("clientSession", Setting::userClientSession);
+    requestInfo.setRawHeader(QByteArrayLiteral("accessToken"), Setting::userAccessToken);
+    requestInfo.setRawHeader(QByteArrayLiteral("clientSession"), Setting::userClientSession);
 
     const auto tVal{QString::number(QDateTime::currentMSecsSinceEpoch()).toUtf8()};
 
-    requestInfo.setRawHeader("t", tVal);
+    requestInfo.setRawHeader(QByteArrayLiteral("t"), tVal);
 
     const auto encryptVal{XinjiaoyuEncryptioner::getXinjiaoyuMD5(tVal, Setting::userClientSession)};
 
-    requestInfo.setRawHeader("encrypt", encryptVal);
+    requestInfo.setRawHeader(QByteArrayLiteral("encrypt"), encryptVal);
     return requestInfo;
 }
 
-QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, bool useUserAccount)
+QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
 {
+    if(!Login::userLogined)
+    {
+        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("未登录"));
+        return QByteArray();
+    }
     QByteArray responseByte;
-    QString studentId;
-    if(useUserAccount)
-    {
-        studentId = Setting::userStudentId;
-    }
-    else
-    {
-        studentId = Setting::studentId;
-    }
     responseByte = Network::getData(
                        XinjiaoyuNetwork::setRequest(
                            QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_homework/"
-                                          "homework/template/question/list?templateCode=%0&studentId=%1&isEncrypted=true").arg(templateCode, studentId)));
+                                          "homework/template/question/list?templateCode=%0&studentId=%1&isEncrypted=true").arg(templateCode, Setting::userStudentId)));
 
     const auto stateCode{responseByte.mid(8, 3)};
 
@@ -159,27 +108,13 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, bo
         responseByte = QJsonDocument(tempObject).toJson(QJsonDocument::Compact);
         return responseByte;
     }
-    else if (stateCode == QByteArrayLiteral("400"))
-    {
-        QMessageBox::critical(nullptr, QStringLiteral("critical"), QStringLiteral("templateCode不正确\n") + QString(responseByte));
-    }
-    else if (stateCode == QByteArrayLiteral("410"))
-    {
-        auto result{ QMessageBox::question(nullptr, QStringLiteral("question"), QStringLiteral("Authorization已过期\n"
-                                           "是否刷新Authorization?") + QString(responseByte)) };
-        if(result == QMessageBox::Yes)
-        {
-            Login::refreshAuthorization();
-            QMessageBox::information(nullptr, QStringLiteral("information"), QStringLiteral("请重复之前的操作"));
-        }
-    }
     else if (responseByte.isEmpty())
     {
-        QMessageBox::critical(nullptr, QStringLiteral("critical"), QStringLiteral("请检查网络连接\n") + QString(responseByte));
+        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("请检查网络连接\n") + QString(responseByte));
     }
     else
     {
-        QMessageBox::critical(nullptr, QStringLiteral("critical"), QStringLiteral("未知错误\n") + QString(responseByte));
+        QMessageBox::warning(nullptr, QStringLiteral("warning"), QString(responseByte));
     }
     return QByteArray();
 }

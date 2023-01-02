@@ -80,7 +80,7 @@ bool UploadWidget::upload()
 
 bool UploadWidget::uploadData(const QByteArray &data)
 {
-    auto request{XinjiaoyuNetwork::setUserRequest(QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_homework/student/homework/answer"))};
+    auto request{XinjiaoyuNetwork::setRequest(QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_homework/student/homework/answer"))};
     if(!request.url().isEmpty())
     {
         request.setHeader(QNetworkRequest::ContentLengthHeader, data.size());
@@ -120,7 +120,7 @@ void UploadWidget::getUserAnswer()
         return outputObject;
     }};
 
-    const auto webRawData{XinjiaoyuNetwork::getTemplateCodeData(templateCode, true)};
+    const auto webRawData{XinjiaoyuNetwork::getTemplateCodeData(templateCode)};
 
     QJsonArray array{ QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
     for (const auto &j : array)

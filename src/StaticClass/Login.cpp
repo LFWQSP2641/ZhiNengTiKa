@@ -17,35 +17,9 @@ QByteArray Login::login(const QByteArray &username, const QByteArray &password)
     return Network::postData(loginRequest, loginData);
 }
 
-Login::loginState Login::refreshAuthorization()
-{
-    const auto returnData{login(QByteArrayLiteral("jcgjzx001"), QByteArrayLiteral("abc123"))};
-    const auto rootObject{QJsonDocument::fromJson(returnData).object()};
-    switch (rootObject.value(QStringLiteral("code")).toInt())
-    {
-    case 200:
-        Setting::Authorization = QString(QStringLiteral("JBY ") + rootObject.value(QStringLiteral("data")).toObject().value(QStringLiteral("token")).toString()).toUtf8();
-        Setting::accessToken = QString(rootObject.value(QStringLiteral("data")).toObject().value(QStringLiteral("accessToken")).toString()).toUtf8();
-#ifdef Q_OS_ANDROID
-        Setting::saveToFile();
-#endif // Q_OS_ANDROID
-        return Login::loginState::Success;
-        break;
-    case 400:
-        return Login::loginState::SomethingIsEmpty;
-        break;
-    case 415:
-        return Login::loginState::SomethingIsWrong;
-        break;
-    default:
-        return Login::loginState::error;
-        break;
-    }
-}
-
 Login::loginState Login::refreshUserData()
 {
-    Login::refreshUserClientSession();
+    Login::refreshClientSession();
     if(Setting::userPassword.isEmpty() || Setting::userUsername.isEmpty())
     {
         return Login::loginState::SomethingIsEmpty;
@@ -70,6 +44,10 @@ Login::loginState Login::refreshUserData()
     case 400:
         Login::userLogined = false;
         return Login::loginState::SomethingIsEmpty;
+        break;
+    case 414:
+        Login::userLogined = false;
+        return Login::loginState::SomethingIsWrong;
         break;
     case 415:
         Login::userLogined = false;
@@ -97,7 +75,7 @@ Login::loginState Login::refreshUserData(const QByteArray &username, const QByte
     return ret;
 }
 
-void Login::refreshUserClientSession()
+void Login::refreshClientSession()
 {
     Setting::userClientSession = QUuid::createUuid().toString(QUuid::WithoutBraces).toUtf8();
 }
@@ -112,4 +90,7 @@ void Login::userLogout()
     Setting::userAuthorization.clear();
     Setting::userAccessToken.clear();
     Setting::userData = QJsonObject();
+#ifdef Q_OS_ANDROID
+    Setting::saveToFile();
+#endif
 }
