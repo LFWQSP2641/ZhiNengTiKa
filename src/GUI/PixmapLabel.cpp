@@ -3,9 +3,10 @@
 #include "../StaticClass/XinjiaoyuNetwork.h"
 
 PixmapLabel::PixmapLabel(QWidget *parent)
-    : QLabel(parent), pixmap(QPixmap(":/img/img/plus_sign.png"))
+    : QLabel(parent)
 {
-    this->setPixmap(pixmap.scaled(50, 50));
+    this->setFixedSize(50, 50);
+    reset();
 }
 
 void PixmapLabel::mouseReleaseEvent(QMouseEvent *event)
@@ -51,8 +52,7 @@ void PixmapLabel::mouseReleaseEvent(QMouseEvent *event)
             if (msgBox.clickedButton() == deleteButton)
             {
                 url.clear();
-                pixmap = QPixmap(":/img/img/plus_sign.png");
-                this->setPixmap(pixmap.scaled(50, 50));
+                reset();
                 emit pixmapRemoved(this);
             }
             else if (msgBox.clickedButton() == ylButton)
@@ -64,11 +64,7 @@ void PixmapLabel::mouseReleaseEvent(QMouseEvent *event)
                 scrollArea->setAttribute(Qt::WA_DeleteOnClose);
                 scrollArea->setWidget(lable);
                 QScroller::grabGesture(scrollArea->viewport(), QScroller::TouchGesture);
-#ifdef Q_OS_ANDROID
-                scrollArea->showFullScreen();
-#else
                 scrollArea->show();
-#endif
             }
         }
         event->accept();
@@ -90,12 +86,17 @@ void PixmapLabel::setPixmapFromNetwork(const QString &url)
         if(!image.isNull())
         {
             pixmap = QPixmap::fromImage(image);
+            this->setPixmap(pixmap.scaled(50, 50));
         }
         else
         {
-            pixmap = QPixmap(":/img/img/plus_sign.png");
+            reset();
         }
-        this->setPixmap(pixmap.scaled(50, 50));
     });
     emit pixmapSet();
+}
+
+void PixmapLabel::reset()
+{
+    this->setPixmap(QPixmap(":/img/img/plus_sign.png").scaled(50, 50));
 }

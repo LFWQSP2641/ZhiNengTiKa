@@ -27,6 +27,7 @@ protected:
 
 public slots:
     void setPixmapFromNetwork(const QString &url);
+    void reset();
 
 signals:
     void pixmapRemoved(PixmapLabel *thisPoint);
