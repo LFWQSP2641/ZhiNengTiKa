@@ -6,34 +6,27 @@
 
 QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url)
 {
-    if(Setting::userAuthorization.isEmpty())
-    {
-        Login::refreshUserData();
-    }
     QNetworkRequest requestInfo;
     requestInfo.setUrl(QUrl(url));
     requestInfo.setRawHeader(QByteArrayLiteral("Accept-Encoding"), QByteArrayLiteral("gzip"));
-    requestInfo.setRawHeader(QByteArrayLiteral("client"), QByteArrayLiteral("android"));
     requestInfo.setRawHeader(QByteArrayLiteral("app"), QByteArrayLiteral("student"));
-    requestInfo.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("okhttp/4.9.3"));
+    requestInfo.setRawHeader(QByteArrayLiteral("client"), QByteArrayLiteral("android"));
     requestInfo.setRawHeader(QByteArrayLiteral("Content-Type"), QByteArrayLiteral("application/json"));
-    requestInfo.setRawHeader(QByteArrayLiteral("Authorization"), Setting::userAuthorization);
-    requestInfo.setRawHeader(QByteArrayLiteral("accessToken"), Setting::userAccessToken);
-    requestInfo.setRawHeader(QByteArrayLiteral("clientSession"), Setting::userClientSession);
+    requestInfo.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("okhttp/4.9.3"));
+    requestInfo.setRawHeader(QByteArrayLiteral("Authorization"), Setting::authorization());
+    requestInfo.setRawHeader(QByteArrayLiteral("accessToken"), Setting::accessToken());
+    requestInfo.setRawHeader(QByteArrayLiteral("clientSession"), Setting::clientSession());
 
     const auto tVal{QString::number(QDateTime::currentMSecsSinceEpoch()).toUtf8()};
-
     requestInfo.setRawHeader(QByteArrayLiteral("t"), tVal);
-
-    const auto encryptVal{XinjiaoyuEncryptioner::getXinjiaoyuMD5(tVal, Setting::userClientSession)};
-
+    const auto encryptVal{XinjiaoyuEncryptioner::getXinjiaoyuMD5(tVal, Setting::clientSession())};
     requestInfo.setRawHeader(QByteArrayLiteral("encrypt"), encryptVal);
     return requestInfo;
 }
 
 QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
 {
-    if(!Login::userLogined)
+    if(!Setting::logined())
     {
         QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("未登录"));
         return QByteArray();
@@ -42,7 +35,7 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
     responseByte = Network::getData(
                        XinjiaoyuNetwork::setRequest(
                            QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_homework/"
-                                          "homework/template/question/list?templateCode=%0&studentId=%1&isEncrypted=true").arg(templateCode, Setting::userStudentId)));
+                                          "homework/template/question/list?templateCode=%0&studentId=%1&isEncrypted=true").arg(templateCode, Setting::studentId())));
 
     const auto stateCode{responseByte.mid(8, 3)};
 

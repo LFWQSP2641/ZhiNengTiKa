@@ -245,8 +245,8 @@ void UploadWidget::showEvent(QShowEvent *event)
 QJsonObject UploadWidget::getAnswerJsonObject()
 {
     QJsonObject rootObject;
-    rootObject.insert(QStringLiteral("schoolId"), QString(Setting::userSchoolId));
-    rootObject.insert(QStringLiteral("studentId"), QString(Setting::userStudentId));
+    rootObject.insert(QStringLiteral("schoolId"), QString(Setting::schoolId()));
+    rootObject.insert(QStringLiteral("studentId"), QString(Setting::studentId()));
     rootObject.insert(QStringLiteral("templateCode"), analysisWebRawData.getTemplateCode());
     QJsonArray array;
     for(auto &i : uploadChildWidgetList)
@@ -286,7 +286,7 @@ void UploadWidget::analysis()
         uploadChildWidgetList.append(uploadChildWidget);
         uploadChildWidgetLayout->addWidget(uploadChildWidget);
     }
-    if(Login::userLogined)
+    if(Setting::logined())
     {
         this->setEnabled(true);
     }

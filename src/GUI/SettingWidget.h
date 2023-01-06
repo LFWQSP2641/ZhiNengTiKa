@@ -10,7 +10,7 @@ public:
     explicit SettingWidget(QWidget *parent = nullptr);
 
 private:
-    QLabel *loginStateLabel;
+    QComboBox *userListComboBox;
     QPushButton *loginButton;
     QPushButton *logoutButton;
     QFont testFont;
@@ -29,6 +29,8 @@ private:
     QPushButton *cleanTempButton;
     QLabel *showTempSize;
     AutoUpdate autoUpdate = AutoUpdate(APP_VERSION);
+
+    void setUserList();
 
 public slots:
     void refreshTempSize();

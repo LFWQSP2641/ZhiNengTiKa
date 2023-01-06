@@ -46,7 +46,7 @@ MainWidget::MainWidget(QWidget *parent)
             questionWidget->setFocusPolicy(Qt::StrongFocus);
             break;
         case 3:
-            if(!Login::userLogined)
+            if(!Setting::logined())
             {
                 QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("未登录"));
             }

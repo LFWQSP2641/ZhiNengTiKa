@@ -21,7 +21,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     QGroupBox *aboutGroupBox = new QGroupBox(QStringLiteral("关于"), this);
     QVBoxLayout *aboutLayout = new QVBoxLayout(aboutGroupBox);
 
-    loginStateLabel = new QLabel(this);
+    userListComboBox = new QComboBox(this);
     loginButton = new QPushButton(QStringLiteral("登录"), this);
     logoutButton = new QPushButton(QStringLiteral("登出"), this);
     fontComboBox = new QComboBox(this);
@@ -39,18 +39,10 @@ SettingWidget::SettingWidget(QWidget *parent)
     aboutQtButton = new QPushButton(QStringLiteral("关于Qt"), this);
     layout = new QVBoxLayout(this);
 
-    loginStateLabel->setFixedHeight(loginStateLabel->fontMetrics().height());
-    if(Login::userLogined)
-    {
-        loginStateLabel->setText(QStringLiteral("当前账号:").append(Setting::userData.value(QStringLiteral("realName")).toString()));
-    }
-    else
-    {
-        loginStateLabel->setText(QStringLiteral("未登录"));
-    }
+    setUserList();
 
     resultTestLabel->setFixedHeight(resultTestLabel->fontMetrics().height());
-    resultTestLabel->setText("AbCd字体测试1234");
+    resultTestLabel->setText(QStringLiteral("AbCd字体测试1234"));
     fontComboBox->addItems(QFontDatabase::families(QFontDatabase::SimplifiedChinese));
     fontComboBox->setCurrentText(Setting::font);
     smallFontPointSizeSpinBox->setValue(Setting::smallFontPointSize);
@@ -66,12 +58,7 @@ SettingWidget::SettingWidget(QWidget *parent)
         return tempLayout;
     }};
 
-    auto tempHBoxLayout{new QHBoxLayout};
-    tempHBoxLayout->addStretch();
-    tempHBoxLayout->addWidget(loginStateLabel);
-    tempHBoxLayout->addStretch();
-
-    accountLayout->addLayout(tempHBoxLayout);
+    accountLayout->addWidget(userListComboBox);
     accountLayout->addLayout(addTwoWidgetToHBoxLayout(loginButton, logoutButton));
     appearanceLayout->addRow(QStringLiteral("字体:"), fontComboBox);
     appearanceLayout->addRow(QStringLiteral("字体大小:"), fontPointSizeSpinBox);
@@ -92,6 +79,14 @@ SettingWidget::SettingWidget(QWidget *parent)
     layout->addWidget(aboutGroupBox);
 
 
+    connect(this->userListComboBox, &QComboBox::currentIndexChanged, [this](int index)
+    {
+        if(index > 0)
+        {
+            Setting::userDataList.toFirst(index);
+            setUserList();
+        }
+    });
 
     connect(this->loginButton, &QPushButton::clicked, [this]
     {
@@ -102,16 +97,8 @@ SettingWidget::SettingWidget(QWidget *parent)
         QPushButton OKButton(QStringLiteral("确定"), &dialog);
         QPushButton cancelButton(QStringLiteral("取消"), &dialog);
 
-        if(Login::userLogined)
-        {
-            usernameLineEdit.setText(Setting::userUsername);
-            passwordLineEdit.setText(Setting::userPassword);
-        }
-        else
-        {
-            usernameLineEdit.setText(QStringLiteral("jcgjzx"));
-            passwordLineEdit.setText(QStringLiteral("abc123"));
-        }
+        usernameLineEdit.setText(QStringLiteral("jcgjzx"));
+        passwordLineEdit.setText(QStringLiteral("abc123"));
         usernameLineEdit.setPlaceholderText(QStringLiteral("账号"));
         passwordLineEdit.setPlaceholderText(QStringLiteral("密码"));
 
@@ -130,19 +117,21 @@ SettingWidget::SettingWidget(QWidget *parent)
             const auto password{passwordLineEdit.text().trimmed()};
             if(!(username.isEmpty() || password.isEmpty()))
             {
-                switch (Login::refreshUserData(username.toUtf8(), password.toUtf8()))
+                const auto returnData{Login::login(username.toUtf8(), password.toUtf8())};
+                switch (QJsonDocument::fromJson(returnData).object().value(QStringLiteral("code")).toInt())
                 {
-                case Login::loginState::Success:
-                    QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(Setting::userData.value(QStringLiteral("realName")).toString()));
+                case 200:
+                    QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(Setting::sheetData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + Setting::username()));
                     dialog.close();
-                    loginStateLabel->setText(QStringLiteral("当前账号:").append(Setting::userData.value(QStringLiteral("realName")).toString()));
+                    setUserList();
                     break;
-                case Login::loginState::SomethingIsWrong:
-                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败,账号或密码错误"));
+                case 414:
+                case 415:
+                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败,账号或密码错误") + returnData);
                     OKButton.setEnabled(true);
                     break;
                 default:
-                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败"));
+                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败") + returnData);
                     OKButton.setEnabled(true);
                     break;
                 }
@@ -160,9 +149,16 @@ SettingWidget::SettingWidget(QWidget *parent)
 
     connect(this->logoutButton, &QPushButton::clicked, [this]
     {
-        Login::userLogout();
+        if(!Setting::logined())
+        {
+            return;
+        }
+        Setting::userDataList.removeFirst();
+#ifdef Q_OS_ANDROID
+        Setting::saveToFile();
+#endif // Q_OS_ANDROID
         QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登出成功"));
-        loginStateLabel->setText(QStringLiteral("未登录"));
+        setUserList();
     });
 
     auto askRestart{[]
@@ -281,6 +277,16 @@ SettingWidget::SettingWidget(QWidget *parent)
         checkNewVersionButton->setText(QStringLiteral("检查更新"));
         checkNewVersionButton->setEnabled(true);
     });
+}
+
+void SettingWidget::setUserList()
+{
+    userListComboBox->clear();
+    for(const auto &i : Setting::userDataList)
+    {
+        userListComboBox->addItem(i.sheetData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + i.username());
+    }
+    userListComboBox->setCurrentIndex(0);
 }
 
 void SettingWidget::refreshTempSize()

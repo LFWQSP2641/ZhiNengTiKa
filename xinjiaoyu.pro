@@ -70,6 +70,8 @@ HEADERS += \
     src/Logic/AnalysisWebRawData.h \
     src/Logic/AnswerDetailData.hpp \
     src/Logic/AutoUpdate.h \
+    src/Logic/UserData.hpp \
+    src/Logic/UserDataList.hpp \
     src/StaticClass/Global.h \
     src/StaticClass/Login.h \
     src/StaticClass/Network.h \

@@ -2,14 +2,7 @@
 #include "Global.h"
 #include "Login.h"
 
-QByteArray Setting::userStudentId;
-QByteArray Setting::userClientSession;
-QByteArray Setting::userSchoolId;
-QByteArray Setting::userAuthorization;
-QByteArray Setting::userAccessToken;
-QByteArray Setting::userUsername;
-QByteArray Setting::userPassword;
-QJsonObject Setting::userData;
+UserDataList Setting::userDataList;
 
 bool Setting::listAllTemplate;
 //若这三为空,就在main那赋个默认值
@@ -33,41 +26,45 @@ void Setting::loadFromFile()
     file.close();
 
     const auto settingJsonObject{QJsonDocument::fromJson(fileData).object()};
+    const auto accountsJsonArray{settingJsonObject.value("accounts").toArray()};
 
-    Setting::userSchoolId = settingJsonObject.value(QStringLiteral("userSchoolId")).toString().toUtf8();
-    Setting::userStudentId = settingJsonObject.value(QStringLiteral("userStudentId")).toString().toUtf8();
-    Setting::userAuthorization = settingJsonObject.value(QStringLiteral("userAuthorization")).toString().toUtf8();
-    Setting::userAccessToken = settingJsonObject.value(QStringLiteral("userAccessToken")).toString().toUtf8();
-    Setting::userUsername = settingJsonObject.value(QStringLiteral("userUsername")).toString().toUtf8();
-    Setting::userPassword = settingJsonObject.value(QStringLiteral("userPassword")).toString().toUtf8();
-    Setting::userData = QJsonDocument::fromJson(QByteArray::fromBase64(settingJsonObject.value(QStringLiteral("userData")).toString().toUtf8())).object();
+    for(const auto &i : accountsJsonArray)
+    {
+        const auto jsonObject{i.toObject()};
+        userDataList.append(UserData(
+                                jsonObject.value(QStringLiteral("AccessToken")).toString().toUtf8(),
+                                jsonObject.value(QStringLiteral("Authorization")).toString().toUtf8(),
+                                jsonObject.value(QStringLiteral("Password")).toString().toUtf8(),
+                                jsonObject.value(QStringLiteral("SchoolId")).toString().toUtf8(),
+                                QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("SheetData")).toString().toUtf8())).object(),
+                                jsonObject.value(QStringLiteral("StudentId")).toString().toUtf8(),
+                                jsonObject.value(QStringLiteral("Username")).toString().toUtf8()));
+    }
 
     Setting::listAllTemplate = settingJsonObject.value(QStringLiteral("listAllTemplate")).toBool(false);
     Setting::fontPointSize = settingJsonObject.value(QStringLiteral("fontPointSize")).toInt();
     Setting::smallFontPointSize = settingJsonObject.value(QStringLiteral("smallFontPointSize")).toInt();
     Setting::font = settingJsonObject.value(QStringLiteral("font")).toString();
-
-    if(!Setting::userAuthorization.isEmpty())
-    {
-        Login::userLogined = true;
-    }
-    else
-    {
-        Login::userLogined = false;
-    }
-    Login::refreshClientSession();
 }
 
 void Setting::saveToFile()
 {
     QJsonObject settingJsonObject;
-    settingJsonObject.insert(QStringLiteral("userSchoolId"), QString(Setting::userSchoolId));
-    settingJsonObject.insert(QStringLiteral("userStudentId"), QString(Setting::userStudentId));
-    settingJsonObject.insert(QStringLiteral("userAuthorization"), QString(Setting::userAuthorization));
-    settingJsonObject.insert(QStringLiteral("userAccessToken"), QString(Setting::userAccessToken));
-    settingJsonObject.insert(QStringLiteral("userUsername"), QString(Setting::userUsername));
-    settingJsonObject.insert(QStringLiteral("userPassword"), QString(Setting::userPassword));
-    settingJsonObject.insert(QStringLiteral("userData"), QString(QJsonDocument(Setting::userData).toJson(QJsonDocument::Compact).toBase64()));
+    QJsonArray accountsJsonArray;
+    for(const auto &i : userDataList)
+    {
+        QJsonObject jsonObject;
+        jsonObject.insert(QStringLiteral("AccessToken"), QString(i.accessToken()));
+        jsonObject.insert(QStringLiteral("Authorization"), QString(i.authorization()));
+        jsonObject.insert(QStringLiteral("Password"), QString(i.password()));
+        jsonObject.insert(QStringLiteral("SchoolId"), QString(i.schoolId()));
+        jsonObject.insert(QStringLiteral("SheetData"), QString(QJsonDocument(i.sheetData()).toJson(QJsonDocument::Compact).toBase64()));
+        jsonObject.insert(QStringLiteral("StudentId"), QString(i.studentId()));
+        jsonObject.insert(QStringLiteral("Username"), QString(i.username()));
+
+        accountsJsonArray.append(jsonObject);
+    }
+    settingJsonObject.insert(QStringLiteral("accounts"), accountsJsonArray);
 
     settingJsonObject.insert(QStringLiteral("listAllTemplate"), listAllTemplate);
     settingJsonObject.insert(QStringLiteral("fontPointSize"), fontPointSize);
@@ -78,4 +75,49 @@ void Setting::saveToFile()
     file.open(QFile::WriteOnly);
     file.write(QJsonDocument(settingJsonObject).toJson(QJsonDocument::Compact));
     file.close();
+}
+
+QByteArray Setting::accessToken()
+{
+    return Setting::userDataList.at(0).accessToken();
+}
+
+QByteArray Setting::authorization()
+{
+    return Setting::userDataList.at(0).authorization();
+}
+
+QByteArray Setting::clientSession()
+{
+    return Setting::userDataList.at(0).clientSession();
+}
+
+QByteArray Setting::password()
+{
+    return Setting::userDataList.at(0).password();
+}
+
+QByteArray Setting::schoolId()
+{
+    return Setting::userDataList.at(0).schoolId();
+}
+
+QJsonObject Setting::sheetData()
+{
+    return Setting::userDataList.at(0).sheetData();
+}
+
+QByteArray Setting::studentId()
+{
+    return Setting::userDataList.at(0).studentId();
+}
+
+QByteArray Setting::username()
+{
+    return Setting::userDataList.at(0).username();
+}
+
+bool Setting::logined()
+{
+    return !Setting::userDataList.isEmpty();
 }

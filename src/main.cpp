@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
     else
     {
         QMessageBox::warning(&w, QStringLiteral("warning"), QStringLiteral("请更新版本或检查网络连接"));
+        QApplication::exit(1);
     }
 #endif // Q_OS_ANDROID
 
