@@ -126,12 +126,13 @@ SettingWidget::SettingWidget(QWidget *parent)
                     setUserList();
                     break;
                 case 414:
+                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("别信那个账号锁定,搁着开玩笑呢"));
                 case 415:
-                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败,账号或密码错误") + returnData);
+                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败,账号或密码错误\n") + returnData);
                     OKButton.setEnabled(true);
                     break;
                 default:
-                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败") + returnData);
+                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败\n") + returnData);
                     OKButton.setEnabled(true);
                     break;
                 }
@@ -234,7 +235,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                                "<p>使用 Qt 框架的跨平台软件,支持 Windows, Android, Linux</p>"
                                "<p>内测版</p>"
                                "<p>作者:LFWQSP2641( <a href=\"%0\">%0</a> )</p>"
-                               "<p><b>只在Github有账号,其他平台同名账号皆与本人无关!</b></p>"
+                               "<p><b>只在Github有账号,其他平台同名账号与本人无关!</b></p>"
                                "<p>Copyright © 2022 - 2022 LFWQSP2641.All Rights Reserved.</p>"
                                "<br />"
                                "<p>鸣谢:</p>"
@@ -282,9 +283,15 @@ SettingWidget::SettingWidget(QWidget *parent)
 void SettingWidget::setUserList()
 {
     userListComboBox->clear();
-    for(const auto &i : Setting::userDataList)
+    if(Setting::logined())
     {
-        userListComboBox->addItem(i.sheetData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + i.username());
+        for(const auto &i : Setting::userDataList)
+        {
+            userListComboBox->addItem(i.sheetData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + i.username());
+        }
+    }
+    {
+        userListComboBox->addItem(QStringLiteral("未登录"));
     }
     userListComboBox->setCurrentIndex(0);
 }
@@ -292,30 +299,5 @@ void SettingWidget::setUserList()
 void SettingWidget::refreshTempSize()
 {
     auto size{ Global::getDirSize(Global::tempPath()) };
-//    if (size < 1024)
-//    {
-//        showTempSize->setText(QString("缓存大小:%0B").arg(size));
-//    }
-//    else
-//    {
-//        size /= 1024;
-//        if (size < 1024)
-//        {
-//            showTempSize->setText(QString("缓存大小:%0KB").arg(size));
-//        }
-//        else
-//        {
-//            size /= 1024;
-//            if (size < 1024)
-//            {
-//                showTempSize->setText(QString("缓存大小:%0MB").arg(size));
-//            }
-//            else
-//            {
-//                size /= 1024;
-//                showTempSize->setText(QString("缓存大小:%0GB").arg(size));
-//            }
-//        }
-//    }
     showTempSize->setText(QStringLiteral("缓存大小:%0").arg(this->locale().formattedDataSize(size)));
 }
