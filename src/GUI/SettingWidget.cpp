@@ -307,6 +307,7 @@ void SettingWidget::setUserList()
             userListComboBox->addItem(i.sheetData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + i.username());
         }
     }
+    else
     {
         userListComboBox->addItem(QStringLiteral("未登录"));
     }
