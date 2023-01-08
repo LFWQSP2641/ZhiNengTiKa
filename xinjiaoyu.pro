@@ -1,5 +1,5 @@
-win32:VERSION = 1.2.12.9
-else:VERSION = 1.2.12
+win32:VERSION = 1.2.13.0
+else:VERSION = 1.2.13
 
 
 android{
