@@ -1,4 +1,4 @@
-win32:VERSION = 1.2.12.8
+win32:VERSION = 1.2.12.9
 else:VERSION = 1.2.12
 
 
@@ -24,7 +24,7 @@ RC_ICONS = Resource/img/xinjiaoyuico.ico
 
 QMAKE_TARGET_PRODUCT = "xinjiaoyu"
 
-QMAKE_TARGET_COPYRIGHT = "Copyright © 2022 - 2022 LFWQSP2641.All Rights Reserved."
+QMAKE_TARGET_COPYRIGHT = "Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserved."
 
 RC_LANG = 0x0004
 

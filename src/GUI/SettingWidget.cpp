@@ -236,7 +236,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                                "<p>内测版</p>"
                                "<p>作者:LFWQSP2641( <a href=\"%0\">%0</a> )</p>"
                                "<p><b>只在Github有账号,其他平台同名账号与本人无关!</b></p>"
-                               "<p>Copyright © 2022 - 2022 LFWQSP2641.All Rights Reserved.</p>"
+                               "<p>Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserved.</p>"
                                "<br />"
                                "<p>鸣谢:</p>"
                                "<p>Qt ( <a href=\"%1\">%1</a> )</p>"

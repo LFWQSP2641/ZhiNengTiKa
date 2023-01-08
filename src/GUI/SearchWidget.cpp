@@ -78,8 +78,8 @@ SearchWidget::SearchWidget(QWidget *parent)
         return layout;
     }};
 
-    templateCodeLineEdit->setPlaceholderText(QStringLiteral("输入题卡编号"));
-    searchLineEdit->setPlaceholderText(QStringLiteral("输入题卡名称"));
+    searchLineEdit->setPlaceholderText(QStringLiteral("题卡名称"));
+    templateCodeLineEdit->setPlaceholderText(QStringLiteral("题卡编号"));
     listWidget->setVisible(false);
     OKButton->setEnabled(false);
     QScroller::grabGesture(listWidget->viewport(), QScroller::TouchGesture);
@@ -103,8 +103,8 @@ SearchWidget::SearchWidget(QWidget *parent)
     previousPageButton->setVisible(false);
     nextPageButton->setVisible(false);
 
-    mainLayout->addLayout(addHBoxLayoutWithTwoWidget(templateCodeLineEdit, selectTemplateIdButton));
     mainLayout->addLayout(addHBoxLayoutWithTwoWidget(searchLineEdit, searchButton));
+    mainLayout->addLayout(addHBoxLayoutWithTwoWidget(templateCodeLineEdit, selectTemplateIdButton));
     mainLayout->addWidget(resetButton);
     mainLayout->addWidget(allListWidget);
     mainLayout->addWidget(listWidget);
