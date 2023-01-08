@@ -118,6 +118,7 @@ SettingWidget::SettingWidget(QWidget *parent)
             if(username == "jcgjzx")
             {
                 QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("请输入正确的账号"));
+                return;
             }
             if(!(username.isEmpty() || password.isEmpty()))
             {
