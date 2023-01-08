@@ -57,7 +57,7 @@ void AutoUpdate::showUpdateWidget()
     showDownloadUrl.setVisible(false);
     copyButton.setVisible(false);
     label.setWordWrap(true);
-    label.setText(QStringLiteral("当前版本:%0\n最新版本:%1\n%2\n是否前往下载?").arg(currentVersion, newestVersion, changeLog));
+    label.setText(QStringLiteral("当前版本:%0\n最新版本:%1\n\n%2\n\n是否前往下载?").arg(currentVersion, newestVersion, changeLog));
 
     layout.addWidget(&label, 0, 0, 1, 2);
     layout.addWidget(&showDownloadUrl, 1, 0, 1, 1);
