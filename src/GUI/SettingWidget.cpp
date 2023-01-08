@@ -115,18 +115,34 @@ SettingWidget::SettingWidget(QWidget *parent)
             OKButton.setEnabled(false);
             const auto username{usernameLineEdit.text().trimmed()};
             const auto password{passwordLineEdit.text().trimmed()};
+            if(username == "jcgjzx")
+            {
+                QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("请输入正确的账号"));
+            }
             if(!(username.isEmpty() || password.isEmpty()))
             {
                 const auto returnData{Login::login(username.toUtf8(), password.toUtf8())};
                 switch (QJsonDocument::fromJson(returnData).object().value(QStringLiteral("code")).toInt())
                 {
                 case 200:
+                    if(Setting::sheetData().value(QStringLiteral("realName")).toString().isEmpty())
+                    {
+                        auto ret{QMessageBox::question(this, QStringLiteral("question"), QStringLiteral("账号部分信息为空,是否继续使用此账号"))};
+                        if(ret == QMessageBox::No)
+                        {
+                            Setting::userDataList.removeFirst();
+#ifdef Q_OS_ANDROID
+                            Setting::saveToFile();
+#endif // Q_OS_ANDROID
+                            return;
+                        }
+                    }
                     QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(Setting::sheetData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + Setting::username()));
                     dialog.close();
                     setUserList();
                     break;
                 case 414:
-                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("别信那个账号锁定,搁着开玩笑呢"));
+                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("可能出现账号锁定,别信"));
                 case 415:
                     QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败,账号或密码错误\n") + returnData);
                     OKButton.setEnabled(true);
