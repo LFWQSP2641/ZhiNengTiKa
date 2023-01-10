@@ -22,14 +22,34 @@ PixmapLabel::PixmapLabel(QWidget *parent)
 }
 
 PixmapLabel::PixmapLabel(const QPixmap &pixmap, QWidget *parent)
-    : PixmapLabel(parent)
+    : PixmapLabel{parent}
 {
     this->setPixmap(pixmap);
 }
 
+PixmapLabel::PixmapLabel(const QPixmap &pixmap, const QString &pixmapUrl, QWidget *parent)
+    : PixmapLabel{parent}
+{
+    this->setPixmap(pixmap, pixmapUrl);
+}
+
 void PixmapLabel::setPixmap(const QPixmap &pixmap)
 {
-    uploadPixmap(pixmap);
+    this->uploadPixmap(pixmap);
+}
+
+void PixmapLabel::setPixmap(const QPixmap &pixmap, const QString &pixmapUrl)
+{
+    if(pixmapUrl.contains(QStringLiteral("xinjiaoyu.com")))
+    {
+        this->rawPixmap = pixmap;
+        this->ClickableLabel::setPixmap(pixmap.scaled(this->size(), Qt::KeepAspectRatio));
+        this->url = pixmapUrl;
+    }
+    else
+    {
+        this->setPixmap(pixmap);
+    }
 }
 
 void PixmapLabel::uploadPixmap()

@@ -8,8 +8,10 @@ class PixmapLabel : public ClickableLabel
 public:
     explicit PixmapLabel(QWidget *parent = nullptr);
     explicit PixmapLabel(const QPixmap &pixmap, QWidget *parent = nullptr);
+    explicit PixmapLabel(const QPixmap &pixmap, const QString &pixmapUrl, QWidget *parent = nullptr);
 
     void setPixmap(const QPixmap &pixmap);
+    void setPixmap(const QPixmap &pixmap, const QString &pixmapUrl);
     QString getUrl() const
     {
         return url;
