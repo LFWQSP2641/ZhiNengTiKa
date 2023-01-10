@@ -34,6 +34,7 @@ void Setting::loadFromFile()
         userDataList.append(UserData(
                                 jsonObject.value(QStringLiteral("AccessToken")).toString().toUtf8(),
                                 jsonObject.value(QStringLiteral("Authorization")).toString().toUtf8(),
+                                jsonObject.value(QStringLiteral("ClientSession")).toString().toUtf8(),
                                 jsonObject.value(QStringLiteral("Password")).toString().toUtf8(),
                                 jsonObject.value(QStringLiteral("SchoolId")).toString().toUtf8(),
                                 QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("SheetData")).toString().toUtf8())).object(),
@@ -56,6 +57,7 @@ void Setting::saveToFile()
         QJsonObject jsonObject;
         jsonObject.insert(QStringLiteral("AccessToken"), QString(i.accessToken()));
         jsonObject.insert(QStringLiteral("Authorization"), QString(i.authorization()));
+        jsonObject.insert(QStringLiteral("ClientSession"), QString(i.clientSession()));
         jsonObject.insert(QStringLiteral("Password"), QString(i.password()));
         jsonObject.insert(QStringLiteral("SchoolId"), QString(i.schoolId()));
         jsonObject.insert(QStringLiteral("SheetData"), QString(QJsonDocument(i.sheetData()).toJson(QJsonDocument::Compact).toBase64()));

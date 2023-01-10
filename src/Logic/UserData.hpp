@@ -3,15 +3,6 @@
 class UserData
 {
 public:
-    UserData(const QByteArray &accessToken, const QByteArray &authorization, const QByteArray &password, const QByteArray &schoolId, const QJsonObject &sheetData, const QByteArray &studentId, const QByteArray &username)
-        : accessTokenStr(accessToken),
-          authorizationStr(authorization),
-          clientSessionStr(QUuid::createUuid().toString(QUuid::WithoutBraces).toUtf8()),
-          passwordStr(password),
-          schoolIdStr(schoolId),
-          sheetDataJsonObject(sheetData),
-          studentIdStr(studentId),
-          usernameStr(username) {}
     UserData(const QByteArray &accessToken, const QByteArray &authorization, const QByteArray &clientSession, const QByteArray &password, const QByteArray &schoolId, const QJsonObject &sheetData, const QByteArray &studentId, const QByteArray &username)
         : accessTokenStr(accessToken),
           authorizationStr(authorization),
