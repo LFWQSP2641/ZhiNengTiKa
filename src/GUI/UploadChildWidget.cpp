@@ -98,7 +98,7 @@ QJsonObject UploadChildWidget::getJsonObject()
 
     QString answerData;
     QString rawScanData;
-    if(options != Q_NULLPTR)
+    if(this->isChoiceQuestions())
     {
         const auto btnList{options->buttons()};
         for(auto i{0}; i < btnList.count(); ++i)
@@ -111,7 +111,7 @@ QJsonObject UploadChildWidget::getJsonObject()
     }
     else
     {
-        for(auto &i : pixmapLabelList)
+        for(const auto &i : pixmapLabelList)
         {
             rawScanData.append(i->getUrl().append(QStringLiteral(",")));
         }
