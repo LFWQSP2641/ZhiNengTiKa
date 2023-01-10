@@ -27,7 +27,7 @@ void PlusSignLabel::contextMenuEvent(QContextMenuEvent *event)
 
 void PlusSignLabel::selectImageFile()
 {
-    auto urlList{QFileDialog::getOpenFileUrls()};
+    auto urlList{QFileDialog::getOpenFileUrls(this, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)"))};
     if(urlList.isEmpty())
     {
         return;
