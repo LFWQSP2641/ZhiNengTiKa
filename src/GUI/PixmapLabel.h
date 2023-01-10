@@ -1,36 +1,43 @@
 #pragma once
 
-class PixmapLabel : public QLabel
+#include "ClickableLabel.hpp"
+
+class PixmapLabel : public ClickableLabel
 {
     Q_OBJECT
 public:
     explicit PixmapLabel(QWidget *parent = nullptr);
+    explicit PixmapLabel(const QPixmap &pixmap, QWidget *parent = nullptr);
+
+    void setPixmap(const QPixmap &pixmap);
     QString getUrl() const
     {
         return url;
     }
 
+    void remove()
+    {
+        emit removed(this);
+    }
 protected:
-    QPixmap pixmap;
     QString url;
+    QPixmap rawPixmap;
 
-    void mouseReleaseEvent(QMouseEvent *event) override;
+    QMenu *menu;
+    QAction *copyAction;
+    QAction *removeAction;
+    QAction *previewAction;
 
-    void enterEvent(QEnterEvent*) override
-    {
-        setCursor(QCursor(Qt::PointingHandCursor));
-    }
-    void leaveEvent(QEvent*) override
-    {
-        setCursor(QCursor(Qt::ArrowCursor));
-    }
+    void uploadPixmap();
+    void uploadPixmap(const QPixmap &pixmap);
 
-public slots:
-    void setPixmapFromNetwork(const QString &url);
-    void reset();
-
+    void contextMenuEvent(QContextMenuEvent *event) override;
+protected slots:
+    void copyPixmap();
+    void removePixmap();
+    void previewPixmap();
+    void showTipBox();
 signals:
-    void pixmapRemoved(PixmapLabel *thisPoint);
-    void pixmapSet();
+    void removed(PixmapLabel *pixmapLabelPoint);
 };
 

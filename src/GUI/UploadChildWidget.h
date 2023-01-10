@@ -2,6 +2,7 @@
 
 #include "../Logic/AnswerDetailData.hpp"
 class PixmapLabel;
+class PlusSignLabel;
 
 class UploadChildWidget : public QWidget
 {
@@ -18,6 +19,7 @@ protected:
     QHBoxLayout *mainLayout;
     QHBoxLayout *answerLayout;
     QList<PixmapLabel*> pixmapLabelList;
+    PlusSignLabel *plusSignLabel = Q_NULLPTR;
     QButtonGroup *options = Q_NULLPTR;
 
     bool choiceQuestions;
@@ -25,9 +27,14 @@ protected:
     const AnswerDetailData answerDetailData;
 
 public slots:
-    void setPixmapFromNetwork(const QString &url);
-    PixmapLabel *addPixmapLabel();
+    void setPixmapFromNetwork(const QUrl &url);
+    PixmapLabel *addPixmapLabelByPixmap(const QPixmap &pixmap);
+    PixmapLabel *addPixmapLabelFromUrl(const QUrl &url);
     void setChecked(const QBitArray &on);
+    void clearPixmapLabelList();
+
+protected slots:
+    PixmapLabel *addPixmapLabel();
 
 signals:
 

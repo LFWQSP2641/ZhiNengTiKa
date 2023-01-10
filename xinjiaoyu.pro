@@ -1,5 +1,5 @@
-win32:VERSION = 1.2.13.0
-else:VERSION = 1.2.13
+win32:VERSION = 1.3.0.11
+else:VERSION = 1.3.0
 
 
 android{
@@ -58,8 +58,10 @@ include(D:/Softwares/scr/WebView/WebView.pri)
 
 HEADERS += \
     src/GUI/AnswerAndAnalysisWidget.h \
+    src/GUI/ClickableLabel.hpp \
     src/GUI/MainWidget.h \
     src/GUI/PixmapLabel.h \
+    src/GUI/PlusSignLabel.h \
     src/GUI/QuestionWidget.h \
     src/GUI/SearchWidget.h \
     src/GUI/SettingWidget.h \
@@ -83,6 +85,7 @@ SOURCES += \
     src/GUI/AnswerAndAnalysisWidget.cpp \
     src/GUI/MainWidget.cpp \
     src/GUI/PixmapLabel.cpp \
+    src/GUI/PlusSignLabel.cpp \
     src/GUI/QuestionWidget.cpp \
     src/GUI/SearchWidget.cpp \
     src/GUI/SettingWidget.cpp \

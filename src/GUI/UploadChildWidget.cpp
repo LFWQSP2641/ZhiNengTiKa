@@ -1,5 +1,7 @@
 #include "UploadChildWidget.h"
 #include "PixmapLabel.h"
+#include "PlusSignLabel.h"
+#include "../StaticClass/Network.h"
 
 UploadChildWidget::UploadChildWidget(const AnswerDetailData &answerDetailData, QWidget *parent)
     : QWidget{parent}, answerDetailData(answerDetailData)
@@ -74,7 +76,16 @@ UploadChildWidget::UploadChildWidget(const AnswerDetailData &answerDetailData, Q
     else
     {
         choiceQuestions = false;
-        addPixmapLabel();
+        plusSignLabel = new PlusSignLabel(this);
+        connect(plusSignLabel, &PlusSignLabel::addPixmapLabel, this, &UploadChildWidget::addPixmapLabelByPixmap);
+        connect(plusSignLabel, &PlusSignLabel::addPixmapLabels, [this](const QList<QUrl> &urlList)
+        {
+            for(const auto &i : urlList)
+            {
+                this->addPixmapLabelFromUrl(i);
+            }
+        });
+        answerLayout->addWidget(plusSignLabel);
     }
     mainLayout->addLayout(answerLayout);
     mainLayout->addStretch();
@@ -98,13 +109,16 @@ QJsonObject UploadChildWidget::getJsonObject()
             }
         }
     }
-    for(auto &i : pixmapLabelList)
+    else
     {
-        rawScanData.append(i->getUrl().append(QStringLiteral(",")));
-    }
-    while(rawScanData.endsWith(","))
-    {
-        rawScanData.resize(rawScanData.size() - 1);
+        for(auto &i : pixmapLabelList)
+        {
+            rawScanData.append(i->getUrl().append(QStringLiteral(",")));
+        }
+        while(rawScanData.endsWith(","))
+        {
+            rawScanData.resize(rawScanData.size() - 1);
+        }
     }
 
     object.insert(QStringLiteral("answer"), answerData);
@@ -113,37 +127,42 @@ QJsonObject UploadChildWidget::getJsonObject()
     return object;
 }
 
-void UploadChildWidget::setPixmapFromNetwork(const QString &url)
+void UploadChildWidget::setPixmapFromNetwork(const QUrl &url)
 {
-    //清空pixmapLabelList
-    //因为图片只有一个
-    for(auto &i : pixmapLabelList)
-    {
-        answerLayout->removeWidget(i);
-        i->deleteLater();
-    }
-    pixmapLabelList.clear();
-    addPixmapLabel()->setPixmapFromNetwork(url);
+    clearPixmapLabelList();
+    addPixmapLabelFromUrl(url);
 }
 
-PixmapLabel* UploadChildWidget::addPixmapLabel()
+PixmapLabel *UploadChildWidget::addPixmapLabelByPixmap(const QPixmap &pixmap)
 {
-    auto pixmapLabel{new PixmapLabel(this)};
-    pixmapLabelList.append(pixmapLabel);
-    answerLayout->addWidget(pixmapLabel);
-    connect(pixmapLabel, &PixmapLabel::pixmapRemoved, [this](PixmapLabel * point)
+    auto newPixmapLabel{this->addPixmapLabel()};
+    newPixmapLabel->setPixmap(pixmap);
+    return newPixmapLabel;
+}
+
+PixmapLabel *UploadChildWidget::addPixmapLabelFromUrl(const QUrl &url)
+{
+    if(!url.isValid())
     {
-        pixmapLabelList.remove(pixmapLabelList.indexOf(point));
-        answerLayout->removeWidget(point);
-        point->deleteLater();
-        if(pixmapLabelList.isEmpty())
+        return Q_NULLPTR;
+    }
+    auto newPixmapLabel{this->addPixmapLabel()};
+    auto reply{ Network::networkAccessManager.get(QNetworkRequest(url)) };
+    connect(reply, &QNetworkReply::finished, [newPixmapLabel, reply]
+    {
+        QPixmap pixmap;
+        if(pixmap.loadFromData(Network::replyReadAll(reply)))
         {
-            addPixmapLabel();
+            newPixmapLabel->setPixmap(pixmap);
+        }
+        else
+        {
+            newPixmapLabel->remove();
         }
     });
-    connect(pixmapLabel, &PixmapLabel::pixmapSet, this, &UploadChildWidget::addPixmapLabel);
-    return pixmapLabel;
+    return newPixmapLabel;
 }
+
 
 void UploadChildWidget::setChecked(const QBitArray &on)
 {
@@ -153,4 +172,30 @@ void UploadChildWidget::setChecked(const QBitArray &on)
     {
         btnList.at(i)->setChecked(on.at(i));
     }
+}
+
+void UploadChildWidget::clearPixmapLabelList()
+{
+    for(auto &i : pixmapLabelList)
+    {
+        answerLayout->removeWidget(i);
+        i->setParent(Q_NULLPTR);
+        i->deleteLater();
+    }
+    pixmapLabelList.clear();
+}
+
+PixmapLabel* UploadChildWidget::addPixmapLabel()
+{
+    auto pixmapLabel{new PixmapLabel(this)};
+    pixmapLabelList.append(pixmapLabel);
+    answerLayout->insertWidget(answerLayout->count() - 1, pixmapLabel);
+    connect(pixmapLabel, &PixmapLabel::removed, [this](PixmapLabel * point)
+    {
+        pixmapLabelList.removeOne(point);
+        answerLayout->removeWidget(point);
+        point->setParent(Q_NULLPTR);
+        point->deleteLater();
+    });
+    return pixmapLabel;
 }

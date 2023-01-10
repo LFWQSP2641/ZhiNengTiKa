@@ -114,18 +114,7 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
 
 QString XinjiaoyuNetwork::uploadFile(const QByteArray &fileData, const QString &fileName)
 {
-    const auto returnData{ Network::replyReadAll(Network::waitForFinished(uploadFileReply(fileData, fileName))) };
-
-    if(returnData.mid(8, 3) != QByteArrayLiteral("200"))
-    {
-        return QString();
-    }
-
-    auto fileUrl{ QJsonDocument::fromJson(returnData).object().value("data").toObject().value("accessUrl").toString() };
-    const auto lastSlashIndex{fileUrl.lastIndexOf("/")};
-    fileUrl.remove(lastSlashIndex + 1, fileUrl.size() - 1);
-    fileUrl.append(fileName.toUtf8().toPercentEncoding());
-    return fileUrl;
+    return XinjiaoyuNetwork::getUploadFileReplyUrl(Network::waitForFinished(uploadFileReply(fileData, fileName)));
 }
 
 QNetworkReply *XinjiaoyuNetwork::uploadFileReply(const QByteArray &fileData, const QString &fileName)
@@ -154,4 +143,21 @@ QNetworkReply *XinjiaoyuNetwork::uploadFileReply(const QByteArray &fileData, con
     request.setHeader(QNetworkRequest::ContentLengthHeader, data.size());
 
     return Network::networkAccessManager.post(request, data);
+}
+
+QString XinjiaoyuNetwork::getUploadFileReplyUrl(QNetworkReply *reply)
+{
+    const auto returnData{ Network::replyReadAll(reply) };
+
+    if(returnData.mid(8, 3) != QByteArrayLiteral("200"))
+    {
+        return returnData;
+    }
+
+    const auto dataJsonObject{QJsonDocument::fromJson(returnData).object().value(QStringLiteral("data")).toObject()};
+    auto fileUrl{ dataJsonObject.value(QStringLiteral("accessUrl")).toString() };
+    const auto lastSlashIndex{fileUrl.lastIndexOf(QStringLiteral("/"))};
+    fileUrl.remove(lastSlashIndex + 1, fileUrl.size() - 1);
+    fileUrl.append(dataJsonObject.value(QStringLiteral("filename")).toString().toUtf8().toPercentEncoding());
+    return fileUrl;
 }

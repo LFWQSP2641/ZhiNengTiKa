@@ -1,102 +1,118 @@
 #include "PixmapLabel.h"
-#include "../StaticClass/Network.h"
 #include "../StaticClass/XinjiaoyuNetwork.h"
 
 PixmapLabel::PixmapLabel(QWidget *parent)
-    : QLabel(parent)
+    : ClickableLabel{parent},
+      menu(new QMenu(this)),
+      copyAction(new QAction(QStringLiteral("复制"), this)),
+      removeAction(new QAction(QStringLiteral("删除"), this)),
+      previewAction(new QAction(QStringLiteral("预览"), this))
 {
     this->setFixedSize(50, 50);
-    reset();
+    this->setText("加载中");
+
+    menu->addAction(copyAction);
+    menu->addAction(removeAction);
+    menu->addAction(previewAction);
+
+    connect(copyAction, &QAction::triggered, this, &PixmapLabel::copyPixmap);
+    connect(removeAction, &QAction::triggered, this, &PixmapLabel::removePixmap);
+    connect(previewAction, &QAction::triggered, this, &PixmapLabel::previewPixmap);
+    connect(this, &PixmapLabel::clicked, this, &PixmapLabel::showTipBox);
 }
 
-void PixmapLabel::mouseReleaseEvent(QMouseEvent *event)
+PixmapLabel::PixmapLabel(const QPixmap &pixmap, QWidget *parent)
+    : PixmapLabel(parent)
 {
-    if (event != nullptr && event->button() == Qt::LeftButton)
+    this->setPixmap(pixmap);
+}
+
+void PixmapLabel::setPixmap(const QPixmap &pixmap)
+{
+    uploadPixmap(pixmap);
+}
+
+void PixmapLabel::uploadPixmap()
+{
+    uploadPixmap(this->rawPixmap);
+}
+
+void PixmapLabel::uploadPixmap(const QPixmap &pixmap)
+{
+    this->setEnabled(false);
+    this->setText("上传中...");
+    QByteArray bytes;
+    QBuffer buffer(&bytes);
+    buffer.open(QIODevice::WriteOnly);
+    pixmap.save(&buffer, "JPG");
+    auto reply{XinjiaoyuNetwork::uploadFileReply(bytes, QStringLiteral("image.jpg"))};
+    connect(reply, &QNetworkReply::finished, [this, reply, pixmap]
     {
-        if(url.isEmpty())
+        auto infoStr{ XinjiaoyuNetwork::getUploadFileReplyUrl(reply) };
+        if(infoStr.startsWith(QStringLiteral("http")))
         {
-#ifdef Q_OS_ANDROID
-            QtAndroidPrivate::requestPermission(QtAndroidPrivate::PermissionType::Storage);
-#endif
-            const auto fileName {QFileDialog::getOpenFileName(this, "getOpenFileName", ".", "Images (*.png *.jpg)")};
-            if(!fileName.isEmpty())
-            {
-                this->setText("上传中...");
-                pixmap = QPixmap(fileName);
-                QByteArray bytes;
-                QBuffer buffer(&bytes);
-                buffer.open(QIODevice::WriteOnly);
-                pixmap.save(&buffer, "JPG");
-                auto reply{XinjiaoyuNetwork::uploadFileReply(bytes, QStringLiteral("image.jpg"))};
-                connect(reply, &QNetworkReply::finished, [this, reply]
-                {
-                    auto fileUrl{ QJsonDocument::fromJson(Network::replyReadAll(reply)).object().value("data").toObject().value("accessUrl").toString() };
-                    const auto lastSlashIndex{fileUrl.lastIndexOf("/")};
-                    fileUrl.remove(lastSlashIndex + 1, fileUrl.size() - 1);
-                    fileUrl.append(QByteArrayLiteral("image.jpg").toPercentEncoding());
-                    url = fileUrl;
-                    this->setPixmap(pixmap.scaled(50, 50));
-                    emit pixmapSet();
-                });
-            }
+            this->url = infoStr;
+            this->rawPixmap = pixmap;
+            this->ClickableLabel::setPixmap(pixmap.scaled(this->size(), Qt::KeepAspectRatio));
+            this->setEnabled(true);
         }
         else
         {
-            QMessageBox msgBox;
-            QPushButton *ylButton = msgBox.addButton(QStringLiteral("预览"), QMessageBox::YesRole);
-            QPushButton *deleteButton = msgBox.addButton(QStringLiteral("删除"), QMessageBox::DestructiveRole);
-            QPushButton *cancelButton = msgBox.addButton(QStringLiteral("取消"), QMessageBox::NoRole);
-            msgBox.setDefaultButton(cancelButton);
-            msgBox.exec();
-
-            if (msgBox.clickedButton() == deleteButton)
-            {
-                url.clear();
-                reset();
-                emit pixmapRemoved(this);
-            }
-            else if (msgBox.clickedButton() == ylButton)
-            {
-                auto lable{new QLabel};
-                lable->setAttribute(Qt::WA_DeleteOnClose);
-                lable->setPixmap(this->pixmap);
-                auto scrollArea{new QScrollArea};
-                scrollArea->setAttribute(Qt::WA_DeleteOnClose);
-                scrollArea->setWidget(lable);
-                QScroller::grabGesture(scrollArea->viewport(), QScroller::TouchGesture);
-                scrollArea->show();
-            }
+            QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("上传失败\n") + infoStr);
+            remove();
+            return;
         }
-        event->accept();
-    }
+    });
 }
 
-void PixmapLabel::setPixmapFromNetwork(const QString &url)
+void PixmapLabel::contextMenuEvent(QContextMenuEvent *event)
 {
-    if(url == "https://file.xinjiaoyu.com/files/image/no_answer.png")
+    this->menu->exec(event->globalPos());
+}
+
+void PixmapLabel::copyPixmap()
+{
+    auto pixmap{this->rawPixmap};
+    if(pixmap.isNull())
     {
         return;
     }
-    this->setText(QStringLiteral("获取中"));
-    this->url = url;
-    const auto reply{Network::networkAccessManager.get(QNetworkRequest(url))};
-    connect(reply, &QNetworkReply::finished, [reply, this]
-    {
-        auto image{QImage::fromData(Network::replyReadAll(reply))};
-        if(!image.isNull())
-        {
-            pixmap = QPixmap::fromImage(image);
-            this->setPixmap(pixmap.scaled(50, 50));
-        }
-        else
-        {
-            reset();
-        }
-    });
-    emit pixmapSet();
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setPixmap(pixmap);
 }
 
-void PixmapLabel::reset()
+void PixmapLabel::removePixmap()
 {
-    this->setPixmap(QPixmap(":/img/img/plus_sign.png").scaled(50, 50));
+    emit removed(this);
+}
+
+void PixmapLabel::previewPixmap()
+{
+    auto lable{new QLabel};
+    lable->setAttribute(Qt::WA_DeleteOnClose);
+    lable->setPixmap(this->rawPixmap);
+    auto scrollArea{new QScrollArea};
+    scrollArea->setAttribute(Qt::WA_DeleteOnClose);
+    scrollArea->setWidget(lable);
+    QScroller::grabGesture(scrollArea->viewport(), QScroller::TouchGesture);
+    scrollArea->show();
+}
+
+void PixmapLabel::showTipBox()
+{
+    QMessageBox msgBox;
+    QPushButton *ylButton = msgBox.addButton(QStringLiteral("预览"), QMessageBox::YesRole);
+    QPushButton *deleteButton = msgBox.addButton(QStringLiteral("删除"), QMessageBox::DestructiveRole);
+    QPushButton *cancelButton = msgBox.addButton(QStringLiteral("取消"), QMessageBox::NoRole);
+    msgBox.setDefaultButton(cancelButton);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == deleteButton)
+    {
+        removePixmap();
+    }
+    else if (msgBox.clickedButton() == ylButton)
+    {
+        previewPixmap();
+    }
 }
