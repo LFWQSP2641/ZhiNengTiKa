@@ -1,4 +1,4 @@
-win32:VERSION = 1.3.0.11
+win32:VERSION = 1.3.0.15
 else:VERSION = 1.3.0
 
 

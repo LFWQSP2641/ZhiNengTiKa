@@ -26,6 +26,7 @@ protected:
     QJsonArray userAnswerList;
 
     bool analysisWebRawDataStateChanged = false;
+    bool analysised = false;
 
     void showEvent(QShowEvent *event) override;
 

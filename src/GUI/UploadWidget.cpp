@@ -43,7 +43,6 @@ UploadWidget::UploadWidget(AnalysisWebRawData &analysisWebRawData, QWidget *pare
     connect(editRawDataButton, &QPushButton::clicked, this, &UploadWidget::editRawData);
     connect(rightAnswerPrecedenceCheckBox, &QRadioButton::clicked, this, &UploadWidget::switchRightAnswerPrecedence);
     connect(uploadAnswerPrecedenceCheckBox, &QRadioButton::clicked, this, &UploadWidget::switchuploadAnswerPrecedence);
-    this->setEnabled(false);
 }
 
 bool UploadWidget::upload()
@@ -239,6 +238,7 @@ void UploadWidget::showEvent(QShowEvent *event)
         analysisWebRawDataStateChanged = false;
         analysis();
     }
+    this->setEnabled(analysised && Setting::logined());
     event->accept();
 }
 
@@ -286,8 +286,5 @@ void UploadWidget::analysis()
         uploadChildWidgetList.append(uploadChildWidget);
         uploadChildWidgetLayout->addWidget(uploadChildWidget);
     }
-    if(Setting::logined())
-    {
-        this->setEnabled(true);
-    }
+    analysised = true;
 }
