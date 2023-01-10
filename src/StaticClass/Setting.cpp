@@ -31,15 +31,20 @@ void Setting::loadFromFile()
     for(const auto &i : accountsJsonArray)
     {
         const auto jsonObject{i.toObject()};
+        //只有authorization不能空(虽然别的空了也不行...)
+        if(!jsonObject.contains(QStringLiteral("authorization")))
+        {
+            continue;
+        }
         userDataList.append(UserData(
-                                jsonObject.value(QStringLiteral("AccessToken")).toString().toUtf8(),
-                                jsonObject.value(QStringLiteral("Authorization")).toString().toUtf8(),
-                                jsonObject.value(QStringLiteral("ClientSession")).toString().toUtf8(),
-                                jsonObject.value(QStringLiteral("Password")).toString().toUtf8(),
-                                jsonObject.value(QStringLiteral("SchoolId")).toString().toUtf8(),
-                                QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("SheetData")).toString().toUtf8())).object(),
-                                jsonObject.value(QStringLiteral("StudentId")).toString().toUtf8(),
-                                jsonObject.value(QStringLiteral("Username")).toString().toUtf8()));
+                                jsonObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
+                                jsonObject.value(QStringLiteral("authorization")).toString().toUtf8(),
+                                jsonObject.value(QStringLiteral("clientSession")).toString(QUuid::createUuid().toString(QUuid::WithoutBraces)).toUtf8(),
+                                jsonObject.value(QStringLiteral("password")).toString().toUtf8(),
+                                jsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
+                                QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("sheetData")).toString().toUtf8())).object(),
+                                jsonObject.value(QStringLiteral("studentId")).toString().toUtf8(),
+                                jsonObject.value(QStringLiteral("username")).toString().toUtf8()));
     }
 
     Setting::listAllTemplate = settingJsonObject.value(QStringLiteral("listAllTemplate")).toBool(false);
@@ -55,14 +60,14 @@ void Setting::saveToFile()
     for(const auto &i : userDataList)
     {
         QJsonObject jsonObject;
-        jsonObject.insert(QStringLiteral("AccessToken"), QString(i.accessToken()));
-        jsonObject.insert(QStringLiteral("Authorization"), QString(i.authorization()));
-        jsonObject.insert(QStringLiteral("ClientSession"), QString(i.clientSession()));
-        jsonObject.insert(QStringLiteral("Password"), QString(i.password()));
-        jsonObject.insert(QStringLiteral("SchoolId"), QString(i.schoolId()));
-        jsonObject.insert(QStringLiteral("SheetData"), QString(QJsonDocument(i.sheetData()).toJson(QJsonDocument::Compact).toBase64()));
-        jsonObject.insert(QStringLiteral("StudentId"), QString(i.studentId()));
-        jsonObject.insert(QStringLiteral("Username"), QString(i.username()));
+        jsonObject.insert(QStringLiteral("accessToken"), QString(i.accessToken()));
+        jsonObject.insert(QStringLiteral("authorization"), QString(i.authorization()));
+        jsonObject.insert(QStringLiteral("clientSession"), QString(i.clientSession()));
+        jsonObject.insert(QStringLiteral("password"), QString(i.password()));
+        jsonObject.insert(QStringLiteral("schoolId"), QString(i.schoolId()));
+        jsonObject.insert(QStringLiteral("sheetData"), QString(QJsonDocument(i.sheetData()).toJson(QJsonDocument::Compact).toBase64()));
+        jsonObject.insert(QStringLiteral("studentId"), QString(i.studentId()));
+        jsonObject.insert(QStringLiteral("username"), QString(i.username()));
 
         accountsJsonArray.append(jsonObject);
     }
