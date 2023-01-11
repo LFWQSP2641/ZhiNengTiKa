@@ -92,6 +92,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     {
         QDialog dialog(this);
         QVBoxLayout layout(&dialog);
+        QFormLayout loginInfoLayout;
         QLineEdit usernameLineEdit(&dialog);
         QLineEdit passwordLineEdit(&dialog);
         QPushButton OKButton(QStringLiteral("确定"), &dialog);
@@ -99,15 +100,16 @@ SettingWidget::SettingWidget(QWidget *parent)
 
         usernameLineEdit.setText(QStringLiteral("jcgjzx"));
         passwordLineEdit.setText(QStringLiteral("abc123"));
-        usernameLineEdit.setPlaceholderText(QStringLiteral("账号"));
-        passwordLineEdit.setPlaceholderText(QStringLiteral("密码"));
+        usernameLineEdit.setPlaceholderText(QStringLiteral("新教育账号"));
+        passwordLineEdit.setPlaceholderText(QStringLiteral("登录密码"));
 
+        loginInfoLayout.addRow(QStringLiteral("账号:"), &usernameLineEdit);
+        loginInfoLayout.addRow(QStringLiteral("密码:"), &passwordLineEdit);
         QHBoxLayout tempLayout;
         tempLayout.addWidget(&OKButton);
         tempLayout.addWidget(&cancelButton);
 
-        layout.addWidget(&usernameLineEdit);
-        layout.addWidget(&passwordLineEdit);
+        layout.addLayout(&loginInfoLayout);
         layout.addLayout(&tempLayout);
 
         connect(&OKButton, &QPushButton::clicked, [&usernameLineEdit, &passwordLineEdit, &OKButton, this, &dialog]
@@ -115,7 +117,7 @@ SettingWidget::SettingWidget(QWidget *parent)
             OKButton.setEnabled(false);
             const auto username{usernameLineEdit.text().trimmed()};
             const auto password{passwordLineEdit.text().trimmed()};
-            if(username == "jcgjzx")
+            if(username == QStringLiteral("jcgjzx"))
             {
                 QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("请输入正确的账号"));
                 return;
