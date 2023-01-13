@@ -86,7 +86,7 @@ void AutoUpdate::showUpdateWidget()
         QJniObject activity = QtAndroidPrivate::activity();
 
         QJniObject::callStaticMethod<void>(
-            "org/qtproject/LFWQSP2641/xinjiaoyu/IntentActivity",
+            "com/LFWQSP2641/xinjiaoyu/IntentActivity",
             "openUrl",
             "(Ljava/lang/String;Lorg/qtproject/qt/android/bindings/QtActivity;)V",
             jUrl.object<jstring>(),
@@ -125,7 +125,7 @@ void AutoUpdate::showUpdateWidget()
                 QJniObject activity = QtAndroidPrivate::activity();
 
                 QJniObject::callStaticMethod<void>(
-                    "org/qtproject/LFWQSP2641/xinjiaoyu/IntentActivity",
+                    "com/LFWQSP2641/xinjiaoyu/IntentActivity",
                     "installApk",
                     "(Ljava/lang/String;Lorg/qtproject/qt/android/bindings/QtActivity;)V",
                     jUrl.object<jstring>(),
