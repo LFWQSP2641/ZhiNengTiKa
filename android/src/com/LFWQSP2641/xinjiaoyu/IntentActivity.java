@@ -4,10 +4,12 @@ import org.qtproject.qt.android.bindings.QtActivity;
 import java.io.File;
 import android.net.Uri;
 import android.content.Intent;
+import androidx.core.content.FileProvider;
+import android.os.Build;
 
 public class IntentActivity extends org.qtproject.qt.android.bindings.QtActivity
 {
-    public static void installApk(String filePath,QtActivity activity)
+    public static void installApk(String filePath, QtActivity activity)
     {
         Intent intent = new Intent();
         // 执行动作
@@ -16,7 +18,7 @@ public class IntentActivity extends org.qtproject.qt.android.bindings.QtActivity
         // 执行的数据类型
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
         {
-            intent.setDataAndType(FileProvider.getUriForFile(this, "com.LFWQSP2641.xinjiaoyu.permissiontest.fileprovider", file),"application/vnd.android.package-archive");
+            intent.setDataAndType(FileProvider.getUriForFile(activity, "com.LFWQSP2641.xinjiaoyu.permissiontest.fileprovider", file),"application/vnd.android.package-archive");
         }
         else
         {
@@ -24,7 +26,7 @@ public class IntentActivity extends org.qtproject.qt.android.bindings.QtActivity
         }
         activity.startActivity(intent);
     };
-    public static void openUrl(String url,QtActivity activity)
+    public static void openUrl(String url, QtActivity activity)
     {
         Intent intent = new Intent();
         // 执行动作
