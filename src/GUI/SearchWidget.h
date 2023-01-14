@@ -22,6 +22,7 @@ private:
     QStringList templateCodeList;
     QLineEdit *templateCodeLineEdit;
     QPushButton *selectTemplateIdButton;
+    QPushButton *scanQRCodeButton;
 
     QByteArray webRawData;
     QString templateName;

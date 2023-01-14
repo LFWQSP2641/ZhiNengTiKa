@@ -2,6 +2,7 @@
 #include "../StaticClass/Global.h"
 #include "../StaticClass/XinjiaoyuNetwork.h"
 #include "../StaticClass/Setting.h"
+#include "../StaticClass/CallAndroidNativeComponent.h"
 
 SearchWidget::SearchWidget(QWidget *parent)
     : QWidget{ parent }
@@ -14,39 +15,63 @@ SearchWidget::SearchWidget(QWidget *parent)
     searchButton = new QPushButton(QStringLiteral("搜索"), this);
     previousPageButton = new QPushButton(QStringLiteral("上一页"), this);
     nextPageButton = new QPushButton(QStringLiteral("下一页"), this);
-    selectTemplateIdButton = new QPushButton(QStringLiteral("确定"), this);
+    selectTemplateIdButton = new QPushButton(QStringLiteral("获取"), this);
+    scanQRCodeButton = new QPushButton(QStringLiteral("扫码"), this);
     searchLineEdit = new QLineEdit(this);
     templateCodeLineEdit = new QLineEdit(this);
 
     const auto subjects{ QStringList() << QStringLiteral("语文") << QStringLiteral("数学") << QStringLiteral("英语") << QStringLiteral("物理") << QStringLiteral("化学") << QStringLiteral("生物") };
     auto fileListNames{ QStringList() << QStringLiteral("templateList_chinese") << QStringLiteral("templateList_mathematics") << QStringLiteral("templateList_english") << QStringLiteral("templateList_physics") << QStringLiteral("templateList_chemistry") << QStringLiteral("templateList_biography") };
 
-    if(!Setting::listAllTemplate)
-    {
-        for(auto &i : fileListNames)
-        {
-            i.append(QStringLiteral("_current"));
-        }
-    }
-
     auto addListWidget{[this](const QString & filePath, const QString & name)
     {
         auto tempListWidget{new QListWidget};
-        QFile inFile { filePath };
-        inFile.open(QFile::ReadOnly);
-        QString data{ inFile.readAll() };
-        inFile.close();
-        auto tempTemplateList{data.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
-        for (auto j{ 0 }; j < tempTemplateList.size(); ++j)
+        if(Setting::listAllTemplate)
         {
-            if(j & 1)
+            QFile file { filePath };
+            file.open(QFile::ReadOnly);
+            QString data{ file.readAll() };
+            file.close();
+            auto tempTemplateList{data.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
+            for (auto i{ 0 }; i < tempTemplateList.size(); ++i)
             {
-                templateCodeList.append(tempTemplateList.at(j));
+                if(i & 1)
+                {
+                    templateCodeList.append(tempTemplateList.at(i));
+                }
+                else
+                {
+                    templateNameList.append(tempTemplateList.at(i));
+                    tempListWidget->addItem(tempTemplateList.at(i));
+                }
             }
-            else
+        }
+        else
+        {
+            QFile fileAll { filePath };
+            fileAll.open(QFile::ReadOnly);
+            QString dataAll{ fileAll.readAll() };
+            fileAll.close();
+            auto tempTemplateListAll{dataAll.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
+            for (auto i{ 0 }; i < tempTemplateListAll.size(); ++i)
             {
-                templateNameList.append(tempTemplateList.at(j));
-                tempListWidget->addItem(tempTemplateList.at(j));
+                if(i & 1)
+                {
+                    templateCodeList.append(tempTemplateListAll.at(i));
+                }
+                else
+                {
+                    templateNameList.append(tempTemplateListAll.at(i));
+                }
+            }
+            QFile fileCurrent { filePath + QStringLiteral("_current") };
+            fileCurrent.open(QFile::ReadOnly);
+            QString dataCurrent{ fileCurrent.readAll() };
+            fileCurrent.close();
+            auto tempTemplateListCurrent{dataCurrent.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
+            for (auto i{ 0 }; i < tempTemplateListCurrent.size(); i += 2)
+            {
+                tempListWidget->addItem(tempTemplateListCurrent.at(i));
             }
         }
         QScroller::grabGesture(tempListWidget->viewport(), QScroller::TouchGesture);
@@ -77,6 +102,14 @@ SearchWidget::SearchWidget(QWidget *parent)
         layout->addWidget(widget2);
         return layout;
     }};
+    auto addHBoxLayoutWithThreeWidget{[](QWidget * widget1, QWidget * widget2, QWidget * widget3)
+    {
+        auto layout{new QHBoxLayout};
+        layout->addWidget(widget1);
+        layout->addWidget(widget2);
+        layout->addWidget(widget3);
+        return layout;
+    }};
 
     searchLineEdit->setPlaceholderText(QStringLiteral("题卡名称"));
     templateCodeLineEdit->setPlaceholderText(QStringLiteral("题卡编号"));
@@ -104,7 +137,7 @@ SearchWidget::SearchWidget(QWidget *parent)
     nextPageButton->setVisible(false);
 
     mainLayout->addLayout(addHBoxLayoutWithTwoWidget(searchLineEdit, searchButton));
-    mainLayout->addLayout(addHBoxLayoutWithTwoWidget(templateCodeLineEdit, selectTemplateIdButton));
+    mainLayout->addLayout(addHBoxLayoutWithThreeWidget(templateCodeLineEdit, scanQRCodeButton, selectTemplateIdButton));
     mainLayout->addWidget(resetButton);
     mainLayout->addWidget(allListWidget);
     mainLayout->addWidget(listWidget);
@@ -120,6 +153,18 @@ SearchWidget::SearchWidget(QWidget *parent)
     connect(previousPageButton, &QPushButton::clicked, this, &SearchWidget::toPreviousPage);
     connect(nextPageButton, &QPushButton::clicked, this, &SearchWidget::toNextPageButton);
     connect(selectTemplateIdButton, &QPushButton::clicked, this, &SearchWidget::selectTemplateIdButtonPushed);
+#ifdef Q_OS_ANDROID
+    connect(scanQRCodeButton, &QPushButton::clicked, [this]
+    {
+        JQQRCodeReader qrCodeReader;
+        auto decodeResult{ qrCodeReader.decodeImage(CallAndroidNativeComponent::takePhoto()) };
+        if(decodeResult.isEmpty())
+        {
+            return;
+        }
+        this->templateCodeLineEdit->setText(decodeResult);
+    });
+#endif // Q_OS_ANDROID
 }
 
 void SearchWidget::reset()

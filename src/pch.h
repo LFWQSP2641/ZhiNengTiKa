@@ -26,6 +26,6 @@
 
 #include "D:/Softwares/scr/Qt-AES/qaesencryption.h"
 #include "D:/Softwares/scr/WebView/WebView.h"
-//#include "D:/Softwares/scr/WebView/WebView_QWebEngineView.h"
+#include "JQQRCodeReader.h"
 
 #endif // PCH_H

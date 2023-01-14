@@ -1,12 +1,12 @@
-win32:VERSION = 1.3.1.4
-else:VERSION = 1.3.1
+win32:VERSION = 1.4.0.4
+else:VERSION = 1.4.0
 
 
 android{
 
 QT       += core widgets gui network core-private
 
-ANDROID_VERSION_NAME = VERSION
+ANDROID_VERSION_NAME = $$VERSION
 
 RESOURCES += Resource/Resource_Android.qrc
 
@@ -55,6 +55,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 include(D:/Softwares/scr/Qt-AES/QAESEncryption.pri)
 include(D:/Softwares/scr/WebView/WebView.pri)
+include(D:/Softwares/scr/JQQRCode/sharedlibrary/JQLibrary/JQLibrary.pri )
+include(D:/Softwares/scr/JQQRCode/sharedlibrary/JQLibrary/JQQRCodeReader.pri )
 
 HEADERS += \
     src/GUI/AnswerAndAnalysisWidget.h \
@@ -74,6 +76,7 @@ HEADERS += \
     src/Logic/AutoUpdate.h \
     src/Logic/UserData.hpp \
     src/Logic/UserDataList.hpp \
+    src/StaticClass/CallAndroidNativeComponent.h \
     src/StaticClass/Global.h \
     src/StaticClass/Login.h \
     src/StaticClass/Network.h \
@@ -95,6 +98,7 @@ SOURCES += \
     src/GUI/WebViewWidget.cpp \
     src/Logic/AnalysisWebRawData.cpp \
     src/Logic/AutoUpdate.cpp \
+    src/StaticClass/CallAndroidNativeComponent.cpp \
     src/StaticClass/Global.cpp \
     src/StaticClass/Login.cpp \
     src/StaticClass/Network.cpp \
@@ -122,3 +126,8 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/src/com/LFWQSP2641/xinjiaoyu/IntentActivity.java
 }
+
+DISTFILES += \
+    android/res/xml/provider_paths.xml \
+    android/src/com/LFWQSP2641/xinjiaoyu/CallNativeComponent.java \
+    android/src/com/LFWQSP2641/xinjiaoyu/Util.java
