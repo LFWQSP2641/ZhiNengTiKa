@@ -1,5 +1,5 @@
 #include "AutoUpdate.h"
-#include "../StaticClass/Global.h"
+#include "../StaticClass/CallAndroidNativeComponent.h"
 #include "../StaticClass/Network.h"
 
 constexpr auto domain {"https://gitee.com/LFWQSP2641/xinjiaoyu/raw/master/"};
@@ -82,16 +82,7 @@ void AutoUpdate::showUpdateWidget()
     {
         OKButton.setText(QStringLiteral("打开浏览器"));
 #ifdef Q_OS_ANDROID
-        QJniObject jUrl = QJniObject::fromString(downloadUrl);
-        QJniObject activity = QtAndroidPrivate::activity();
-
-        QJniObject::callStaticMethod<void>(
-            "com/LFWQSP2641/xinjiaoyu/IntentActivity",
-            "openUrl",
-            "(Ljava/lang/String;Lorg/qtproject/qt/android/bindings/QtActivity;)V",
-            jUrl.object<jstring>(),
-            activity.object<jobject>()
-        );
+        CallAndroidNativeComponent::openUrl(downloadUrl);
 
         showDownloadUrl.setVisible(true);
         copyButton.setVisible(true);
