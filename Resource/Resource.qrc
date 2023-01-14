@@ -388,7 +388,4 @@
         <file>img/xinjiaoyuico.ico</file>
         <file>img/xinjiaoyuico.png</file>
     </qresource>
-    <qresource prefix="/img">
-        <file>img/plus_sign.png</file>
-    </qresource>
 </RCC>
