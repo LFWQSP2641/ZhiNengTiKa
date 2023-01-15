@@ -31,16 +31,11 @@ public slots:
 
 private:
     QNetworkReply *newestVersionReply = nullptr;
-    QNetworkReply *downloadUrlReply = nullptr;
     QNetworkReply *changeLogReply = nullptr;
 
     QString newestVersion;
     QString currentVersion;
-    QString downloadUrl;
     QString changeLog;
-
-    bool downloadUrlReplyIsFinished = true;
-    bool changeLogReplyIsFinished = true;
 
     static bool compareVersion(const QString &version1, const QString &version2);
 
@@ -51,7 +46,6 @@ private:
 
 private slots:
     void newestVersionReplyFinished();
-    void downloadUrlReplyFinished();
     void changeLogReplyFinished();
 
 signals:
