@@ -170,7 +170,8 @@ void AutoUpdate::showResultWidget()
         QDialog dialog;
         QGridLayout layout(&dialog);
         QLabel label(&dialog);
-        QPushButton OKButton("确定", &dialog);
+        QPushButton OKButton(QStringLiteral("确定"), &dialog);
+        QPushButton stillUpdataButton(QStringLiteral("更新"), &dialog);
 
         if(newestVersion.isEmpty())
         {
@@ -180,10 +181,12 @@ void AutoUpdate::showResultWidget()
         {
             label.setText(QStringLiteral("当前版本:%0\n已是最新版本").arg(currentVersion));
         }
-        layout.addWidget(&label, 0, 0, 1, 1);
+        layout.addWidget(&label, 0, 0, 1, 2);
         layout.addWidget(&OKButton, 1, 0, 1, 1);
+        layout.addWidget(&stillUpdataButton, 1, 1, 1, 1);
 
         QObject::connect(&OKButton, &QPushButton::clicked, [&dialog] { dialog.close(); });
+        QObject::connect(&stillUpdataButton, &QPushButton::clicked, [this, &dialog] { dialog.close(); showUpdateWidget(); });
 
         dialog.exec();
     }
