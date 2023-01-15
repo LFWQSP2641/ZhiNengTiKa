@@ -12,7 +12,7 @@ QImage CallAndroidNativeComponent::takePhoto()
         "(Lorg/qtproject/qt/android/bindings/QtActivity;)V",
         activity.object<jobject>());
     // 简单粗暴好吧(*/ω＼*)
-    QMessageBox::information(Q_NULLPTR, QStringLiteral("information"), QStringLiteral(""));
+    QMessageBox::information(Q_NULLPTR, QStringLiteral("information"), QStringLiteral("简单粗暴的线程堵塞,关掉就行"));
     QFile file(CallAndroidNativeComponent::getCacheDir() + QDir::separator() + QStringLiteral("callNativeCamera_result.jpg"));
     if(file.size() < 1)
     {
@@ -24,6 +24,10 @@ QImage CallAndroidNativeComponent::takePhoto()
     file.close();
     QFileInfo fileInfo(file);
     fileInfo.dir().remove(fileInfo.fileName());
+    if(image.isNull())
+    {
+        qWarning() << "CallAndroidNativeComponent::takePhoto() : image.isNull()";
+    }
     return image;
 }
 

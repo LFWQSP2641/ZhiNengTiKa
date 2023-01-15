@@ -144,7 +144,13 @@ PixmapLabel *UploadChildWidget::addPixmapLabelFromUrl(const QUrl &url)
 {
     if(!url.isValid())
     {
+        qWarning() << "UploadChildWidget::addPixmapLabelFromUrl : !url.isValid()";
         return Q_NULLPTR;
+    }
+    if(url.isLocalFile())
+    {
+        qDebug() << "UploadChildWidget::addPixmapLabelFromUrl : url.isLocalFile()";
+        return addPixmapLabelByPixmap(QPixmap(url.toLocalFile()));
     }
     auto newPixmapLabel{this->addPixmapLabel()};
     auto reply{ Network::networkAccessManager.get(QNetworkRequest(url)) };

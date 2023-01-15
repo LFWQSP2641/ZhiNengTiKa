@@ -18,7 +18,6 @@ AutoUpdate::AutoUpdate(const QString &currentVersion, QObject *parent)
 
 void AutoUpdate::checkUpdate()
 {
-    qDebug() << "AutoUpdate::checkUpdate()";
     running = true;
     hasNewVersion = false;
     newestVersionReply = nullptr;
@@ -99,9 +98,6 @@ void AutoUpdate::showUpdateWidget()
                 QtAndroidPrivate::requestPermission(QtAndroidPrivate::Storage);
 
                 const auto data{Global::replyReadAll(Global::requestAndWaitForFinished(QNetworkRequest(downloadUrl)))};
-
-                qDebug() << data.size();
-                qDebug() << data;
 
                 const QString apkPath(Global::tempPath() + "/newVersion.apk");
 

@@ -153,18 +153,31 @@ SearchWidget::SearchWidget(QWidget *parent)
     connect(previousPageButton, &QPushButton::clicked, this, &SearchWidget::toPreviousPage);
     connect(nextPageButton, &QPushButton::clicked, this, &SearchWidget::toNextPageButton);
     connect(selectTemplateIdButton, &QPushButton::clicked, this, &SearchWidget::selectTemplateIdButtonPushed);
-#ifdef Q_OS_ANDROID
     connect(scanQRCodeButton, &QPushButton::clicked, [this]
     {
+        scanQRCodeButton->setEnabled(false);
         JQQRCodeReader qrCodeReader;
-        auto decodeResult{ qrCodeReader.decodeImage(CallAndroidNativeComponent::takePhoto()) };
+#ifdef Q_OS_ANDROID
+        auto image{ CallAndroidNativeComponent::takePhoto() };
+#else
+        QImage image(QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)")));
+#endif // Q_OS_ANDROID
+        QMessageBox msgBox;
+        msgBox.setText(QStringLiteral("解析中..."));
+        msgBox.show();
+        auto decodeResult{ qrCodeReader.decodeImage(image)};
+        msgBox.close();
         if(decodeResult.isEmpty())
         {
+            QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("扫描失败\n"
+                                 "请确保二维码清晰可见"));
+            scanQRCodeButton->setEnabled(true);
             return;
         }
+        qDebug() << decodeResult;
         this->templateCodeLineEdit->setText(decodeResult);
+        scanQRCodeButton->setEnabled(true);
     });
-#endif // Q_OS_ANDROID
 }
 
 void SearchWidget::reset()

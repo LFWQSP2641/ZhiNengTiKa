@@ -15,6 +15,9 @@ protected:
     void contextMenuEvent(QContextMenuEvent *event) override;
 public slots:
     void selectImageFile();
+#ifdef Q_OS_ANDROID
+    void showAskDialog();
+#endif // Q_OS_ANDROID
 protected slots:
     void paste();
 signals:
