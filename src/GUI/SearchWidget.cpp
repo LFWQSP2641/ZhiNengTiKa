@@ -23,12 +23,16 @@ SearchWidget::SearchWidget(QWidget *parent)
     const auto subjects{ QStringList() << QStringLiteral("语文") << QStringLiteral("数学") << QStringLiteral("英语") << QStringLiteral("物理") << QStringLiteral("化学") << QStringLiteral("生物") };
     auto fileListNames{ QStringList() << QStringLiteral("templateList_chinese") << QStringLiteral("templateList_mathematics") << QStringLiteral("templateList_english") << QStringLiteral("templateList_physics") << QStringLiteral("templateList_chemistry") << QStringLiteral("templateList_biography") };
 
-    auto addListWidget{[this](const QString & filePath, const QString & name)
+    auto addListWidget{[this](const QString & filePath, const QString & name, bool current)
     {
         auto tempListWidget{new QListWidget};
-        if(Setting::listAllTemplate)
+        if(current)
         {
             QFile file { filePath };
+            if(!file.exists())
+            {
+                return;
+            }
             file.open(QFile::ReadOnly);
             QString data{ file.readAll() };
             file.close();
@@ -49,6 +53,10 @@ SearchWidget::SearchWidget(QWidget *parent)
         else
         {
             QFile fileAll { filePath };
+            if(!fileAll.exists())
+            {
+                return;
+            }
             fileAll.open(QFile::ReadOnly);
             QString dataAll{ fileAll.readAll() };
             fileAll.close();
@@ -65,6 +73,10 @@ SearchWidget::SearchWidget(QWidget *parent)
                 }
             }
             QFile fileCurrent { filePath + QStringLiteral("_current") };
+            if(!fileCurrent.exists())
+            {
+                return;
+            }
             fileCurrent.open(QFile::ReadOnly);
             QString dataCurrent{ fileCurrent.readAll() };
             fileCurrent.close();
@@ -90,10 +102,10 @@ SearchWidget::SearchWidget(QWidget *parent)
         const QString filePath { QStringLiteral(":/template/templateList/") + fileListNames.at(i) };
 #endif
         const QString tabName {subjects.at(i)};
-        addListWidget(filePath, tabName);
+        addListWidget(filePath, tabName, Setting::listAllTemplate);
     }
 
-    addListWidget(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"), QStringLiteral("undefined"));
+    addListWidget(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"), QStringLiteral("undefined"), false);
 
     auto addHBoxLayoutWithTwoWidget{[](QWidget * widget1, QWidget * widget2)
     {
