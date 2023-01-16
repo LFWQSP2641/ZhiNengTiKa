@@ -47,6 +47,9 @@ void CallAndroidNativeComponent::openUrl(const QString &url)
 
 void CallAndroidNativeComponent::installApk(const QString &filePath)
 {
+    QtAndroidPrivate::requestPermission(QtAndroidPrivate::Storage).waitForFinished();
+    QtAndroidPrivate::requestPermission(QStringLiteral("android.permission.INSTALL_PACKAGES")).waitForFinished();
+    QtAndroidPrivate::requestPermission(QStringLiteral("android.permission.REQUEST_INSTALL_PACKAGES")).waitForFinished();
     QJniObject jFilePath = QJniObject::fromString(filePath);
     QJniObject activity = QtAndroidPrivate::activity();
 
