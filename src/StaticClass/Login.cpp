@@ -47,33 +47,4 @@ QByteArray Login::login(const QByteArray &username, const QByteArray &password)
 #endif // Q_OS_ANDROID
     }
     return returnData;
-//    switch (rootObject.value(QStringLiteral("code")).toInt())
-//    {
-//    case 200:
-//    {
-//        const auto userDataJsonObject = dataObject.value(QStringLiteral("info")).toObject();
-//        const auto userSchoolDataJsonObject = userDataJsonObject.value(QStringLiteral("school")).toObject();
-//        Setting::userDataList.prepend(UserData(
-//                                          dataObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
-//                                          QByteArrayLiteral("JBY ") + dataObject.value(QStringLiteral("token")).toString().toUtf8(),
-//                                          password,
-//                                          userSchoolDataJsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
-//                                          userDataJsonObject,
-//                                          userSchoolDataJsonObject.value(QStringLiteral("studentId")).toString().toUtf8(),
-//                                          username
-//                                      ));
-//#ifdef Q_OS_ANDROID
-//        Setting::saveToFile();
-//#endif // Q_OS_ANDROID
-//        return Login::LoginState::Success;
-//    }
-//    case 400:
-//        return Login::LoginState::SomethingIsEmpty;
-//    case 414:
-//        return Login::LoginState::SomethingIsWrong;
-//    case 415:
-//        return Login::LoginState::SomethingIsWrong;
-//    default:
-//        return Login::LoginState::error;
-//    }
 }

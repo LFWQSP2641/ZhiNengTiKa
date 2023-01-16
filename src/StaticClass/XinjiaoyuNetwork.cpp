@@ -7,7 +7,7 @@
 QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url)
 {
     QNetworkRequest requestInfo;
-    requestInfo.setUrl(QUrl(url));
+    requestInfo.setUrl(url);
     requestInfo.setRawHeader(QByteArrayLiteral("Accept-Encoding"), QByteArrayLiteral("gzip"));
     requestInfo.setRawHeader(QByteArrayLiteral("app"), QByteArrayLiteral("student"));
     requestInfo.setRawHeader(QByteArrayLiteral("client"), QByteArrayLiteral("android"));
@@ -29,7 +29,7 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
     if(!Setting::logined())
     {
         QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("未登录"));
-        return QByteArray();
+        throw std::runtime_error("获取题卡时处于未登录状态");
     }
     QByteArray responseByte;
     responseByte = Network::getData(
@@ -99,17 +99,20 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
         //6
 
         responseByte = QJsonDocument(tempObject).toJson(QJsonDocument::Compact);
-        return responseByte;
     }
     else if (responseByte.isEmpty())
     {
         QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("请检查网络连接\n") + QString(responseByte));
+        throw std::runtime_error("请求题卡后,返回值为空");
     }
     else
     {
         QMessageBox::warning(nullptr, QStringLiteral("warning"), QString(responseByte));
+        throw std::runtime_error(QStringLiteral("服务器报错\n"
+                                                "返回值:%0\n"
+                                                "返回结果:%1").arg(stateCode, responseByte).toStdString());
     }
-    return QByteArray();
+    return responseByte;
 }
 
 QString XinjiaoyuNetwork::uploadFile(const QByteArray &fileData, const QString &fileName)
@@ -142,7 +145,7 @@ QNetworkReply *XinjiaoyuNetwork::uploadFileReply(const QByteArray &fileData, con
 
     request.setHeader(QNetworkRequest::ContentLengthHeader, data.size());
 
-    return Network::networkAccessManager.post(request, data);
+    return Network::networkAccessManager->post(request, data);
 }
 
 QString XinjiaoyuNetwork::getUploadFileReplyUrl(QNetworkReply *reply)

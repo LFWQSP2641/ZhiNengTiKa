@@ -3,7 +3,7 @@
 
 namespace Network
 {
-extern QNetworkAccessManager networkAccessManager;
+extern QNetworkAccessManager *networkAccessManager;
 extern QNetworkReply *requestAndWaitForFinished(const QNetworkRequest &requestInfo);
 extern QNetworkReply *postAndWaitForFinished(const QNetworkRequest &requestInfo, const QByteArray &data);
 extern QNetworkReply *waitForFinished(QNetworkReply *reply);

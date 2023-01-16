@@ -1,15 +1,15 @@
 #include "Network.h"
 
-QNetworkAccessManager Network::networkAccessManager;
+QNetworkAccessManager *Network::networkAccessManager = Q_NULLPTR;
 
 QNetworkReply *Network::requestAndWaitForFinished(const QNetworkRequest &requestInfo)
 {
-    return Network::waitForFinished(Network::networkAccessManager.get(requestInfo));
+    return Network::waitForFinished(Network::networkAccessManager->get(requestInfo));
 }
 
 QNetworkReply *Network::postAndWaitForFinished(const QNetworkRequest &requestInfo, const QByteArray &data)
 {
-    return Network::waitForFinished(Network::networkAccessManager.post(requestInfo, data));
+    return Network::waitForFinished(Network::networkAccessManager->post(requestInfo, data));
 }
 
 QNetworkReply *Network::waitForFinished(QNetworkReply *reply)

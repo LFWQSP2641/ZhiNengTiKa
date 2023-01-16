@@ -22,5 +22,7 @@ extern QJsonObject sheetData();
 extern QByteArray studentId();
 extern QByteArray username();
 extern bool logined();
+
+extern QJsonObject jsonObjectApiQRCodeScanner;
 };
 

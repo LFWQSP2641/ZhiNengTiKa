@@ -119,7 +119,16 @@ void UploadWidget::getUserAnswer()
         return outputObject;
     }};
 
-    const auto webRawData{XinjiaoyuNetwork::getTemplateCodeData(templateCode)};
+    QByteArray webRawData;
+    try
+    {
+        webRawData = XinjiaoyuNetwork::getTemplateCodeData(templateCode);
+    }
+    catch (const std::exception &e)
+    {
+        QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+        return;
+    }
 
     QJsonArray array{ QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
     for (const auto &j : array)

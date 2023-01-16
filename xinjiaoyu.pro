@@ -55,8 +55,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 include(D:/Softwares/scr/Qt-AES/QAESEncryption.pri)
 include(D:/Softwares/scr/WebView/WebView.pri)
-include(D:/Softwares/scr/JQQRCode/sharedlibrary/JQLibrary/JQLibrary.pri )
-include(D:/Softwares/scr/JQQRCode/sharedlibrary/JQLibrary/JQQRCodeReader.pri )
 
 HEADERS += \
     src/GUI/AnswerAndAnalysisWidget.h \
@@ -80,6 +78,7 @@ HEADERS += \
     src/StaticClass/Global.h \
     src/StaticClass/Login.h \
     src/StaticClass/Network.h \
+    src/StaticClass/QRCodeScanner.h \
     src/StaticClass/Setting.h \
     src/StaticClass/XinjiaoyuEncryptioner.h \
     src/StaticClass/XinjiaoyuNetwork.h
@@ -102,6 +101,7 @@ SOURCES += \
     src/StaticClass/Global.cpp \
     src/StaticClass/Login.cpp \
     src/StaticClass/Network.cpp \
+    src/StaticClass/QRCodeScanner.cpp \
     src/StaticClass/Setting.cpp \
     src/StaticClass/XinjiaoyuEncryptioner.cpp \
     src/StaticClass/XinjiaoyuNetwork.cpp \

@@ -25,7 +25,7 @@ void AutoUpdate::checkUpdate()
     newestVersion = QString();
     changeLog = QString();
 
-    newestVersionReply = Network::networkAccessManager.get(QNetworkRequest(QStringLiteral("newestVersion").prepend(domain)));
+    newestVersionReply = Network::networkAccessManager->get(QNetworkRequest(QStringLiteral("newestVersion").prepend(domain)));
     QTimer::singleShot(5000, newestVersionReply, &QNetworkReply::abort);
     connect(newestVersionReply, &QNetworkReply::finished, this, &AutoUpdate::newestVersionReplyFinished);
 }
@@ -43,120 +43,8 @@ void AutoUpdate::showUpdateWidget()
     {
         return;
     }
-    QMessageBox msgBox;
-    msgBox.setText(QStringLiteral("当前版本:%0\n最新版本:%1\n\n%2\n\n是否下载?").arg(currentVersion, newestVersion, changeLog));
-    auto downloadBtn{ msgBox.addButton(QStringLiteral("下载"), QMessageBox::AcceptRole) };
-    auto openBrowerBtn{ msgBox.addButton(QStringLiteral("浏览器下载"), QMessageBox::AcceptRole) };
-    msgBox.addButton(QStringLiteral("取消"), QMessageBox::RejectRole);
-    msgBox.exec();
+    showUpdateWidgetPrivate();
 
-#ifdef Q_OS_ANDROID
-    if(msgBox.clickedButton() == downloadBtn)
-    {
-        QMessageBox loadingMsgBox;
-        loadingMsgBox.setText(QStringLiteral("加载中"));
-        loadingMsgBox.show();
-        auto downloadUrlReply{Network::networkAccessManager.get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersionEncryption").prepend(domain))))};
-        QProgressDialog progressDialog(QStringLiteral("下载进度"), QStringLiteral("取消"), 0, 100);
-        if(downloadUrlReply->isRunning())
-        {
-            Network::waitForFinished(downloadUrlReply);
-        }
-        const auto downloadUrl{Network::replyReadAll(downloadUrlReply)};
-        qDebug() << "downloadUrl : " << downloadUrl;
-        auto downloadReply{Network::networkAccessManager.get(QNetworkRequest(QUrl(downloadUrl)))};
-        connect(downloadReply, &QNetworkReply::finished, [&progressDialog, downloadReply]
-        {
-            if(!downloadReply->isFinished())
-            {
-                downloadReply->deleteLater();
-                progressDialog.close();
-                return;
-            }
-            auto fileData{Network::replyReadAll(downloadReply)};
-            fileData[4] = static_cast<char>(120);
-            fileData[5] = static_cast<char>(156);
-            const QString filePath{CallAndroidNativeComponent::getCacheDir() + QDir::separator() + QStringLiteral("newVersion.apk")};
-            QFile file(filePath);
-            if(file.open(QFile::WriteOnly))
-            {
-                file.write(qUncompress(fileData));
-                file.close();
-                CallAndroidNativeComponent::installApk(filePath);
-            }
-            else
-            {
-                qWarning() << "AutoUpdate::showUpdateWidget() : !file.open(QFile::WriteOnly)";
-                QMessageBox::warning(Q_NULLPTR, QStringLiteral("warning"), QStringLiteral("写入文件失败"));
-            }
-            progressDialog.close();
-        });
-        connect(downloadReply, &QNetworkReply::downloadProgress, [&progressDialog](qint64 bytesReceived, qint64 bytesTotal)
-        {
-            progressDialog.setValue((static_cast<double>(bytesReceived) / static_cast<double>(bytesTotal)) * 100);
-        });
-        connect(&progressDialog, &QProgressDialog::canceled, downloadReply, &QNetworkReply::abort);
-        loadingMsgBox.close();
-        progressDialog.exec();
-    }
-    else if(msgBox.clickedButton() == openBrowerBtn)
-    {
-        QMessageBox loadingMsgBox;
-        loadingMsgBox.setText(QStringLiteral("加载中"));
-        loadingMsgBox.show();
-        auto reply{Network::networkAccessManager.get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersion").prepend(domain))))};
-        QDialog dialog;
-        QVBoxLayout mianLayout(&dialog);
-
-        QTextEdit showDownloadUrl(&dialog);
-        QPushButton copyButton("复制", &dialog);
-
-        QPushButton openBrowerButton(QStringLiteral("打开浏览器"), &dialog);
-        QPushButton cancelButton(QStringLiteral("取消"), &dialog);
-
-        QHBoxLayout tempLayout1;
-        tempLayout1.addWidget(&showDownloadUrl);
-        tempLayout1.addWidget(&copyButton);
-        QHBoxLayout tempLayout2;
-        tempLayout2.addWidget(&openBrowerButton);
-        tempLayout2.addWidget(&cancelButton);
-
-        mianLayout.addLayout(&tempLayout1);
-        mianLayout.addLayout(&tempLayout2);
-
-        if(reply->isRunning())
-        {
-            Network::waitForFinished(reply);
-        }
-
-        const QString downloadUrl(Network::replyReadAll(reply));
-        qDebug() << "downloadUrl : " << downloadUrl;
-        showDownloadUrl.setText(downloadUrl);
-
-        connect(&copyButton, &QPushButton::clicked, [&downloadUrl]
-        {
-            QApplication::clipboard()->setText(downloadUrl);
-            if(QApplication::clipboard()->text() == downloadUrl)
-            {
-                QMessageBox::information(Q_NULLPTR, QStringLiteral("information"), QStringLiteral("复制成功"));
-            }
-            else
-            {
-                QMessageBox::warning(Q_NULLPTR, QStringLiteral("warning"), QStringLiteral("复制失败"));
-            }
-        });
-        connect(&openBrowerButton, &QPushButton::clicked, [&downloadUrl]
-        {
-            CallAndroidNativeComponent::openUrl(downloadUrl);
-        });
-        connect(&cancelButton, &QPushButton::clicked, [&dialog]
-        {
-            dialog.close();
-        });
-        loadingMsgBox.close();
-        dialog.exec();
-    }
-#endif // Q_OS_ANDROID
 }
 
 void AutoUpdate::showResultWidget()
@@ -186,7 +74,14 @@ void AutoUpdate::showResultWidget()
         layout.addWidget(&stillUpdataButton, 1, 1, 1, 1);
 
         QObject::connect(&OKButton, &QPushButton::clicked, [&dialog] { dialog.close(); });
-        QObject::connect(&stillUpdataButton, &QPushButton::clicked, [this, &dialog] { dialog.close(); showUpdateWidget(); });
+        QObject::connect(&stillUpdataButton, &QPushButton::clicked, [this, &dialog]
+        {
+            dialog.close();
+            changeLogReply = Network::networkAccessManager->get(QNetworkRequest(QStringLiteral("changeLog").prepend(domain)));
+            Network::waitForFinished(changeLogReply);
+            changeLog = Network::replyReadAll(changeLogReply);
+            showUpdateWidgetPrivate();
+        });
 
         dialog.exec();
     }
@@ -209,6 +104,115 @@ bool AutoUpdate::compareVersion(const QString &version1, const QString &version2
     }
 }
 
+void AutoUpdate::showUpdateWidgetPrivate()
+{
+    QMessageBox msgBox;
+    msgBox.setText(QStringLiteral("当前版本:%0\n最新版本:%1\n\n%2\n\n是否下载?").arg(currentVersion, newestVersion, changeLog));
+    auto downloadBtn{ msgBox.addButton(QStringLiteral("下载"), QMessageBox::AcceptRole) };
+    auto openBrowerBtn{ msgBox.addButton(QStringLiteral("浏览器下载"), QMessageBox::AcceptRole) };
+    msgBox.addButton(QStringLiteral("取消"), QMessageBox::RejectRole);
+    msgBox.exec();
+
+#ifdef Q_OS_ANDROID
+    if(msgBox.clickedButton() == downloadBtn)
+    {
+        auto downloadUrlReply{Network::networkAccessManager->get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersionEncryption").prepend(domain))))};
+        auto progressDialog{new QDialog};
+        auto progressLayout{new QVBoxLayout(progressDialog)};
+        auto progressLabel{new QLabel(progressDialog)};
+        progressLabel->setFixedHeight(progressLabel->fontMetrics().height());
+        progressDialog->setAttribute(Qt::WA_DeleteOnClose);
+        progressLayout->addWidget(progressLabel, Qt::AlignCenter);
+        progressDialog->show();
+        Network::waitForFinished(downloadUrlReply);
+        const auto downloadUrl{Network::replyReadAll(downloadUrlReply)};
+        qDebug() << "downloadUrl : " << downloadUrl;
+        auto downloadReply{Network::networkAccessManager->get(QNetworkRequest(QUrl(downloadUrl)))};
+        connect(downloadReply, &QNetworkReply::finished, [progressDialog, downloadReply]
+        {
+            if(!downloadReply->isFinished())
+            {
+                downloadReply->deleteLater();
+                progressDialog->close();
+                return;
+            }
+            auto fileData{Network::replyReadAll(downloadReply)};
+            fileData[4] = static_cast<char>(120);
+            fileData[5] = static_cast<char>(156);
+            const QString filePath{CallAndroidNativeComponent::getCacheDir() + QDir::separator() + QStringLiteral("newVersion.apk")};
+            QFile file(filePath);
+            if(file.open(QFile::WriteOnly))
+            {
+                file.write(qUncompress(fileData));
+                file.close();
+                CallAndroidNativeComponent::installApk(filePath);
+            }
+            else
+            {
+                qWarning() << "AutoUpdate::showUpdateWidget() : !file.open(QFile::WriteOnly)";
+                QMessageBox::warning(Q_NULLPTR, QStringLiteral("warning"), QStringLiteral("写入文件失败"));
+            }
+            progressDialog->close();
+        });
+        connect(downloadReply, &QNetworkReply::downloadProgress, [progressLabel](qint64 bytesReceived)
+        {
+            progressLabel->setText(QStringLiteral("已下载:%0").arg(bytesReceived));
+            QApplication::processEvents();
+        });
+    }
+    else if(msgBox.clickedButton() == openBrowerBtn)
+    {
+        auto reply{Network::networkAccessManager->get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersion").prepend(domain))))};
+        QDialog dialog;
+        QVBoxLayout mianLayout(&dialog);
+
+        QTextEdit showDownloadUrl(&dialog);
+        QPushButton copyButton("复制", &dialog);
+
+        QPushButton openBrowerButton(QStringLiteral("打开浏览器"), &dialog);
+        QPushButton cancelButton(QStringLiteral("取消"), &dialog);
+
+        QHBoxLayout tempLayout1;
+        tempLayout1.addWidget(&showDownloadUrl);
+        tempLayout1.addWidget(&copyButton);
+        QHBoxLayout tempLayout2;
+        tempLayout2.addWidget(&openBrowerButton);
+        tempLayout2.addWidget(&cancelButton);
+
+        mianLayout.addLayout(&tempLayout1);
+        mianLayout.addLayout(&tempLayout2);
+
+        Network::waitForFinished(reply);
+
+        const QString downloadUrl(Network::replyReadAll(reply));
+        qDebug() << "downloadUrl : " << downloadUrl;
+        showDownloadUrl.setText(downloadUrl);
+
+        connect(&copyButton, &QPushButton::clicked, [&downloadUrl]
+        {
+            QApplication::clipboard()->setText(downloadUrl);
+            if(QApplication::clipboard()->text() == downloadUrl)
+            {
+                QMessageBox::information(Q_NULLPTR, QStringLiteral("information"), QStringLiteral("复制成功"));
+            }
+            else
+            {
+                QMessageBox::warning(Q_NULLPTR, QStringLiteral("warning"), QStringLiteral("复制失败"));
+            }
+        });
+        connect(&openBrowerButton, &QPushButton::clicked, [&downloadUrl]
+        {
+            CallAndroidNativeComponent::openUrl(downloadUrl);
+        });
+        connect(&cancelButton, &QPushButton::clicked, [&dialog]
+        {
+            dialog.close();
+        });
+        dialog.exec();
+    }
+#endif // Q_OS_ANDROID
+}
+
 void AutoUpdate::newestVersionReplyFinished()
 {
     newestVersion = Network::replyReadAll(newestVersionReply);
@@ -216,7 +220,7 @@ void AutoUpdate::newestVersionReplyFinished()
     if(compareVersion(currentVersion, newestVersion))
     {
         hasNewVersion = true;
-        changeLogReply = Network::networkAccessManager.get(QNetworkRequest(QStringLiteral("changeLog").prepend(domain)));
+        changeLogReply = Network::networkAccessManager->get(QNetworkRequest(QStringLiteral("changeLog").prepend(domain)));
 
         connect(changeLogReply, &QNetworkReply::finished, this, &AutoUpdate::changeLogReplyFinished);
     }

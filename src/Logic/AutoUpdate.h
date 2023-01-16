@@ -42,11 +42,15 @@ private:
     bool running = false;
     bool hasNewVersion = false;
 
+    //起的什么破名字啊~
+    void showUpdateWidgetPrivate();
+
     //int timeoutCount = 0;
 
 private slots:
     void newestVersionReplyFinished();
     void changeLogReplyFinished();
+
 
 signals:
     void finished();

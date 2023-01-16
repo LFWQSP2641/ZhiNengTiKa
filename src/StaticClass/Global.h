@@ -1,6 +1,5 @@
 #pragma once
 
-
 //全局变量以及不足以成一个类的成员都会放到这
 namespace Global
 {

@@ -153,7 +153,7 @@ PixmapLabel *UploadChildWidget::addPixmapLabelFromUrl(const QUrl &url)
         return addPixmapLabelByPixmap(QPixmap(url.toLocalFile()));
     }
     auto newPixmapLabel{this->addPixmapLabel()};
-    auto reply{ Network::networkAccessManager.get(QNetworkRequest(url)) };
+    auto reply{ Network::networkAccessManager->get(QNetworkRequest(url)) };
     connect(reply, &QNetworkReply::finished, [newPixmapLabel, reply, url]
     {
         QPixmap pixmap;

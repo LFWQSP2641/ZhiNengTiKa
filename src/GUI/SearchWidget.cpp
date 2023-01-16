@@ -3,6 +3,7 @@
 #include "../StaticClass/XinjiaoyuNetwork.h"
 #include "../StaticClass/Setting.h"
 #include "../StaticClass/CallAndroidNativeComponent.h"
+#include "../StaticClass/QRCodeScanner.h"
 
 SearchWidget::SearchWidget(QWidget *parent)
     : QWidget{ parent }
@@ -168,7 +169,6 @@ SearchWidget::SearchWidget(QWidget *parent)
     connect(scanQRCodeButton, &QPushButton::clicked, [this]
     {
         scanQRCodeButton->setEnabled(false);
-        JQQRCodeReader qrCodeReader;
 #ifdef Q_OS_ANDROID
         auto image{ CallAndroidNativeComponent::takePhoto() };
 #else
@@ -177,7 +177,7 @@ SearchWidget::SearchWidget(QWidget *parent)
         QMessageBox msgBox;
         msgBox.setText(QStringLiteral("解析中..."));
         msgBox.show();
-        auto decodeResult{ qrCodeReader.decodeImage(image)};
+        auto decodeResult{ QRCodeScanner::scanQRCode(image, "JPEG")};
         msgBox.close();
         if(decodeResult.isEmpty())
         {
@@ -310,7 +310,15 @@ void SearchWidget::selectTemplateIdButtonPushed()
     }
     else
     {
-        webRawData = XinjiaoyuNetwork::getTemplateCodeData(templateCode);
+        try
+        {
+            webRawData = XinjiaoyuNetwork::getTemplateCodeData(templateCode);
+        }
+        catch (const std::exception &e)
+        {
+            QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+            return;
+        }
         if(!webRawData.isEmpty())
         {
             fileTemp.open(QFile::WriteOnly);
