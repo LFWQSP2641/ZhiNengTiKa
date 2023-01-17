@@ -46,6 +46,51 @@ public:
         return usernameStr;
     }
 
+    void setAccessToken(const QByteArray &newAccessToken)
+    {
+        accessTokenStr = newAccessToken;
+    }
+    void setAuthorization(const QByteArray &newAuthorization)
+    {
+        authorizationStr = newAuthorization;
+    }
+    void setClientSession(const QByteArray &newClientSession)
+    {
+        clientSessionStr = newClientSession;
+    }
+    void setPassword(const QByteArray &newPassword)
+    {
+        passwordStr = newPassword;
+    }
+    void setSchoolId(const QByteArray &newSchoolId)
+    {
+        schoolIdStr = newSchoolId;
+    }
+    void setSheetData(const QJsonObject &newSheetData)
+    {
+        sheetDataJsonObject = newSheetData;
+    }
+    void setStudentId(const QByteArray &newStudentId)
+    {
+        studentIdStr = newStudentId;
+    }
+    void setUsername(const QByteArray &newUsername)
+    {
+        usernameStr = newUsername;
+    }
+
+    bool isEmpty() const
+    {
+        return accessTokenStr.isEmpty() ||
+               authorizationStr.isEmpty() ||
+               clientSessionStr.isEmpty() ||
+               passwordStr.isEmpty() ||
+               schoolIdStr.isEmpty() ||
+               sheetDataJsonObject.isEmpty() ||
+               studentIdStr.isEmpty() ||
+               usernameStr.isEmpty();
+    }
+
 private:
     QByteArray accessTokenStr;
     QByteArray authorizationStr;
