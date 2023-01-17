@@ -6,7 +6,6 @@ QJsonObject QRCodeScanner::apiArguments;
 
 void QRCodeScanner::initialize()
 {
-    QRCodeScanner::apiInitialize();
 }
 
 void QRCodeScanner::initialize(const QJsonObject &apiJsonObject)
@@ -15,15 +14,11 @@ void QRCodeScanner::initialize(const QJsonObject &apiJsonObject)
     {
         apiArguments = apiJsonObject;
     }
-    else
-    {
-        QRCodeScanner::apiInitialize();
-    }
 }
 
 QByteArray QRCodeScanner::scanQRCode(const QImage &image, const char *format, int quality)
 {
-    if(QRCodeScanner::apiArguments.value(QStringLiteral("expire")).toInt() < QDateTime::currentSecsSinceEpoch())
+    if(QRCodeScanner::apiArguments.value(QStringLiteral("expire")).toInt(0) < QDateTime::currentSecsSinceEpoch())
     {
         QRCodeScanner::apiInitialize();
     }
