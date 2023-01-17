@@ -21,70 +21,68 @@ SearchWidget::SearchWidget(QWidget *parent)
     searchLineEdit = new QLineEdit(this);
     templateCodeLineEdit = new QLineEdit(this);
 
+    //TODO 重构导入题卡列表
     const auto subjects{ QStringList() << QStringLiteral("语文") << QStringLiteral("数学") << QStringLiteral("英语") << QStringLiteral("物理") << QStringLiteral("化学") << QStringLiteral("生物") };
     auto fileListNames{ QStringList() << QStringLiteral("templateList_chinese") << QStringLiteral("templateList_mathematics") << QStringLiteral("templateList_english") << QStringLiteral("templateList_physics") << QStringLiteral("templateList_chemistry") << QStringLiteral("templateList_biography") };
 
-    auto addListWidget{[this](const QString & filePath, const QString & name, bool current)
+    auto addListWidget{[this](const QString & filePath, const QString & name, bool listAll)
     {
         auto tempListWidget{new QListWidget};
-        if(current)
+        if(listAll)
         {
             QFile file { filePath };
-            if(!file.exists())
+            if(file.exists())
             {
-                return;
-            }
-            file.open(QFile::ReadOnly);
-            QString data{ file.readAll() };
-            file.close();
-            auto tempTemplateList{data.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
-            for (auto i{ 0 }; i < tempTemplateList.size(); ++i)
-            {
-                if(i & 1)
+                file.open(QFile::ReadOnly);
+                QString data{ file.readAll() };
+                file.close();
+                auto tempTemplateList{data.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
+                for (auto i{ 0 }; i < tempTemplateList.size(); ++i)
                 {
-                    templateCodeList.append(tempTemplateList.at(i));
-                }
-                else
-                {
-                    templateNameList.append(tempTemplateList.at(i));
-                    tempListWidget->addItem(tempTemplateList.at(i));
+                    if(i & 1)
+                    {
+                        templateCodeList.append(tempTemplateList.at(i));
+                    }
+                    else
+                    {
+                        templateNameList.append(tempTemplateList.at(i));
+                        tempListWidget->addItem(tempTemplateList.at(i));
+                    }
                 }
             }
         }
         else
         {
             QFile fileAll { filePath };
-            if(!fileAll.exists())
+            if(fileAll.exists())
             {
-                return;
-            }
-            fileAll.open(QFile::ReadOnly);
-            QString dataAll{ fileAll.readAll() };
-            fileAll.close();
-            auto tempTemplateListAll{dataAll.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
-            for (auto i{ 0 }; i < tempTemplateListAll.size(); ++i)
-            {
-                if(i & 1)
+                fileAll.open(QFile::ReadOnly);
+                QString dataAll{ fileAll.readAll() };
+                fileAll.close();
+                auto tempTemplateListAll{dataAll.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
+                for (auto i{ 0 }; i < tempTemplateListAll.size(); ++i)
                 {
-                    templateCodeList.append(tempTemplateListAll.at(i));
-                }
-                else
-                {
-                    templateNameList.append(tempTemplateListAll.at(i));
+                    if(i & 1)
+                    {
+                        templateCodeList.append(tempTemplateListAll.at(i));
+                    }
+                    else
+                    {
+                        templateNameList.append(tempTemplateListAll.at(i));
+                    }
                 }
             }
             QFile fileCurrent { filePath + QStringLiteral("_current") };
-            if(!fileCurrent.exists())
+            if(fileCurrent.exists())
             {
-                return;
-            }
-            fileCurrent.open(QFile::ReadOnly);
-            QString dataCurrent{ fileCurrent.readAll() };
-            fileCurrent.close();
-            auto tempTemplateListCurrent{dataCurrent.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
-            for (auto i{ 0 }; i < tempTemplateListCurrent.size(); i += 2)
-            {
-                tempListWidget->addItem(tempTemplateListCurrent.at(i));
+                fileCurrent.open(QFile::ReadOnly);
+                QString dataCurrent{ fileCurrent.readAll() };
+                fileCurrent.close();
+                auto tempTemplateListCurrent{dataCurrent.split(QStringLiteral("\n"), Qt::SkipEmptyParts)};
+                for (auto i{ 0 }; i < tempTemplateListCurrent.size(); i += 2)
+                {
+                    tempListWidget->addItem(tempTemplateListCurrent.at(i));
+                }
             }
         }
         QScroller::grabGesture(tempListWidget->viewport(), QScroller::TouchGesture);
@@ -106,7 +104,7 @@ SearchWidget::SearchWidget(QWidget *parent)
         addListWidget(filePath, tabName, Setting::listAllTemplate);
     }
 
-    addListWidget(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"), QStringLiteral("undefined"), false);
+    addListWidget(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"), QStringLiteral("undefined"), true);
 
     auto addHBoxLayoutWithTwoWidget{[](QWidget * widget1, QWidget * widget2)
     {
@@ -169,16 +167,47 @@ SearchWidget::SearchWidget(QWidget *parent)
     connect(scanQRCodeButton, &QPushButton::clicked, [this]
     {
         scanQRCodeButton->setEnabled(false);
+
+        QMessageBox msgBox1;
+        const auto takePhotoBtn{ msgBox1.addButton(QStringLiteral("拍照"), QMessageBox::AcceptRole) };
+        const auto selectFileBtn{ msgBox1.addButton(QStringLiteral("选择文件"), QMessageBox::AcceptRole) };
+        msgBox1.exec();
+
+        QByteArray decodeResult;
+
+        if(msgBox1.clickedButton() == takePhotoBtn)
+        {
 #ifdef Q_OS_ANDROID
-        auto image{ CallAndroidNativeComponent::takePhoto() };
-#else
-        QImage image(QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)")));
+            auto image {CallAndroidNativeComponent::takePhoto()};
+            if(image.isNull())
+            {
+                return;
+            }
+            QMessageBox msgBox2;
+            msgBox2.setText(QStringLiteral("解析中..."));
+            msgBox2.show();
+            decodeResult = QRCodeScanner::scanQRCode(image, "JPEG");
+            msgBox2.close();
 #endif // Q_OS_ANDROID
-        QMessageBox msgBox;
-        msgBox.setText(QStringLiteral("解析中..."));
-        msgBox.show();
-        auto decodeResult{ QRCodeScanner::scanQRCode(image, "JPEG")};
-        msgBox.close();
+        }
+        else if(msgBox1.clickedButton() == selectFileBtn)
+        {
+            const auto imagePath{QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)"))};
+            if(imagePath.isEmpty())
+            {
+                return;
+            }
+            QMessageBox msgBox2;
+            msgBox2.setText(QStringLiteral("解析中..."));
+            msgBox2.show();
+            decodeResult = QRCodeScanner::scanQRCode(imagePath, "JPEG");
+            msgBox2.close();
+        }
+        else
+        {
+            return;
+        }
+
         if(decodeResult.isEmpty())
         {
             QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("扫描失败\n"
