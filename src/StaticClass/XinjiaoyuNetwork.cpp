@@ -28,7 +28,6 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
 {
     if(!Setting::logined())
     {
-        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("未登录"));
         throw std::runtime_error("获取题卡时处于未登录状态");
     }
     QByteArray responseByte;
@@ -102,12 +101,10 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
     }
     else if (responseByte.isEmpty())
     {
-        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("请检查网络连接\n") + QString(responseByte));
         throw std::runtime_error("请求题卡后,返回值为空");
     }
     else
     {
-        QMessageBox::warning(nullptr, QStringLiteral("warning"), QString(responseByte));
         throw std::runtime_error(QStringLiteral("服务器报错\n"
                                                 "返回值:%0\n"
                                                 "返回结果:%1").arg(stateCode, responseByte).toStdString());

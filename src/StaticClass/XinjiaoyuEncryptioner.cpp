@@ -11,18 +11,10 @@ QByteArray XinjiaoyuEncryptioner::xinjiaoyuEncryption(const QByteArray &rawText)
 
 QByteArray XinjiaoyuEncryptioner::xinjiaoyuDecryption(const QByteArray &rawText)
 {
-    try
-    {
-        const auto rawResult1{QByteArray::fromBase64(rawText)};
-        const auto rawResult2{XinjiaoyuEncryptioner::encryptioner.decode(rawResult1, XinjiaoyuEncryptioner::xinjiaoyuKey)};
-        const auto result{XinjiaoyuEncryptioner::encryptioner.removePadding(rawResult2)};
-        return result;
-    }
-    catch (const std::exception &e)
-    {
-        QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
-    }
-    return QByteArray();
+    const auto rawResult1{QByteArray::fromBase64(rawText)};
+    const auto rawResult2{XinjiaoyuEncryptioner::encryptioner.decode(rawResult1, XinjiaoyuEncryptioner::xinjiaoyuKey)};
+    const auto result{XinjiaoyuEncryptioner::encryptioner.removePadding(rawResult2)};
+    return result;
 }
 
 QByteArray XinjiaoyuEncryptioner::getXinjiaoyuMD5(const QByteArray &tValue, const QByteArray &clientSessionValue)
