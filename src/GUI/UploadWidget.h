@@ -2,6 +2,7 @@
 
 class AnalysisWebRawData;
 class UploadChildWidget;
+class UserData;
 
 class UploadWidget : public QWidget
 {
@@ -31,6 +32,7 @@ protected:
     void showEvent(QShowEvent *event) override;
 
     QJsonObject getAnswerJsonObject();
+    QJsonObject getAnswerJsonObject(const UserData &userData);
 
 public slots:
     void analysis();

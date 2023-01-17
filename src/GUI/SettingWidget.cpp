@@ -122,44 +122,45 @@ SettingWidget::SettingWidget(QWidget *parent)
                 QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("请输入正确的账号"));
                 return;
             }
-            if(!(username.isEmpty() || password.isEmpty()))
-            {
-                const auto returnData{Login::login(username.toUtf8(), password.toUtf8())};
-                switch (QJsonDocument::fromJson(returnData).object().value(QStringLiteral("code")).toInt())
-                {
-                case 200:
-                    if(Setting::sheetData().value(QStringLiteral("realName")).toString().isEmpty())
-                    {
-                        auto ret{QMessageBox::question(this, QStringLiteral("question"), QStringLiteral("账号部分信息为空,是否继续使用此账号"))};
-                        if(ret == QMessageBox::No)
-                        {
-                            Setting::userDataList.removeFirst();
-#ifdef Q_OS_ANDROID
-                            Setting::saveToFile();
-#endif // Q_OS_ANDROID
-                            return;
-                        }
-                    }
-                    QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(Setting::sheetData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + Setting::username()));
-                    dialog.close();
-                    setUserList();
-                    break;
-                case 414:
-                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("可能出现账号锁定,别信"));
-                case 415:
-                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败,账号或密码错误\n") + returnData);
-                    OKButton.setEnabled(true);
-                    break;
-                default:
-                    QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败\n") + returnData);
-                    OKButton.setEnabled(true);
-                    break;
-                }
-            }
-            else
+            if(username.isEmpty() || password.isEmpty())
             {
                 QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("登录失败,请检查输入是否正确"));
                 OKButton.setEnabled(true);
+            }
+            else
+            {
+                UserData newUserData;
+                try
+                {
+                    newUserData = Login::login(username.toUtf8(), password.toUtf8());
+                }
+                catch(const std::exception &e)
+                {
+                    const QString whatStr{e.what()};
+                    if(whatStr.contains(QStringLiteral("锁定")))
+                    {
+                        QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("不用管那个锁定,大概率误报"));
+                    }
+                    QMessageBox::warning(this, QStringLiteral("warning"), whatStr);
+                    OKButton.setEnabled(true);
+                    return;
+                }
+                if(newUserData.sheetData().isEmpty())
+                {
+                    auto ret{QMessageBox::question(this, QStringLiteral("question"), QStringLiteral("账号部分信息为空,是否继续使用此账号"))};
+                    if(ret == QMessageBox::No)
+                    {
+                        dialog.close();
+                        return;
+                    }
+                }
+                Setting::userDataList.prepend(newUserData);
+#ifdef Q_OS_ANDROID
+                Setting::saveToFile();
+#endif // Q_OS_ANDROID
+                setUserList();
+                QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(newUserData.sheetData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + newUserData.username()));
+                dialog.close();
             }
         });
         connect(&cancelButton, &QPushButton::clicked, [&dialog] {dialog.close(); });
@@ -181,7 +182,9 @@ SettingWidget::SettingWidget(QWidget *parent)
         setUserList();
     });
 
-    auto askRestart{[]
+    auto askRestart
+    {
+        []
         {
             QMessageBox msgBox;
             msgBox.setText(QStringLiteral("重启生效,是否关闭程序?"));
@@ -194,7 +197,8 @@ SettingWidget::SettingWidget(QWidget *parent)
             {
                 QApplication::exit(0);
             }
-        }};
+        }
+    };
 
     connect(fontComboBox, &QComboBox::currentTextChanged, [this](const QString & text)
     {

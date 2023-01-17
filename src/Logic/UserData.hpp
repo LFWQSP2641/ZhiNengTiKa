@@ -3,6 +3,7 @@
 class UserData
 {
 public:
+    UserData() = default;
     UserData(const QByteArray &accessToken, const QByteArray &authorization, const QByteArray &clientSession, const QByteArray &password, const QByteArray &schoolId, const QJsonObject &sheetData, const QByteArray &studentId, const QByteArray &username)
         : accessTokenStr(accessToken),
           authorizationStr(authorization),

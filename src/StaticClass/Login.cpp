@@ -1,9 +1,8 @@
 #include "Login.h"
 #include "XinjiaoyuEncryptioner.h"
 #include "Network.h"
-#include "Setting.h"
 
-QByteArray Login::login(const QByteArray &username, const QByteArray &password)
+UserData Login::login(const QByteArray &username, const QByteArray &password)
 {
     const auto encodedUsername{XinjiaoyuEncryptioner::xinjiaoyuEncryption(username)};
     const auto encodedPassword{XinjiaoyuEncryptioner::xinjiaoyuEncryption(password)};
@@ -32,19 +31,22 @@ QByteArray Login::login(const QByteArray &username, const QByteArray &password)
         auto dataObject{rootObject.value(QStringLiteral("data")).toObject()};
         const auto userDataJsonObject = dataObject.value(QStringLiteral("info")).toObject();
         const auto userSchoolDataJsonObject = userDataJsonObject.value(QStringLiteral("school")).toObject();
-        Setting::userDataList.prepend(UserData(
-                                          dataObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
-                                          QByteArrayLiteral("JBY ") + dataObject.value(QStringLiteral("token")).toString().toUtf8(),
-                                          clientSessionVal,
-                                          password,
-                                          userSchoolDataJsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
-                                          userDataJsonObject,
-                                          userSchoolDataJsonObject.value(QStringLiteral("studentId")).toString().toUtf8(),
-                                          username
-                                      ));
-#ifdef Q_OS_ANDROID
-        Setting::saveToFile();
-#endif // Q_OS_ANDROID
+        return UserData(
+                   dataObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
+                   QByteArrayLiteral("JBY ") + dataObject.value(QStringLiteral("token")).toString().toUtf8(),
+                   clientSessionVal,
+                   password,
+                   userSchoolDataJsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
+                   userDataJsonObject,
+                   userSchoolDataJsonObject.value(QStringLiteral("studentId")).toString().toUtf8(),
+                   username
+               );
     }
-    return returnData;
+    else
+    {
+        throw std::runtime_error(QStringLiteral("登陆失败\n"
+                                                "返回结果错误\n"
+                                                "返回数据:%0").arg(returnData).toStdString());
+        return UserData();
+    }
 }

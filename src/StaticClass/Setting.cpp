@@ -88,46 +88,6 @@ void Setting::saveToFile()
     file.close();
 }
 
-QByteArray Setting::accessToken()
-{
-    return Setting::userDataList.at(0).accessToken();
-}
-
-QByteArray Setting::authorization()
-{
-    return Setting::userDataList.at(0).authorization();
-}
-
-QByteArray Setting::clientSession()
-{
-    return Setting::userDataList.at(0).clientSession();
-}
-
-QByteArray Setting::password()
-{
-    return Setting::userDataList.at(0).password();
-}
-
-QByteArray Setting::schoolId()
-{
-    return Setting::userDataList.at(0).schoolId();
-}
-
-QJsonObject Setting::sheetData()
-{
-    return Setting::userDataList.at(0).sheetData();
-}
-
-QByteArray Setting::studentId()
-{
-    return Setting::userDataList.at(0).studentId();
-}
-
-QByteArray Setting::username()
-{
-    return Setting::userDataList.at(0).username();
-}
-
 bool Setting::logined()
 {
     return !Setting::userDataList.isEmpty();

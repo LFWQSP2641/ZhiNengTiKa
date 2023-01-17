@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../Logic/UserData.hpp"
 
 namespace Login
 {
@@ -10,6 +11,6 @@ namespace Login
 //    SomethingIsWrong = 415,
 //    error = -1
 //};
-extern QByteArray login(const QByteArray &username, const QByteArray &password);
+extern UserData login(const QByteArray &username, const QByteArray &password);
 };
 

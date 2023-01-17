@@ -253,9 +253,14 @@ void UploadWidget::showEvent(QShowEvent *event)
 
 QJsonObject UploadWidget::getAnswerJsonObject()
 {
+    return getAnswerJsonObject(Setting::userDataList.at(0));
+}
+
+QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)
+{
     QJsonObject rootObject;
-    rootObject.insert(QStringLiteral("schoolId"), QString(Setting::schoolId()));
-    rootObject.insert(QStringLiteral("studentId"), QString(Setting::studentId()));
+    rootObject.insert(QStringLiteral("schoolId"), QString(userData.schoolId()));
+    rootObject.insert(QStringLiteral("studentId"), QString(userData.studentId()));
     rootObject.insert(QStringLiteral("templateCode"), analysisWebRawData.getTemplateCode());
     QJsonArray array;
     for(auto &i : uploadChildWidgetList)
