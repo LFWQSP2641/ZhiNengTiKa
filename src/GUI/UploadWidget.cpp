@@ -129,6 +129,16 @@ void UploadWidget::getUserAnswer()
         QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
         return;
     }
+    catch (const char* &e)
+    {
+        QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e);
+        return;
+    }
+    catch(...)
+    {
+        QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), QStringLiteral("发生未知错误"));
+        return;
+    }
 
     QJsonArray array{ QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
     for (const auto &j : array)

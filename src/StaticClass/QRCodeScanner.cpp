@@ -149,6 +149,10 @@ void QRCodeScanner::apiInitialize()
     cookie.append(currentSecsSinceEpoch);
     QString xCsrfToken(QString::fromUtf8(Network::replyReadAll(replyFir)).mid(340, 100));
     xCsrfToken = xCsrfToken.mid(xCsrfToken.indexOf("<meta name=\"csrf-token\" content=\"") + 33, 32);
+    if(cookie.isEmpty() || xCsrfToken.isEmpty())
+    {
+        throw std::runtime_error("返回数据为空,可能无法连接网络");
+    }
 
     QNetworkRequest requestSec{QUrl(QStringLiteral("https://jie.2weima.com/Api/oss_sign.html?source=qrdecode"))};
     requestSec.setRawHeader(QByteArrayLiteral("Content-Length"), QByteArrayLiteral("0"));

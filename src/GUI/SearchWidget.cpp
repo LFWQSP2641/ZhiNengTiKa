@@ -186,7 +186,26 @@ SearchWidget::SearchWidget(QWidget *parent)
             QMessageBox msgBox2;
             msgBox2.setText(QStringLiteral("解析中..."));
             msgBox2.show();
-            decodeResult = QRCodeScanner::scanQRCode(image, "JPEG");
+            try
+            {
+                decodeResult = QRCodeScanner::scanQRCode(image, "JPEG");
+            }
+            catch (const std::exception &e)
+            {
+                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+                return;
+            }
+            catch (const char* &e)
+            {
+                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e);
+                return;
+            }
+            catch(...)
+            {
+                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), QStringLiteral("发生未知错误"));
+                return;
+            }
+
             msgBox2.close();
 #endif // Q_OS_ANDROID
         }
@@ -200,7 +219,25 @@ SearchWidget::SearchWidget(QWidget *parent)
             QMessageBox msgBox2;
             msgBox2.setText(QStringLiteral("解析中..."));
             msgBox2.show();
-            decodeResult = QRCodeScanner::scanQRCode(imagePath, "JPEG");
+            try
+            {
+                decodeResult = QRCodeScanner::scanQRCode(imagePath, "JPEG");
+            }
+            catch (const std::exception &e)
+            {
+                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+                return;
+            }
+            catch (const char* &e)
+            {
+                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e);
+                return;
+            }
+            catch(...)
+            {
+                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), QStringLiteral("发生未知错误"));
+                return;
+            }
             msgBox2.close();
         }
         else
@@ -346,6 +383,16 @@ void SearchWidget::selectTemplateIdButtonPushed()
         catch (const std::exception &e)
         {
             QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+            return;
+        }
+        catch (const char* &e)
+        {
+            QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e);
+            return;
+        }
+        catch(...)
+        {
+            QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), QStringLiteral("发生未知错误"));
             return;
         }
         if(!webRawData.isEmpty())
