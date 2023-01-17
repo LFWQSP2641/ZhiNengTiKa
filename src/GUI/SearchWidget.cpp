@@ -195,16 +195,6 @@ SearchWidget::SearchWidget(QWidget *parent)
                 QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
                 return;
             }
-            catch (const char* &e)
-            {
-                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e);
-                return;
-            }
-            catch(...)
-            {
-                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), QStringLiteral("发生未知错误"));
-                return;
-            }
 
             msgBox2.close();
 #endif // Q_OS_ANDROID
@@ -226,16 +216,6 @@ SearchWidget::SearchWidget(QWidget *parent)
             catch (const std::exception &e)
             {
                 QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
-                return;
-            }
-            catch (const char* &e)
-            {
-                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e);
-                return;
-            }
-            catch(...)
-            {
-                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), QStringLiteral("发生未知错误"));
                 return;
             }
             msgBox2.close();
@@ -383,16 +363,6 @@ void SearchWidget::selectTemplateIdButtonPushed()
         catch (const std::exception &e)
         {
             QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
-            return;
-        }
-        catch (const char* &e)
-        {
-            QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e);
-            return;
-        }
-        catch(...)
-        {
-            QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), QStringLiteral("发生未知错误"));
             return;
         }
         if(!webRawData.isEmpty())

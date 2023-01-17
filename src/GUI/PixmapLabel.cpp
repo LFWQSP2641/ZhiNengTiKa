@@ -68,20 +68,21 @@ void PixmapLabel::uploadPixmap(const QPixmap &pixmap)
     auto reply{XinjiaoyuNetwork::uploadFileReply(bytes, QStringLiteral("image.jpg"))};
     connect(reply, &QNetworkReply::finished, [this, reply, pixmap]
     {
-        auto infoStr{ XinjiaoyuNetwork::getUploadFileReplyUrl(reply) };
-        if(infoStr.startsWith(QStringLiteral("http")))
+        QString infoStr;
+        try
         {
-            this->url = infoStr;
-            this->rawPixmap = pixmap;
-            this->ClickableLabel::setPixmap(pixmap.scaled(this->size(), Qt::KeepAspectRatio));
-            this->setEnabled(true);
+            infoStr = XinjiaoyuNetwork::getUploadFileReplyUrl(reply) ;
         }
-        else
+        catch(const std::exception &e)
         {
-            QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("上传失败\n") + infoStr);
+            QMessageBox::warning(this, QStringLiteral("warning"), e.what());
             remove();
             return;
         }
+        this->url = infoStr;
+        this->rawPixmap = pixmap;
+        this->ClickableLabel::setPixmap(pixmap.scaled(this->size(), Qt::KeepAspectRatio));
+        this->setEnabled(true);
     });
 }
 

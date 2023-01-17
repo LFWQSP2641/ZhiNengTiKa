@@ -149,9 +149,13 @@ QString XinjiaoyuNetwork::getUploadFileReplyUrl(QNetworkReply *reply)
 {
     const auto returnData{ Network::replyReadAll(reply) };
 
-    if(returnData.mid(8, 3) != QByteArrayLiteral("200"))
+    const auto stateCode{returnData.mid(8, 3)};
+
+    if(stateCode != QByteArrayLiteral("200"))
     {
-        return returnData;
+        throw std::runtime_error(QStringLiteral("上传失败\n"
+                                                "返回值:%0\n"
+                                                "返回数据:%1").arg(stateCode, returnData).toStdString());
     }
 
     const auto dataJsonObject{QJsonDocument::fromJson(returnData).object().value(QStringLiteral("data")).toObject()};
