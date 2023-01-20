@@ -181,6 +181,7 @@ SearchWidget::SearchWidget(QWidget *parent)
             auto image {CallAndroidNativeComponent::takePhoto()};
             if(image.isNull())
             {
+                scanQRCodeButton->setEnabled(true);
                 return;
             }
             QMessageBox msgBox2;
@@ -193,6 +194,7 @@ SearchWidget::SearchWidget(QWidget *parent)
             catch (const std::exception &e)
             {
                 QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+                scanQRCodeButton->setEnabled(true);
                 return;
             }
 
@@ -204,6 +206,7 @@ SearchWidget::SearchWidget(QWidget *parent)
             const auto imagePath{QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)"))};
             if(imagePath.isEmpty())
             {
+                scanQRCodeButton->setEnabled(true);
                 return;
             }
             QMessageBox msgBox2;
@@ -216,12 +219,14 @@ SearchWidget::SearchWidget(QWidget *parent)
             catch (const std::exception &e)
             {
                 QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+                scanQRCodeButton->setEnabled(true);
                 return;
             }
             msgBox2.close();
         }
         else
         {
+            scanQRCodeButton->setEnabled(true);
             return;
         }
 
