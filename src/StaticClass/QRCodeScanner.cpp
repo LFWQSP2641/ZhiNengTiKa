@@ -63,8 +63,8 @@ QByteArray QRCodeScanner::scanQRCode(const QImage &image, const char *format, in
     request.setRawHeader(QByteArrayLiteral("Referer"), QByteArrayLiteral("https://jie.2weima.com/"));
     request.setRawHeader(QByteArrayLiteral("Accept-Encoding"), QByteArrayLiteral("deflate, br"));
     request.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("zh-CN,zh;q=0.9"));
-    request.setRawHeader(QByteArrayLiteral("Cookie"), QByteArray());
-    request.setRawHeader(QByteArrayLiteral("MIME-Version"), 0);
+    request.setRawHeader(QByteArrayLiteral("Cookie"), QString(QChar(1)).toUtf8());
+    request.setRawHeader(QByteArrayLiteral("MIME-Version"), QString(QChar(1)).toUtf8());
     QHttpMultiPart multiPart(QHttpMultiPart::FormDataType);
 
     multiPart.setBoundary(boundary.toUtf8());
