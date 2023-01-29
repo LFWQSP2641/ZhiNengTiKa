@@ -124,10 +124,8 @@ DISTFILES += \
     android/res/drawable-xxhdpi/icon.png \
     android/res/drawable-xxxhdpi/icon.png \
     android/res/values/libs.xml \
-    android/src/com/LFWQSP2641/xinjiaoyu/IntentActivity.java
-}
-
-DISTFILES += \
-    android/res/xml/provider_paths.xml \
     android/src/com/LFWQSP2641/xinjiaoyu/CallNativeComponent.java \
-    android/src/com/LFWQSP2641/xinjiaoyu/Util.java
+    android/src/com/LFWQSP2641/xinjiaoyu/IntentActivity.java \
+    android/src/com/LFWQSP2641/xinjiaoyu/Util.java \
+    android/res/xml/provider_paths.xml
+}

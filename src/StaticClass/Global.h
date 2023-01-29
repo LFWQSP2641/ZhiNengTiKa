@@ -7,6 +7,8 @@ extern QString appConfigPath;
 extern QString appDataPath;
 extern QString appTempPath;
 
+extern void initOnce();
+
 extern QString configPath();
 extern QString dataPath();
 extern QString tempPath();

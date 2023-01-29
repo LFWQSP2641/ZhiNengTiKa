@@ -19,22 +19,7 @@ int main(int argc, char *argv[])
 
     Network::networkAccessManager = new QNetworkAccessManager(&a);
 
-#ifdef Q_OS_ANDROID
-    Global::appConfigPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-    Global::appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    Global::appTempPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-#else
-    Global::appConfigPath = QApplication::applicationDirPath() + QDir::separator() + QStringLiteral("Config");
-    Global::appDataPath = QApplication::applicationDirPath() + QDir::separator() + QStringLiteral("Data");
-    Global::appTempPath = QApplication::applicationDirPath() + QDir::separator() + QStringLiteral("Temp");
-#endif // Q_OS_ANDROID
-
-    QDir dir;
-    dir.mkdir(Global::configPath());
-    dir.mkdir(Global::dataPath());
-    dir.mkdir(Global::tempPath());
-    dir.mkdir(Global::tempPath() + QDir::separator() + QStringLiteral("Image"));
-    dir.mkdir(Global::tempPath() + QDir::separator() + QStringLiteral("TemplateFile"));
+    Global::initOnce();
 
     a.setWindowIcon(QIcon(QStringLiteral(":/ico/xinjiaoyuico.png")));
 
