@@ -6,7 +6,7 @@
 #include "../StaticClass/XinjiaoyuNetwork.h"
 #include "../StaticClass/Login.h"
 
-UploadWidget::UploadWidget(AnalysisWebRawData &analysisWebRawData, QWidget *parent)
+UploadWidget::UploadWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent)
     : QWidget{parent}, analysisWebRawData(analysisWebRawData)
 {
     mainLayout = new QVBoxLayout(this);
@@ -28,21 +28,18 @@ UploadWidget::UploadWidget(AnalysisWebRawData &analysisWebRawData, QWidget *pare
     mainLayout->addLayout(uploadChildWidgetLayout);
     mainLayout->addLayout(tempLayout1);
 
-    connect(&analysisWebRawData, &AnalysisWebRawData::analysisFinished, [this]
-    {
-        if(this->isVisible())
-        {
-            analysis();
-        }
-        else
-        {
-            analysisWebRawDataStateChanged = true;
-        }
-    });
     connect(uploadButton, &QPushButton::clicked, this, &UploadWidget::upload);
     connect(editRawDataButton, &QPushButton::clicked, this, &UploadWidget::editRawData);
     connect(rightAnswerPrecedenceCheckBox, &QRadioButton::clicked, this, &UploadWidget::switchRightAnswerPrecedence);
-    connect(uploadAnswerPrecedenceCheckBox, &QRadioButton::clicked, this, &UploadWidget::switchuploadAnswerPrecedence);
+    connect(uploadAnswerPrecedenceCheckBox, &QRadioButton::clicked, this, &UploadWidget::switchUploadAnswerPrecedence);
+
+    this->analysisWebRawDataStateChanged = true;
+}
+
+void UploadWidget::setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData)
+{
+    this->analysisWebRawDataStateChanged = true;
+    this->analysisWebRawData = analysisWebRawData;
 }
 
 bool UploadWidget::upload()
@@ -173,7 +170,7 @@ void UploadWidget::switchRightAnswerPrecedence()
     this->setEnabled(true);
 }
 
-void UploadWidget::switchuploadAnswerPrecedence()
+void UploadWidget::switchUploadAnswerPrecedence()
 {
     this->setEnabled(false);
     if(userAnswerList.isEmpty())

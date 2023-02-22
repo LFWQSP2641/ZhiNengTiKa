@@ -12,7 +12,6 @@ private:
     QVBoxLayout *mainLayout;
     QTabWidget *allListWidget;
     QListWidget *listWidget;
-    QPushButton *resetButton;
     QPushButton *OKButton;
     QPushButton *searchButton;
     QPushButton *previousPageButton;
@@ -21,27 +20,20 @@ private:
     QStringList templateNameList;
     QStringList templateCodeList;
     QLineEdit *templateCodeLineEdit;
-    QPushButton *selectTemplateIdButton;
+    QPushButton *getTemplateCodeDataButton;
     QPushButton *scanQRCodeButton;
 
     QByteArray webRawData;
     QString templateName;
     QString templateCode;
 
-public slots:
-    void reset();
-
 private slots:
     void toPreviousPage();
     void toNextPageButton();
     void searchButtonPushed();
-    void cancleButtonPushed();
     void OKButtonPushed();
-    void selectTemplateIdButtonPushed();
+    void getTemplateCodeDataButtonPushed();
     void currentItemChanged(QListWidgetItem *item);
-
-signals:
-    void searchFinished(const QByteArray &webRawData, const QString &templateName, const QString &templateCode);
 };
 
 #endif // SEARCHDIALOG_H

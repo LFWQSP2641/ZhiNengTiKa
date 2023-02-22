@@ -29,6 +29,8 @@ SettingWidget::SettingWidget(QWidget *parent)
     smallFontPointSizeSpinBox = new QSpinBox(this);
     resultTestLabel = new QLabel(this);
     listAllTemplateCheckBox = new QCheckBox(QStringLiteral("显示所有"), this);
+    getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox = new QCheckBox(QStringLiteral("扫码成功后自动获取"), this);
+    autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox = new QCheckBox(QStringLiteral("获取成功后自动显示答案"), this);
     cleanTempButton = new QPushButton(QStringLiteral("删除缓存"), this);
     showTempSize = new QLabel(this);
     commonProblemButton = new QPushButton(QStringLiteral("常见问题"), this);
@@ -49,6 +51,8 @@ SettingWidget::SettingWidget(QWidget *parent)
     fontPointSizeSpinBox->setValue(Setting::fontPointSize);
 
     listAllTemplateCheckBox->setChecked(Setting::listAllTemplate);
+    getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox->setChecked(Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully);
+    autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox->setChecked(Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully);
 
     auto addTwoWidgetToHBoxLayout{[](QWidget * widget1, QWidget * widget2)
     {
@@ -65,6 +69,8 @@ SettingWidget::SettingWidget(QWidget *parent)
     appearanceLayout->addRow(QStringLiteral("小字体部件:"), smallFontPointSizeSpinBox);
     appearanceLayout->addRow(QStringLiteral("效果:"), resultTestLabel);
     templateListLayout->addWidget(listAllTemplateCheckBox);
+    templateListLayout->addWidget(getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox);
+    templateListLayout->addWidget(autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox);
     cacheLayout->addLayout(addTwoWidgetToHBoxLayout(showTempSize, cleanTempButton));
     problemLayout->addLayout(addTwoWidgetToHBoxLayout(commonProblemButton, knownProblemButton));
     versionLayout->addLayout(addTwoWidgetToHBoxLayout(currentVersionLabel, checkNewVersionButton));
@@ -145,7 +151,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                     OKButton.setEnabled(true);
                     return;
                 }
-                if(newUserData.sheetData().isEmpty())
+                if(newUserData.detailData().isEmpty())
                 {
                     auto ret{QMessageBox::question(this, QStringLiteral("question"), QStringLiteral("账号部分信息为空,是否继续使用此账号"))};
                     if(ret == QMessageBox::No)
@@ -159,7 +165,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                 Setting::saveToFile();
 #endif // Q_OS_ANDROID
                 setUserList();
-                QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(newUserData.sheetData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + newUserData.username()));
+                QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(newUserData.detailData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + newUserData.username()));
                 dialog.close();
             }
         });
@@ -234,7 +240,25 @@ SettingWidget::SettingWidget(QWidget *parent)
     connect(this->listAllTemplateCheckBox, &QCheckBox::stateChanged, [askRestart](int state)
     {
         Setting::listAllTemplate = (state == Qt::CheckState::Checked);
+#ifdef Q_OS_ANDROID
         Setting::saveToFile();
+#endif
+        askRestart();
+    });
+    connect(this->getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox, &QCheckBox::stateChanged, [askRestart](int state)
+    {
+        Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully = (state == Qt::CheckState::Checked);
+#ifdef Q_OS_ANDROID
+        Setting::saveToFile();
+#endif
+        askRestart();
+    });
+    connect(this->autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox, &QCheckBox::stateChanged, [askRestart](int state)
+    {
+        Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully = (state == Qt::CheckState::Checked);
+#ifdef Q_OS_ANDROID
+        Setting::saveToFile();
+#endif
         askRestart();
     });
 
@@ -310,7 +334,7 @@ void SettingWidget::setUserList()
     {
         for(const auto &i : Setting::userDataList)
         {
-            userListComboBox->addItem(i.sheetData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + i.username());
+            userListComboBox->addItem(i.detailData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + i.username());
         }
     }
     else

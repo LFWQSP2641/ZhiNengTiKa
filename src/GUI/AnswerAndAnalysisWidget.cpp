@@ -1,7 +1,7 @@
 #include "AnswerAndAnalysisWidget.h"
 #include "../Logic/AnalysisWebRawData.h"
 
-AnswerAndAnalysisWidget::AnswerAndAnalysisWidget(AnalysisWebRawData &analysisWebRawData, QWidget *parent)
+AnswerAndAnalysisWidget::AnswerAndAnalysisWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent)
     : WebViewWidget(analysisWebRawData, parent)
 {
     onlyAnswerCheckBox = new QCheckBox(QStringLiteral("Only Answer"), this);
@@ -10,7 +10,7 @@ AnswerAndAnalysisWidget::AnswerAndAnalysisWidget(AnalysisWebRawData &analysisWeb
     connect(this->onlyAnswerCheckBox, &QCheckBox::clicked, this, &AnswerAndAnalysisWidget::onlyAnswerCheckBoxClicked);
 }
 
-QString AnswerAndAnalysisWidget::getHtml(const qsizetype index)
+QString AnswerAndAnalysisWidget::getAnalyzedHtml(const qsizetype index)
 {
     if(onlyAnswerCheckBox->isChecked())
     {
@@ -24,5 +24,5 @@ QString AnswerAndAnalysisWidget::getHtml(const qsizetype index)
 
 void AnswerAndAnalysisWidget::onlyAnswerCheckBoxClicked([[maybe_unused]]bool checked)
 {
-    webView->setHtml(getHtml(currentPageIndex));
+    webView->setHtml(getAnalyzedHtml(currentPageIndex));
 }

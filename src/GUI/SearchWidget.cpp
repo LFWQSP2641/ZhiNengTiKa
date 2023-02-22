@@ -4,6 +4,8 @@
 #include "../StaticClass/Setting.h"
 #include "../StaticClass/CallAndroidNativeComponent.h"
 #include "../StaticClass/QRCodeScanner.h"
+#include "../GUI/TemplateDetailWidget.h"
+#include "../Logic/AnalysisWebRawData.h"
 
 SearchWidget::SearchWidget(QWidget *parent)
     : QWidget{ parent }
@@ -11,12 +13,11 @@ SearchWidget::SearchWidget(QWidget *parent)
     mainLayout = new QVBoxLayout(this);
     listWidget = new QListWidget(this);
     allListWidget = new QTabWidget(this);
-    resetButton = new QPushButton(QStringLiteral("重置"), this);
     OKButton = new QPushButton(QStringLiteral("确定"), this);
     searchButton = new QPushButton(QStringLiteral("搜索"), this);
     previousPageButton = new QPushButton(QStringLiteral("上一页"), this);
     nextPageButton = new QPushButton(QStringLiteral("下一页"), this);
-    selectTemplateIdButton = new QPushButton(QStringLiteral("获取"), this);
+    getTemplateCodeDataButton = new QPushButton(QStringLiteral("获取"), this);
     scanQRCodeButton = new QPushButton(QStringLiteral("扫码"), this);
     searchLineEdit = new QLineEdit(this);
     templateCodeLineEdit = new QLineEdit(this);
@@ -148,8 +149,7 @@ SearchWidget::SearchWidget(QWidget *parent)
     nextPageButton->setVisible(false);
 
     mainLayout->addLayout(addHBoxLayoutWithTwoWidget(searchLineEdit, searchButton));
-    mainLayout->addLayout(addHBoxLayoutWithThreeWidget(templateCodeLineEdit, scanQRCodeButton, selectTemplateIdButton));
-    mainLayout->addWidget(resetButton);
+    mainLayout->addLayout(addHBoxLayoutWithThreeWidget(templateCodeLineEdit, scanQRCodeButton, getTemplateCodeDataButton));
     mainLayout->addWidget(allListWidget);
     mainLayout->addWidget(listWidget);
     mainLayout->addLayout(addHBoxLayoutWithTwoWidget(previousPageButton, nextPageButton));
@@ -158,12 +158,11 @@ SearchWidget::SearchWidget(QWidget *parent)
 
     connect(OKButton, &QPushButton::clicked, this, &SearchWidget::OKButtonPushed);
     connect(searchButton, &QPushButton::clicked, this, &SearchWidget::searchButtonPushed);
-    connect(resetButton, &QPushButton::clicked, this, &SearchWidget::reset);
     connect(listWidget, &QListWidget::itemClicked, this, &SearchWidget::currentItemChanged);
     connect(searchLineEdit, &QLineEdit::returnPressed, this, &SearchWidget::searchButtonPushed);
     connect(previousPageButton, &QPushButton::clicked, this, &SearchWidget::toPreviousPage);
     connect(nextPageButton, &QPushButton::clicked, this, &SearchWidget::toNextPageButton);
-    connect(selectTemplateIdButton, &QPushButton::clicked, this, &SearchWidget::selectTemplateIdButtonPushed);
+    connect(getTemplateCodeDataButton, &QPushButton::clicked, this, &SearchWidget::getTemplateCodeDataButtonPushed);
     connect(scanQRCodeButton, &QPushButton::clicked, [this]
     {
         scanQRCodeButton->setEnabled(false);
@@ -239,32 +238,12 @@ SearchWidget::SearchWidget(QWidget *parent)
         }
         qDebug() << decodeResult;
         this->templateCodeLineEdit->setText(decodeResult);
+        if(Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully)
+        {
+            this->getTemplateCodeDataButtonPushed();
+        }
         scanQRCodeButton->setEnabled(true);
     });
-}
-
-void SearchWidget::reset()
-{
-    this->OKButton->setEnabled(false);
-    listWidget->setVisible(false);
-    allListWidget->setVisible(true);
-    allListWidget->setCurrentIndex(0);
-    searchLineEdit->clear();
-    templateCodeLineEdit->clear();
-
-    for(auto i{0};; ++i)
-    {
-        const auto tempListWidget{static_cast<QListWidget*>(allListWidget->widget(i))};
-        if(tempListWidget == nullptr)
-        {
-            break;
-        }
-        const auto currentItem{tempListWidget->currentItem()};
-        if(currentItem != nullptr)
-        {
-            currentItem->setFlags(Qt::ItemIsEnabled);
-        }
-    }
 }
 
 void SearchWidget::toPreviousPage()
@@ -296,7 +275,6 @@ void SearchWidget::searchButtonPushed()
     auto searchText{searchLineEdit->text().trimmed()};
     if(searchText.isEmpty())
     {
-        allListWidget->setVisible(true);
         listWidget->setVisible(false);
     }
     else
@@ -305,7 +283,6 @@ void SearchWidget::searchButtonPushed()
         if (list.isEmpty())
         {
             QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("搜索结果为空"));
-            allListWidget->setVisible(true);
             listWidget->setVisible(false);
         }
         else
@@ -315,32 +292,29 @@ void SearchWidget::searchButtonPushed()
             {
                 listWidget->addItem(*i);
             }
-            allListWidget->setVisible(false);
             listWidget->setVisible(true);
         }
     }
 }
 
-void SearchWidget::cancleButtonPushed()
-{
-    this->hide();
-}
-
 void SearchWidget::OKButtonPushed()
 {
-    this->hide();
-    QApplication::processEvents();
-    emit searchFinished(this->webRawData, this->templateName, this->templateCode);
+    auto templateDetailWidget{new TemplateDetailWidget(AnalysisWebRawData(this->webRawData, this->templateName, this->templateCode))};
+    templateDetailWidget->setAttribute(Qt::WA_DeleteOnClose);
+    templateDetailWidget->show();
 }
 
-void SearchWidget::selectTemplateIdButtonPushed()
+void SearchWidget::getTemplateCodeDataButtonPushed()
 {
+    this->getTemplateCodeDataButton->setEnabled(false);
     templateCode = templateCodeLineEdit->text().trimmed();
     if(templateCode.isEmpty())
     {
-        QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("不能为空"));
+        QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("题卡编号不能为空"));
+        this->getTemplateCodeDataButton->setEnabled(true);
         return;
     }
+    bool autoShowDetailWidget{false};
 #ifdef Q_OS_ANDROID
     QFile file { QStringLiteral("assets:/templateData/") + templateCode };
 #else
@@ -368,17 +342,22 @@ void SearchWidget::selectTemplateIdButtonPushed()
         catch (const std::exception &e)
         {
             QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+            this->getTemplateCodeDataButton->setEnabled(true);
             return;
         }
-        if(!webRawData.isEmpty())
+        if(webRawData.isEmpty())
+        {
+            QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("返回结果为空\n"
+                                 "请检查登录状态和网络"));
+            this->getTemplateCodeDataButton->setEnabled(true);
+            return;
+        }
+        else
         {
             fileTemp.open(QFile::WriteOnly);
             fileTemp.write(webRawData);
             fileTemp.close();
-        }
-        else
-        {
-            return;
+            autoShowDetailWidget = Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully;
         }
     }
     templateName = QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
@@ -398,6 +377,11 @@ void SearchWidget::selectTemplateIdButtonPushed()
         allListWidget->setCurrentIndex(6);
     }
     OKButton->setEnabled(true);
+    this->getTemplateCodeDataButton->setEnabled(true);
+    if(autoShowDetailWidget)
+    {
+        OKButtonPushed();
+    }
 }
 
 void SearchWidget::currentItemChanged(QListWidgetItem *item)
@@ -406,6 +390,6 @@ void SearchWidget::currentItemChanged(QListWidgetItem *item)
     this->searchLineEdit->setText(currentItemText);
     templateCode = templateCodeList.at(templateNameList.indexOf(currentItemText));
     this->templateCodeLineEdit->setText(templateCode);
-    selectTemplateIdButtonPushed();
+    getTemplateCodeDataButtonPushed();
     OKButton->setEnabled(true);
 }

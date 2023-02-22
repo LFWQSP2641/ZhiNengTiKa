@@ -19,6 +19,8 @@ private:
     QSpinBox *smallFontPointSizeSpinBox;
     QLabel *resultTestLabel;
     QCheckBox *listAllTemplateCheckBox;
+    QCheckBox *getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox;
+    QCheckBox *autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox;
     QPushButton *commonProblemButton;
     QPushButton *knownProblemButton;
     QPushButton *aboutButton;

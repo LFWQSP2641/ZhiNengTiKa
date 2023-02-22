@@ -2,11 +2,10 @@
 
 #include "AnswerDetailData.hpp"
 
-class AnalysisWebRawData : public QObject
+class AnalysisWebRawData
 {
-    Q_OBJECT
 public:
-    explicit AnalysisWebRawData(QObject *parent = nullptr);
+    explicit AnalysisWebRawData(const QByteArray &webRawData, const QString &templateName, const QString &templateCode);
 
     QString getAnswerAndAnalysisHtml(const qsizetype index = -1) const;
     QString getAnswerHtml(const qsizetype index = -1) const;
@@ -30,24 +29,19 @@ public:
         return answerDataList.isEmpty();
     }
 
-public slots:
-    void analysis(const QByteArray &webRawData, const QString &templateName, const QString &templateCode);
-
 protected:
     QString templateName;
     QString templateCode;
-    QString answerSheetId;
     QStringList questionsCountsStrList;
 
     QJsonArray answerDataList;
+
+    void analysis(const QByteArray &webRawData);
 
     template<typename f>
     static void callFunc(const QJsonArray &jsonArray, const qsizetype index, f func);
 
     template<typename f1, typename f2>
     static void callFunc(const QJsonArray &jsonArray, const qsizetype index, f1 func1, f2 func2);
-
-signals:
-    void analysisFinished();
 };
 

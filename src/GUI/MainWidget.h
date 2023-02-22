@@ -1,15 +1,11 @@
-#ifndef MAINWIDGET_H
-#define MAINWIDGET_H
+#pragma once
 
-#include "../Logic/AnalysisWebRawData.h"
+#include "NavigationBarTabWidget.h"
 
-class AnswerAndAnalysisWidget;
 class SearchWidget;
-class QuestionWidget;
-class UploadWidget;
 class SettingWidget;
 
-class MainWidget : public QWidget
+class MainWidget : public NavigationBarTabWidget
 {
     Q_OBJECT
 
@@ -18,18 +14,8 @@ public:
     ~MainWidget();
 
 private:
-    QGridLayout *mainLayout;
-    QTabWidget *mainTabWidget;
-
     SearchWidget *searchWidget;
-    AnswerAndAnalysisWidget *answerAndAnalysisWidget;
-    QuestionWidget *questionWidget;
-    UploadWidget *uploadWidget;
     SettingWidget *settingWidget;
-
-    QWidget *addScrollArea(QWidget *Widget);
-
-    AnalysisWebRawData analysisWebRawData;
 
     void closeEvent(QCloseEvent *event) override;
 #ifdef Q_OS_ANDROID
@@ -38,4 +24,3 @@ private:
 
 private slots:
 };
-#endif // MAINWIDGET_H

@@ -4,13 +4,13 @@ class UserData
 {
 public:
     UserData() = default;
-    UserData(const QByteArray &accessToken, const QByteArray &authorization, const QByteArray &clientSession, const QByteArray &password, const QByteArray &schoolId, const QJsonObject &sheetData, const QByteArray &studentId, const QByteArray &username)
+    UserData(const QByteArray &accessToken, const QByteArray &authorization, const QByteArray &clientSession, const QByteArray &password, const QByteArray &schoolId, const QJsonObject &detailData, const QByteArray &studentId, const QByteArray &username)
         : accessTokenStr(accessToken),
           authorizationStr(authorization),
           clientSessionStr(clientSession),
           passwordStr(password),
           schoolIdStr(schoolId),
-          sheetDataJsonObject(sheetData),
+          detailDataJsonObject(detailData),
           studentIdStr(studentId),
           usernameStr(username) {}
 
@@ -34,9 +34,9 @@ public:
     {
         return schoolIdStr;
     }
-    QJsonObject sheetData() const
+    QJsonObject detailData() const
     {
-        return sheetDataJsonObject;
+        return detailDataJsonObject;
     }
     QByteArray studentId() const
     {
@@ -67,9 +67,9 @@ public:
     {
         schoolIdStr = newSchoolId;
     }
-    void setSheetData(const QJsonObject &newSheetData)
+    void setDetailData(const QJsonObject &newDetailData)
     {
-        sheetDataJsonObject = newSheetData;
+        detailDataJsonObject = newDetailData;
     }
     void setStudentId(const QByteArray &newStudentId)
     {
@@ -87,7 +87,7 @@ public:
                clientSessionStr.isEmpty() ||
                passwordStr.isEmpty() ||
                schoolIdStr.isEmpty() ||
-               sheetDataJsonObject.isEmpty() ||
+               detailDataJsonObject.isEmpty() ||
                studentIdStr.isEmpty() ||
                usernameStr.isEmpty();
     }
@@ -98,7 +98,7 @@ private:
     QByteArray clientSessionStr;
     QByteArray passwordStr;
     QByteArray schoolIdStr;
-    QJsonObject sheetDataJsonObject;
+    QJsonObject detailDataJsonObject;
     QByteArray studentIdStr;
     QByteArray usernameStr;
 };

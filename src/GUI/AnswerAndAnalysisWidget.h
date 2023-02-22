@@ -8,13 +8,13 @@ class AnswerAndAnalysisWidget : public WebViewWidget
 {
     Q_OBJECT
 public:
-    explicit AnswerAndAnalysisWidget(AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
+    explicit AnswerAndAnalysisWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
 
 private:
     QCheckBox *onlyAnswerCheckBox;
 
 public slots:
-    QString getHtml(const qsizetype index = -1) override;
+    QString getAnalyzedHtml(const qsizetype index = -1) override;
 
 private slots:
     void onlyAnswerCheckBoxClicked(bool checked);

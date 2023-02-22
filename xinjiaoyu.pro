@@ -1,5 +1,5 @@
-win32:VERSION = 1.4.1.13
-else:VERSION = 1.4.1
+win32:VERSION = 1.5.1.0
+else:VERSION = 1.5.1
 
 
 android{
@@ -60,12 +60,14 @@ HEADERS += \
     src/GUI/AnswerAndAnalysisWidget.h \
     src/GUI/ClickableLabel.hpp \
     src/GUI/MainWidget.h \
+    src/GUI/NavigationBarTabWidget.h \
     src/GUI/PixmapLabel.h \
     src/GUI/PlusSignLabel.h \
     src/GUI/QuestionWidget.h \
     src/GUI/SearchWidget.h \
     src/GUI/SettingWidget.h \
     src/GUI/ShowFullScreenWidget.h \
+    src/GUI/TemplateDetailWidget.h \
     src/GUI/UploadChildWidget.h \
     src/GUI/UploadWidget.h \
     src/GUI/WebViewWidget.h \
@@ -86,12 +88,14 @@ HEADERS += \
 SOURCES += \
     src/GUI/AnswerAndAnalysisWidget.cpp \
     src/GUI/MainWidget.cpp \
+    src/GUI/NavigationBarTabWidget.cpp \
     src/GUI/PixmapLabel.cpp \
     src/GUI/PlusSignLabel.cpp \
     src/GUI/QuestionWidget.cpp \
     src/GUI/SearchWidget.cpp \
     src/GUI/SettingWidget.cpp \
     src/GUI/ShowFullScreenWidget.cpp \
+    src/GUI/TemplateDetailWidget.cpp \
     src/GUI/UploadChildWidget.cpp \
     src/GUI/UploadWidget.cpp \
     src/GUI/WebViewWidget.cpp \

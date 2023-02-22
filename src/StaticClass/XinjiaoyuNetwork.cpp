@@ -33,7 +33,8 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, co
 {
     if(!Setting::logined())
     {
-        throw std::runtime_error("获取题卡时处于未登录状态");
+        throw std::runtime_error("获取题卡时处于未登录状态\n"
+                                 "请在设置界面登录");
     }
     QByteArray responseByte;
     responseByte = Network::getData(

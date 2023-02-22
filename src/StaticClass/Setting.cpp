@@ -5,6 +5,8 @@
 UserDataList Setting::userDataList;
 
 bool Setting::listAllTemplate;
+bool Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully;
+bool Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully;
 //若这三为空,就在main那赋个默认值
 int Setting::fontPointSize;
 int Setting::smallFontPointSize;
@@ -44,12 +46,15 @@ void Setting::loadFromFile()
                                 jsonObject.value(QStringLiteral("clientSession")).toString(QUuid::createUuid().toString(QUuid::WithoutBraces)).toUtf8(),
                                 jsonObject.value(QStringLiteral("password")).toString().toUtf8(),
                                 jsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
-                                QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("sheetData")).toString().toUtf8())).object(),
+                                QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("detailData")).toString().toUtf8())).object(),
                                 jsonObject.value(QStringLiteral("studentId")).toString().toUtf8(),
                                 jsonObject.value(QStringLiteral("username")).toString().toUtf8()));
     }
 
     Setting::listAllTemplate = settingJsonObject.value(QStringLiteral("listAllTemplate")).toBool(false);
+    Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully = settingJsonObject.value(QStringLiteral("getTemplateCodeDataAfterScanQRCodeSuccessfully")).toBool(true);
+    Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully = settingJsonObject.value(QStringLiteral("autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully")).toBool(true);
+
     Setting::fontPointSize = settingJsonObject.value(QStringLiteral("fontPointSize")).toInt();
     Setting::smallFontPointSize = settingJsonObject.value(QStringLiteral("smallFontPointSize")).toInt();
     Setting::font = settingJsonObject.value(QStringLiteral("font")).toString();
@@ -68,7 +73,7 @@ void Setting::saveToFile()
         jsonObject.insert(QStringLiteral("clientSession"), QString(i.clientSession()));
         jsonObject.insert(QStringLiteral("password"), QString(i.password()));
         jsonObject.insert(QStringLiteral("schoolId"), QString(i.schoolId()));
-        jsonObject.insert(QStringLiteral("sheetData"), QString(QJsonDocument(i.sheetData()).toJson(QJsonDocument::Compact).toBase64()));
+        jsonObject.insert(QStringLiteral("detailData"), QString(QJsonDocument(i.detailData()).toJson(QJsonDocument::Compact).toBase64()));
         jsonObject.insert(QStringLiteral("studentId"), QString(i.studentId()));
         jsonObject.insert(QStringLiteral("username"), QString(i.username()));
 
@@ -77,6 +82,9 @@ void Setting::saveToFile()
     settingJsonObject.insert(QStringLiteral("accounts"), accountsJsonArray);
 
     settingJsonObject.insert(QStringLiteral("listAllTemplate"), listAllTemplate);
+    settingJsonObject.insert(QStringLiteral("getTemplateCodeDataAfterScanQRCodeSuccessfully"), getTemplateCodeDataAfterScanQRCodeSuccessfully);
+    settingJsonObject.insert(QStringLiteral("autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully"), autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully);
+
     settingJsonObject.insert(QStringLiteral("fontPointSize"), fontPointSize);
     settingJsonObject.insert(QStringLiteral("smallFontPointSize"), smallFontPointSize);
     settingJsonObject.insert(QStringLiteral("font"), font);

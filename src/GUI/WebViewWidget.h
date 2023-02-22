@@ -1,12 +1,13 @@
 #pragma once
 
-class AnalysisWebRawData;
+#include "../Logic/AnalysisWebRawData.h"
 
 class WebViewWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit WebViewWidget(AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
+    explicit WebViewWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
+    void setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData);
 
 protected:
     QGridLayout *mainLayout;
@@ -24,14 +25,14 @@ protected:
 
     bool analysisWebRawDataStateChanged = false;
 
-    AnalysisWebRawData &analysisWebRawData;
+    AnalysisWebRawData analysisWebRawData;
     void showEvent(QShowEvent *event) override;
 
     void keyPressEvent(QKeyEvent *event) override;
 
 public slots:
     void analysis();
-    virtual QString getHtml(const qsizetype index = -1) = 0;
+    virtual QString getAnalyzedHtml(const qsizetype index = -1) = 0;
     void saveToFile(const QString &pathName);
 
 protected slots:

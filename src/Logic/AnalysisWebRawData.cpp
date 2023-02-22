@@ -1,9 +1,9 @@
 #include "AnalysisWebRawData.h"
 
-AnalysisWebRawData::AnalysisWebRawData(QObject *parent)
-    : QObject{parent}
+AnalysisWebRawData::AnalysisWebRawData(const QByteArray &webRawData, const QString &templateName, const QString &templateCode)
+    : templateName(templateName), templateCode(templateCode)
 {
-
+    analysis(webRawData);
 }
 
 QString AnalysisWebRawData::getAnswerAndAnalysisHtml(const qsizetype index) const
@@ -127,10 +127,8 @@ QList<AnswerDetailData> AnalysisWebRawData::getCountAndAnswer(const qsizetype in
     return data;
 }
 
-void AnalysisWebRawData::analysis(const QByteArray &webRawData, const QString &templateName, const QString &templateCode)
+void AnalysisWebRawData::analysis(const QByteArray &webRawData)
 {
-    this->templateName = templateName;
-    this->templateCode = templateCode;
     answerDataList = QJsonArray();
     questionsCountsStrList.clear();
 
@@ -199,8 +197,6 @@ void AnalysisWebRawData::analysis(const QByteArray &webRawData, const QString &t
         answerData.insert(QStringLiteral("childQuestionList"), childQuestionArray);
         answerDataList.append(answerData);
     }
-
-    emit analysisFinished();
 }
 
 template<typename f>

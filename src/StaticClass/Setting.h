@@ -8,6 +8,9 @@ extern void loadFromFile();
 extern void saveToFile();
 
 extern bool listAllTemplate;
+extern bool getTemplateCodeDataAfterScanQRCodeSuccessfully;
+extern bool autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully;
+
 extern int fontPointSize;
 extern int smallFontPointSize;
 extern QString font;

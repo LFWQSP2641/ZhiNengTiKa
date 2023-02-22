@@ -106,6 +106,7 @@ bool AutoUpdate::compareVersion(const QString &version1, const QString &version2
 
 void AutoUpdate::showUpdateWidgetPrivate()
 {
+#ifdef Q_OS_ANDROID
     QMessageBox msgBox;
     msgBox.setText(QStringLiteral("当前版本:%0\n最新版本:%1\n\n%2\n\n是否下载?").arg(currentVersion, newestVersion, changeLog));
     auto downloadBtn{ msgBox.addButton(QStringLiteral("下载"), QMessageBox::AcceptRole) };
@@ -113,7 +114,6 @@ void AutoUpdate::showUpdateWidgetPrivate()
     msgBox.addButton(QStringLiteral("取消"), QMessageBox::RejectRole);
     msgBox.exec();
 
-#ifdef Q_OS_ANDROID
     if(msgBox.clickedButton() == downloadBtn)
     {
         auto downloadUrlReply{Network::networkAccessManager->get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersionEncryption").prepend(domain))))};

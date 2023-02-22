@@ -4,7 +4,7 @@
 #include "../StaticClass/Global.h"
 #include "../StaticClass/Setting.h"
 
-WebViewWidget::WebViewWidget(AnalysisWebRawData &analysisWebRawData, QWidget *parent)
+WebViewWidget::WebViewWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent)
     : QWidget{parent}, analysisWebRawData(analysisWebRawData)
 {
     mainLayout = new QGridLayout(this);
@@ -28,7 +28,7 @@ WebViewWidget::WebViewWidget(AnalysisWebRawData &analysisWebRawData, QWidget *pa
 #endif // Q_OS_ANDROID
 
     QFont smallFont;
-    const auto defaultFontPixelSize{QWidget::font().pixelSize()};
+    const auto defaultFontPixelSize{this->font().pixelSize()};
     if(Setting::smallFontPointSize != 0)
     {
         smallFont.setPointSize(Setting::smallFontPointSize);
@@ -47,8 +47,6 @@ WebViewWidget::WebViewWidget(AnalysisWebRawData &analysisWebRawData, QWidget *pa
     pagesSwitch->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     QScroller::grabGesture(pagesSwitch->viewport(), QScroller::TouchGesture);
 
-    this->setEnabled(false);
-
 #ifdef Q_OS_ANDROID
     mainLayout->addWidget(fullScreenButton, 0, 1, 1, 1);
 #else
@@ -59,19 +57,15 @@ WebViewWidget::WebViewWidget(AnalysisWebRawData &analysisWebRawData, QWidget *pa
     mainLayout->addWidget(pagesSwitch, 1, 0, 1, 2);
     mainLayout->addWidget(webView, 2, 0, 1, 2);
 
-    connect(&analysisWebRawData, &AnalysisWebRawData::analysisFinished, [this]
-    {
-        if(this->isVisible())
-        {
-            analysis();
-            analysisWebRawDataStateChanged = false;
-        }
-        else
-        {
-            analysisWebRawDataStateChanged = true;
-        }
-    });
     connect(pagesSwitch, &QListWidget::itemPressed, this, &WebViewWidget::switchPage);
+
+    this->analysisWebRawDataStateChanged = true;
+}
+
+void WebViewWidget::setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData)
+{
+    this->analysisWebRawDataStateChanged = true;
+    this->analysisWebRawData = analysisWebRawData;
 }
 
 void WebViewWidget::showEvent(QShowEvent *event)
@@ -119,8 +113,7 @@ void WebViewWidget::analysis()
     {
         pageHash.insert(pageStrList.at(i), i);
     }
-    webView->setHtml(getHtml());
-    this->setEnabled(true);
+    webView->setHtml(getAnalyzedHtml());
 }
 
 void WebViewWidget::saveToFile(const QString &pathName)
@@ -139,5 +132,5 @@ void WebViewWidget::saveToFile(const QString &pathName)
 void WebViewWidget::switchPage(QListWidgetItem *item)
 {
     currentPageIndex = pageHash.value(item->text());
-    webView->setHtml(getHtml(currentPageIndex));
+    webView->setHtml(getAnalyzedHtml(currentPageIndex));
 }

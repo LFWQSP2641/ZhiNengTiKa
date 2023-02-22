@@ -1,5 +1,8 @@
 #pragma once
 
+#include "../Logic/AnalysisWebRawData.h"
+class AnalysisWebRawData;
+
 class AnalysisWebRawData;
 class UploadChildWidget;
 class UserData;
@@ -8,7 +11,8 @@ class UploadWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit UploadWidget(AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
+    explicit UploadWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
+    void setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData);
 
 protected:
     QVBoxLayout *mainLayout;
@@ -20,7 +24,7 @@ protected:
     QPushButton *uploadButton;
     QPushButton *editRawDataButton;
 
-    AnalysisWebRawData &analysisWebRawData;
+    AnalysisWebRawData analysisWebRawData;
     QList<UploadChildWidget*> uploadChildWidgetList;
     QList<QBitArray> rightAnswer;
 
@@ -42,7 +46,7 @@ protected slots:
     bool uploadData(const QByteArray &data);
     void getUserAnswer();
     void switchRightAnswerPrecedence();
-    void switchuploadAnswerPrecedence();
+    void switchUploadAnswerPrecedence();
     void editRawData();
 
 signals:

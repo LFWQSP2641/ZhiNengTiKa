@@ -8,13 +8,13 @@ class QuestionWidget : public WebViewWidget
 {
     Q_OBJECT
 public:
-    explicit QuestionWidget(AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
+    explicit QuestionWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
 
 private:
     QPushButton *showCurrentAnswerButton;
 
 public slots:
-    QString getHtml(const qsizetype index = -1) override;
+    QString getAnalyzedHtml(const qsizetype index = -1) override;
 
 private slots:
     void showCurrentAnswer();
