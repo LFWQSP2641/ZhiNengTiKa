@@ -1,5 +1,17 @@
 <RCC>
     <qresource prefix="/template">
+        <file>templateList/templateList_biography</file>
+        <file>templateList/templateList_chemistry</file>
+        <file>templateList/templateList_chinese</file>
+        <file>templateList/templateList_english</file>
+        <file>templateList/templateList_mathematics</file>
+        <file>templateList/templateList_physics</file>
+        <file>templateList/templateList_biography_current</file>
+        <file>templateList/templateList_chemistry_current</file>
+        <file>templateList/templateList_chinese_current</file>
+        <file>templateList/templateList_english_current</file>
+        <file>templateList/templateList_mathematics_current</file>
+        <file>templateList/templateList_physics_current</file>
         <file>templateData/mxzy2022053000010121(01)</file>
         <file>templateData/mxzy2022053000010121(02)</file>
         <file>templateData/mxzy2022053000010121(03)</file>
@@ -319,12 +331,6 @@
         <file>templateData/mxzy2022100200010121503-1</file>
         <file>templateData/mxzy2022100600010121501-1</file>
         <file>templateData/mxzy2022101800010121504-1</file>
-        <file>templateList/templateList_biography</file>
-        <file>templateList/templateList_chemistry</file>
-        <file>templateList/templateList_chinese</file>
-        <file>templateList/templateList_english</file>
-        <file>templateList/templateList_mathematics</file>
-        <file>templateList/templateList_physics</file>
         <file>templateData/mxzy2022102900050456501</file>
         <file>templateData/mxzy2022102900050456502</file>
         <file>templateData/mxzy2022102900050456503</file>
@@ -358,12 +364,6 @@
         <file>templateData/mxzy202211180041022216</file>
         <file>templateData/mxzy202211180041022217</file>
         <file>templateData/mxzy202211180041022218</file>
-        <file>templateList/templateList_biography_current</file>
-        <file>templateList/templateList_chemistry_current</file>
-        <file>templateList/templateList_chinese_current</file>
-        <file>templateList/templateList_english_current</file>
-        <file>templateList/templateList_mathematics_current</file>
-        <file>templateList/templateList_physics_current</file>
         <file>templateData/mxzy202210180002055430</file>
         <file>templateData/mxzy202210180002055431</file>
         <file>templateData/mxzy202210180002055432</file>
@@ -383,6 +383,66 @@
         <file>templateData/mxzy202210180001062208</file>
         <file>templateData/mxzy202210180001062209</file>
         <file>templateData/mxzy202210180001062210</file>
+        <file>templateData/mxzy202210310002055525</file>
+        <file>templateData/mxzy202210310002055526</file>
+        <file>templateData/mxzy202210310002055527</file>
+        <file>templateData/mxzy202210310002055528</file>
+        <file>templateData/mxzy202210310002055529</file>
+        <file>templateData/mxzy202210310002055530</file>
+        <file>templateData/mxzy202210310002055531</file>
+        <file>templateData/mxzy202210310002055532</file>
+        <file>templateData/mxzy202210310002055533</file>
+        <file>templateData/mxzy202210310002055534</file>
+        <file>templateData/mxzy202210310002055535</file>
+        <file>templateData/mxzy202211100001062211</file>
+        <file>templateData/mxzy202211100001062212</file>
+        <file>templateData/mxzy202211100001062213</file>
+        <file>templateData/mxzy202211100001062214</file>
+        <file>templateData/mxzy202211100001062215</file>
+        <file>templateData/mxzy202211100001062216</file>
+        <file>templateData/mxzy202211100001062217</file>
+        <file>templateData/mxzy202211100001062218</file>
+        <file>templateData/mxzy202211100001062219</file>
+        <file>templateData/mxzy202211100001062220</file>
+        <file>templateData/mxzy202211100001062221</file>
+        <file>templateData/mxzy202211100001062222</file>
+        <file>templateData/mxzy202211190001072201</file>
+        <file>templateData/mxzy202211190001072202</file>
+        <file>templateData/mxzy202211190001072203</file>
+        <file>templateData/mxzy202211190001072204</file>
+        <file>templateData/mxzy202211190001072205</file>
+        <file>templateData/mxzy202211190001072206</file>
+        <file>templateData/mxzy202211190001072207</file>
+        <file>templateData/mxzy202211190001072208</file>
+        <file>templateData/mxzy202211190001072209</file>
+        <file>templateData/mxzy202211190001072210</file>
+        <file>templateData/mxzy202211190001072211</file>
+        <file>templateData/mxzy202211190001072212</file>
+        <file>templateData/mxzy202211190001072213</file>
+        <file>templateData/mxzy2022111900010722501</file>
+        <file>templateData/mzxy202208290002055502</file>
+        <file>templateData/mzxy202208290002055503</file>
+        <file>templateData/mzxy202208290002055504</file>
+        <file>templateData/mzxy202208290002055505</file>
+        <file>templateData/mzxy202208290002055506</file>
+        <file>templateData/mzxy202208290002055507</file>
+        <file>templateData/mzxy202208290002055508</file>
+        <file>templateData/mzxy202208290002055509</file>
+        <file>templateData/mzxy202208290002055510</file>
+        <file>templateData/mzxy202208290002055511</file>
+        <file>templateData/mzxy202208290002055512</file>
+        <file>templateData/mzxy202210110002055513</file>
+        <file>templateData/mzxy202210110002055514</file>
+        <file>templateData/mzxy202210110002055515</file>
+        <file>templateData/mzxy202210110002055516</file>
+        <file>templateData/mzxy202210110002055517</file>
+        <file>templateData/mzxy202210110002055518</file>
+        <file>templateData/mzxy202210110002055519</file>
+        <file>templateData/mzxy202210110002055520</file>
+        <file>templateData/mzxy202210110002055521</file>
+        <file>templateData/mzxy202210110002055522</file>
+        <file>templateData/mzxy202210110002055523</file>
+        <file>templateData/mzxy202210110002055524</file>
     </qresource>
     <qresource prefix="/ico">
         <file>img/xinjiaoyuico.ico</file>
