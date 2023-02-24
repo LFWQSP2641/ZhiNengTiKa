@@ -1,6 +1,7 @@
 #ifndef SEARCHDIALOG_H
 #define SEARCHDIALOG_H
 
+class AnalysisWebRawData;
 
 class SearchWidget : public QWidget
 {
@@ -8,7 +9,7 @@ class SearchWidget : public QWidget
 public:
     explicit SearchWidget(QWidget *parent = nullptr);
 
-private:
+protected:
     QVBoxLayout *mainLayout;
     QTabWidget *allListWidget;
     QListWidget *listWidget;
@@ -27,13 +28,16 @@ private:
     QString templateName;
     QString templateCode;
 
-private slots:
+protected slots:
     void toPreviousPage();
     void toNextPageButton();
     void searchButtonPushed();
     void OKButtonPushed();
     void getTemplateCodeDataButtonPushed();
     void currentItemChanged(QListWidgetItem *item);
+
+signals:
+    void searchFinished(const AnalysisWebRawData &analysisWebRawData);
 };
 
 #endif // SEARCHDIALOG_H

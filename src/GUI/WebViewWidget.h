@@ -6,7 +6,7 @@ class WebViewWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit WebViewWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
+    explicit WebViewWidget(const AnalysisWebRawData &analysisWebRawData = AnalysisWebRawData(), QWidget *parent = nullptr);
     void setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData);
 
 protected:

@@ -8,7 +8,7 @@ class QuestionWidget : public WebViewWidget
 {
     Q_OBJECT
 public:
-    explicit QuestionWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
+    explicit QuestionWidget(const AnalysisWebRawData &analysisWebRawData = AnalysisWebRawData(), QWidget *parent = nullptr);
 
 private:
     QPushButton *showCurrentAnswerButton;

@@ -24,14 +24,14 @@ int NavigationBarTabWidget::addTabWithScrollArea(QWidget *page, const QIcon &ico
     return QTabWidget::addTab(scrollArea, icon, label);
 }
 
-void NavigationBarTabWidget::resizeEvent([[maybe_unused]]QResizeEvent *event)
+void NavigationBarTabWidget::resizeEvent(QResizeEvent *event)
 {
     QTabWidget::resizeEvent(event);
     if(this->count() > 0)
     {
-//        this->tabBar()->setStyleSheet(QStringLiteral("QTabBar::tab{height:25;width:%1}").arg(this->width() / this->count()));
         this->tabBar()->setFixedWidth(this->width());
     }
+    event->accept();
 }
 
 //bool NavigationBarTabWidget::eventFilter(QObject *obj, QEvent *event)

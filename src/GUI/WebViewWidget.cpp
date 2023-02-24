@@ -99,6 +99,10 @@ void WebViewWidget::keyPressEvent(QKeyEvent *event)
 
 void WebViewWidget::analysis()
 {
+    if(this->analysisWebRawData.isEmpty())
+    {
+        return;
+    }
     pageHash.clear();
     currentPageIndex = -1;
     pagesSwitch->clear();

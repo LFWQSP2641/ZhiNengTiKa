@@ -299,9 +299,13 @@ void SearchWidget::searchButtonPushed()
 
 void SearchWidget::OKButtonPushed()
 {
-    auto templateDetailWidget{new TemplateDetailWidget(AnalysisWebRawData(this->webRawData, this->templateName, this->templateCode))};
+#ifdef Q_OS_ANDROID
+    emit searchFinished(AnalysisWebRawData(this->webRawData, this->templateName, this->templateCode));
+#else // Q_OS_ANDROID
+    auto templateDetailWidget {new TemplateDetailWidget(AnalysisWebRawData(this->webRawData, this->templateName, this->templateCode))};
     templateDetailWidget->setAttribute(Qt::WA_DeleteOnClose);
     templateDetailWidget->show();
+#endif // Q_OS_ANDROID
 }
 
 void SearchWidget::getTemplateCodeDataButtonPushed()

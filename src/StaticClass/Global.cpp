@@ -1,9 +1,5 @@
 #include "Global.h"
 
-#ifdef Q_OS_ANDROID
-QSize Global::mainWidgetSize;
-#endif // Q_OS_ANDROID
-
 QString Global::appConfigPath;
 QString Global::appDataPath;
 QString Global::appTempPath;

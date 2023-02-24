@@ -76,6 +76,15 @@ bool UploadWidget::upload()
 
 bool UploadWidget::uploadData(const QByteArray &data)
 {
+    auto ret{ QMessageBox::question(this,
+                                    QStringLiteral(""),
+                                    QStringLiteral("将提交到 %0 的账号\n"
+                                            "且此操作不可撤回\n"
+                                            "是否继续?").arg(Setting::userDataList.at(0).detailData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + Setting::userDataList.at(0).username())) };
+    if(ret == QMessageBox::No)
+    {
+        return false;
+    }
     auto request{XinjiaoyuNetwork::setRequest(QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_homework/student/homework/answer"))};
     if(!request.url().isEmpty())
     {
@@ -271,6 +280,10 @@ QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)
 
 void UploadWidget::analysis()
 {
+    if(this->analysisWebRawData.isEmpty())
+    {
+        return;
+    }
     userAnswerList = QJsonArray();
     rightAnswer.clear();
     rightAnswerPrecedenceCheckBox->setAutoExclusive(false);

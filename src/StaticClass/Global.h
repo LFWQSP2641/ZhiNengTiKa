@@ -13,10 +13,6 @@ extern QString configPath();
 extern QString dataPath();
 extern QString tempPath();
 
-#ifdef Q_OS_ANDROID
-extern QSize mainWidgetSize;
-#endif // Q_OS_ANDROID
-
 extern bool deleteDir(const QString &path);
 extern qint64 getDirSize(const QString &filePath);
 extern void webImageDownloadToLocal(QString &webStr);

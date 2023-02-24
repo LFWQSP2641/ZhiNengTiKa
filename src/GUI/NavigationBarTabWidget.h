@@ -9,6 +9,7 @@ public:
     int addTabWithScrollArea(QWidget *page, const QString &label);
     int addTabWithScrollArea(QWidget *page, const QIcon &icon, const QString &label);
 
+protected:
     void resizeEvent(QResizeEvent *event) override;
 //    bool eventFilter(QObject *obj, QEvent *event) override;
 };

@@ -5,7 +5,8 @@
 class AnalysisWebRawData
 {
 public:
-    explicit AnalysisWebRawData(const QByteArray &webRawData, const QString &templateName, const QString &templateCode);
+    AnalysisWebRawData() = default;
+    AnalysisWebRawData(const QByteArray &webRawData, const QString &templateName, const QString &templateCode);
 
     QString getAnswerAndAnalysisHtml(const qsizetype index = -1) const;
     QString getAnswerHtml(const qsizetype index = -1) const;

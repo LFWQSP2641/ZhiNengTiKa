@@ -2,7 +2,10 @@
 #include "MainWidget.h"
 #include "SettingWidget.h"
 #include "SearchWidget.h"
-#include "src/StaticClass/Global.h"
+
+#ifdef Q_OS_ANDROID
+#include "../GUI/TemplateDetailWidget.h"
+#endif // Q_OS_ANDROID
 
 MainWidget::MainWidget(QWidget *parent)
     : NavigationBarTabWidget{parent}
@@ -10,18 +13,27 @@ MainWidget::MainWidget(QWidget *parent)
     settingWidget = new SettingWidget(this);
     searchWidget = new SearchWidget(this);
 
-#ifdef Q_OS_ANDROID
-    this->setFixedSize(this->size());
-#endif
-
     this->addTab(searchWidget, QStringLiteral("题卡"));
+
+#ifdef Q_OS_ANDROID
+    templateDetailWidget = new TemplateDetailWidget(this);
+    this->addTab(templateDetailWidget, QStringLiteral("解析"));
+
+    connect(searchWidget, &SearchWidget::searchFinished, templateDetailWidget, &TemplateDetailWidget::setAnalysisWebRawData);
+    connect(searchWidget, &SearchWidget::searchFinished, [this]
+    {
+        this->setCurrentIndex(TabIndex::TemplateDetailWidgetIndex);
+        this->templateDetailWidget->setCurrentIndex(TemplateDetailWidget::TabIndex::AnswerAndAnalysisWidgetIndex);
+    });
+#endif // Q_OS_ANDROID
+
     this->addTabWithScrollArea(settingWidget, QStringLiteral("设置"));
 
     connect(this, &QTabWidget::currentChanged, [this](int index)
     {
         switch (index)
         {
-        case 1:
+        case TabIndex::SettingWidgetIndex:
             settingWidget->refreshTempSize();
             break;
         default:
@@ -30,20 +42,8 @@ MainWidget::MainWidget(QWidget *parent)
     });
 }
 
-MainWidget::~MainWidget()
-{
-}
-
 void MainWidget::closeEvent(QCloseEvent *event)
 {
     Setting::saveToFile();
     event->accept();
 }
-
-#ifdef Q_OS_ANDROID
-void MainWidget::resizeEvent(QResizeEvent *event)
-{
-    Global::mainWidgetSize = this->size();
-    event->accept();
-}
-#endif

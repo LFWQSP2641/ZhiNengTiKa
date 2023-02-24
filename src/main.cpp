@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
     {
         file.remove();
     }
+#else
 #endif // Q_OS_ANDROID
 
     MainWidget w;

@@ -11,7 +11,7 @@ class UploadWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit UploadWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
+    explicit UploadWidget(const AnalysisWebRawData &analysisWebRawData = AnalysisWebRawData(), QWidget *parent = nullptr);
     void setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData);
 
 protected:
@@ -48,8 +48,5 @@ protected slots:
     void switchRightAnswerPrecedence();
     void switchUploadAnswerPrecedence();
     void editRawData();
-
-signals:
-
 };
 

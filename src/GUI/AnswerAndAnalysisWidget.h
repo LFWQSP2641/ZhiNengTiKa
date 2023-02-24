@@ -8,7 +8,7 @@ class AnswerAndAnalysisWidget : public WebViewWidget
 {
     Q_OBJECT
 public:
-    explicit AnswerAndAnalysisWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent = nullptr);
+    explicit AnswerAndAnalysisWidget(const AnalysisWebRawData &analysisWebRawData = AnalysisWebRawData(), QWidget *parent = nullptr);
 
 private:
     QCheckBox *onlyAnswerCheckBox;
