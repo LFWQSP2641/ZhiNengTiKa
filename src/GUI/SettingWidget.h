@@ -21,6 +21,7 @@ private:
     QCheckBox *listAllTemplateCheckBox;
     QCheckBox *getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox;
     QCheckBox *autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox;
+    QCheckBox *compressQRCodeImageCheckBox;
     QPushButton *commonProblemButton;
     QPushButton *knownProblemButton;
     QPushButton *aboutButton;

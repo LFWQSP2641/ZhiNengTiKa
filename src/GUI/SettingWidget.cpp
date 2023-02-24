@@ -12,6 +12,8 @@ SettingWidget::SettingWidget(QWidget *parent)
     QFormLayout *appearanceLayout = new QFormLayout(appearanceGroupBox);
     QGroupBox *templateListGroupBox = new QGroupBox(QStringLiteral("题卡列表"), this);
     QVBoxLayout *templateListLayout = new QVBoxLayout(templateListGroupBox);
+    QGroupBox *aboutQRCodeGroupBox = new QGroupBox(QStringLiteral("二维码扫描"), this);
+    QVBoxLayout *aboutQRCodeLayout = new QVBoxLayout(aboutQRCodeGroupBox);
     QGroupBox *cacheGroupBox = new QGroupBox(QStringLiteral("缓存"), this);
     QVBoxLayout *cacheLayout = new QVBoxLayout(cacheGroupBox);
     QGroupBox *problemGroupBox = new QGroupBox(QStringLiteral("问题"), this);
@@ -31,6 +33,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     listAllTemplateCheckBox = new QCheckBox(QStringLiteral("显示所有"), this);
     getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox = new QCheckBox(QStringLiteral("扫码成功后自动获取"), this);
     autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox = new QCheckBox(QStringLiteral("获取成功后自动显示答案"), this);
+    compressQRCodeImageCheckBox = new QCheckBox(QStringLiteral("压缩二维码图片后解析"), this);
     cleanTempButton = new QPushButton(QStringLiteral("删除缓存"), this);
     showTempSize = new QLabel(this);
     commonProblemButton = new QPushButton(QStringLiteral("常见问题"), this);
@@ -54,6 +57,8 @@ SettingWidget::SettingWidget(QWidget *parent)
     getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox->setChecked(Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully);
     autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox->setChecked(Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully);
 
+    compressQRCodeImageCheckBox->setChecked(Setting::compressQRCodeImage);
+
     auto addTwoWidgetToHBoxLayout{[](QWidget * widget1, QWidget * widget2)
     {
         auto tempLayout{new QHBoxLayout};
@@ -71,6 +76,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     templateListLayout->addWidget(listAllTemplateCheckBox);
     templateListLayout->addWidget(getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox);
     templateListLayout->addWidget(autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox);
+    aboutQRCodeLayout->addWidget(compressQRCodeImageCheckBox);
     cacheLayout->addLayout(addTwoWidgetToHBoxLayout(showTempSize, cleanTempButton));
     problemLayout->addLayout(addTwoWidgetToHBoxLayout(commonProblemButton, knownProblemButton));
     versionLayout->addLayout(addTwoWidgetToHBoxLayout(currentVersionLabel, checkNewVersionButton));
@@ -79,6 +85,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     layout->addWidget(accountGroupBox);
     layout->addWidget(appearanceGroupBox);
     layout->addWidget(templateListGroupBox);
+    layout->addWidget(aboutQRCodeGroupBox);
     layout->addWidget(cacheGroupBox);
     layout->addWidget(problemGroupBox);
     layout->addWidget(versionGroupBox);
@@ -245,21 +252,26 @@ SettingWidget::SettingWidget(QWidget *parent)
 #endif
         askRestart();
     });
-    connect(this->getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox, &QCheckBox::stateChanged, [askRestart](int state)
+    connect(this->getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox, &QCheckBox::stateChanged, [](int state)
     {
         Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully = (state == Qt::CheckState::Checked);
 #ifdef Q_OS_ANDROID
         Setting::saveToFile();
 #endif
-        askRestart();
     });
-    connect(this->autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox, &QCheckBox::stateChanged, [askRestart](int state)
+    connect(this->autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox, &QCheckBox::stateChanged, [](int state)
     {
         Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully = (state == Qt::CheckState::Checked);
 #ifdef Q_OS_ANDROID
         Setting::saveToFile();
 #endif
-        askRestart();
+    });
+    connect(this->compressQRCodeImageCheckBox, &QCheckBox::stateChanged, [](int state)
+    {
+        Setting::compressQRCodeImage = (state == Qt::CheckState::Checked);
+#ifdef Q_OS_ANDROID
+        Setting::saveToFile();
+#endif
     });
 
     connect(this->commonProblemButton, &QPushButton::clicked, [this]

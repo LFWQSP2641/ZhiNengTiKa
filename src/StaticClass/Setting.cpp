@@ -7,6 +7,9 @@ UserDataList Setting::userDataList;
 bool Setting::listAllTemplate;
 bool Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully;
 bool Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully;
+
+bool Setting::compressQRCodeImage;
+
 //若这三为空,就在main那赋个默认值
 int Setting::fontPointSize;
 int Setting::smallFontPointSize;
@@ -51,6 +54,8 @@ void Setting::loadFromFile()
                                 jsonObject.value(QStringLiteral("username")).toString().toUtf8()));
     }
 
+    Setting::compressQRCodeImage = settingJsonObject.value(QStringLiteral("compressQRCodeImage")).toBool(true);
+
     Setting::listAllTemplate = settingJsonObject.value(QStringLiteral("listAllTemplate")).toBool(false);
     Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully = settingJsonObject.value(QStringLiteral("getTemplateCodeDataAfterScanQRCodeSuccessfully")).toBool(true);
     Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully = settingJsonObject.value(QStringLiteral("autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully")).toBool(true);
@@ -80,6 +85,8 @@ void Setting::saveToFile()
         accountsJsonArray.append(jsonObject);
     }
     settingJsonObject.insert(QStringLiteral("accounts"), accountsJsonArray);
+
+    settingJsonObject.insert(QStringLiteral("compressQRCodeImage"), compressQRCodeImage);
 
     settingJsonObject.insert(QStringLiteral("listAllTemplate"), listAllTemplate);
     settingJsonObject.insert(QStringLiteral("getTemplateCodeDataAfterScanQRCodeSuccessfully"), getTemplateCodeDataAfterScanQRCodeSuccessfully);

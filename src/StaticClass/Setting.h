@@ -11,6 +11,8 @@ extern bool listAllTemplate;
 extern bool getTemplateCodeDataAfterScanQRCodeSuccessfully;
 extern bool autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully;
 
+extern bool compressQRCodeImage;
+
 extern int fontPointSize;
 extern int smallFontPointSize;
 extern QString font;

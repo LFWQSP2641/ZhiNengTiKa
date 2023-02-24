@@ -72,7 +72,23 @@ QByteArray QRCodeScanner::scanQRCode(const QImage &image, const char *format, in
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
-    image.save(&buffer, format, quality);
+    if(Setting::compressQRCodeImage)
+    {
+        qDebug() << "压缩图片";
+        if(image.size().width() > 1600 || image.size().height() > 900)
+        {
+            qDebug() << "压缩图片分辨率";
+            image.convertToFormat(QImage::Format_Grayscale8).scaled(QSize(1600, 900), Qt::KeepAspectRatio).save(&buffer, "JPG", 70);
+        }
+        else
+        {
+            image.convertToFormat(QImage::Format_Grayscale8).save(&buffer, "JPG", 70);
+        }
+    }
+    else
+    {
+        image.save(&buffer, format, quality);
+    }
 
     auto initializeHttpPart{[](const QByteArray & name, const QByteArray & body)
     {
