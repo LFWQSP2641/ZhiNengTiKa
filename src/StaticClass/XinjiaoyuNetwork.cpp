@@ -26,7 +26,7 @@ QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url, const UserData &us
 
 QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url)
 {
-    return XinjiaoyuNetwork::setRequest(url, Setting::userDataList.at(0));
+    return XinjiaoyuNetwork::setRequest(url, Setting::currentUserData());
 }
 
 QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, const UserData &userData)
@@ -107,7 +107,8 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, co
     }
     else if (responseByte.isEmpty())
     {
-        throw std::runtime_error("请求题卡后,返回值为空");
+        throw std::runtime_error("请求题卡后,返回值为空\n"
+                                 "请检查登录状态和网络");
     }
     else
     {
@@ -119,7 +120,7 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, co
 
 QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
 {
-    return XinjiaoyuNetwork::getTemplateCodeData(templateCode, Setting::userDataList.at(0));
+    return XinjiaoyuNetwork::getTemplateCodeData(templateCode, Setting::currentUserData());
 }
 
 QString XinjiaoyuNetwork::uploadFile(const QByteArray &fileData, const QString &fileName)

@@ -2,7 +2,7 @@
 
 #include "NavigationBarTabWidget.h"
 
-class SearchWidget;
+class SelectWidget;
 class SettingWidget;
 
 #ifdef Q_OS_ANDROID
@@ -20,14 +20,14 @@ public:
 #ifdef Q_OS_ANDROID
     enum TabIndex
     {
-        SearchWidgetIndex = 0,
+        SelectWidgetIndex = 0,
         TemplateDetailWidgetIndex = 1,
         SettingWidgetIndex = 2
     };
 #else // Q_OS_ANDROID
     enum TabIndex
     {
-        SearchWidgetIndex = 0,
+        SelectWidgetIndex = 0,
         SettingWidgetIndex = 1
     };
 #endif // Q_OS_ANDROID
@@ -38,7 +38,7 @@ protected:
     TemplateDetailWidget *templateDetailWidget;
 #endif // Q_OS_ANDROID
 
-    SearchWidget *searchWidget;
+    SelectWidget *searchWidget;
     SettingWidget *settingWidget;
 
     void closeEvent(QCloseEvent *event) override;

@@ -1,7 +1,7 @@
 #include "../StaticClass/Setting.h"
 #include "MainWidget.h"
 #include "SettingWidget.h"
-#include "SearchWidget.h"
+#include "SelectWidget.h"
 
 #ifdef Q_OS_ANDROID
 #include "../GUI/TemplateDetailWidget.h"
@@ -11,7 +11,7 @@ MainWidget::MainWidget(QWidget *parent)
     : NavigationBarTabWidget{parent}
 {
     settingWidget = new SettingWidget(this);
-    searchWidget = new SearchWidget(this);
+    searchWidget = new SelectWidget(this);
 
     this->addTab(searchWidget, QStringLiteral("题卡"));
 
@@ -19,8 +19,8 @@ MainWidget::MainWidget(QWidget *parent)
     templateDetailWidget = new TemplateDetailWidget(this);
     this->addTab(templateDetailWidget, QStringLiteral("解析"));
 
-    connect(searchWidget, &SearchWidget::searchFinished, templateDetailWidget, &TemplateDetailWidget::setAnalysisWebRawData);
-    connect(searchWidget, &SearchWidget::searchFinished, [this]
+    connect(searchWidget, &SelectWidget::searchFinished, templateDetailWidget, &TemplateDetailWidget::setAnalysisWebRawData);
+    connect(searchWidget, &SelectWidget::searchFinished, [this]
     {
         this->setCurrentIndex(TabIndex::TemplateDetailWidgetIndex);
         this->templateDetailWidget->setCurrentIndex(TemplateDetailWidget::TabIndex::AnswerAndAnalysisWidgetIndex);
@@ -45,5 +45,6 @@ MainWidget::MainWidget(QWidget *parent)
 void MainWidget::closeEvent(QCloseEvent *event)
 {
     Setting::saveToFile();
+    NavigationBarTabWidget::closeEvent(event);
     event->accept();
 }

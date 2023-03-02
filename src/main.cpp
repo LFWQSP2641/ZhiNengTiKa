@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 #endif // Q_OS_ANDROID
 
     MainWidget w;
+    w.setAttribute(Qt::WA_QuitOnClose);
     w.show();
 
 #ifdef Q_OS_ANDROID

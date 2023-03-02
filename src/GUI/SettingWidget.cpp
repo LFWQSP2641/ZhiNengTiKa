@@ -30,7 +30,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     fontPointSizeSpinBox = new QSpinBox(this);
     smallFontPointSizeSpinBox = new QSpinBox(this);
     resultTestLabel = new QLabel(this);
-    listAllTemplateCheckBox = new QCheckBox(QStringLiteral("显示所有"), this);
+    listLatestTemplatePreferentiallyCheckBox = new QCheckBox(QStringLiteral("优先显示最新题卡"), this);
     getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox = new QCheckBox(QStringLiteral("扫码成功后自动获取"), this);
     autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox = new QCheckBox(QStringLiteral("获取成功后自动显示答案"), this);
     compressQRCodeImageCheckBox = new QCheckBox(QStringLiteral("压缩二维码图片后解析"), this);
@@ -53,7 +53,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     smallFontPointSizeSpinBox->setValue(Setting::smallFontPointSize);
     fontPointSizeSpinBox->setValue(Setting::fontPointSize);
 
-    listAllTemplateCheckBox->setChecked(Setting::listAllTemplate);
+    listLatestTemplatePreferentiallyCheckBox->setChecked(Setting::listLatestTemplatePreferentially);
     getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox->setChecked(Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully);
     autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox->setChecked(Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully);
 
@@ -73,7 +73,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     appearanceLayout->addRow(QStringLiteral("字体大小:"), fontPointSizeSpinBox);
     appearanceLayout->addRow(QStringLiteral("小字体部件:"), smallFontPointSizeSpinBox);
     appearanceLayout->addRow(QStringLiteral("效果:"), resultTestLabel);
-    templateListLayout->addWidget(listAllTemplateCheckBox);
+    templateListLayout->addWidget(listLatestTemplatePreferentiallyCheckBox);
     templateListLayout->addWidget(getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox);
     templateListLayout->addWidget(autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox);
     aboutQRCodeLayout->addWidget(compressQRCodeImageCheckBox);
@@ -244,9 +244,9 @@ SettingWidget::SettingWidget(QWidget *parent)
 #endif // Q_OS_ANDROID
     });
 
-    connect(this->listAllTemplateCheckBox, &QCheckBox::stateChanged, [askRestart](int state)
+    connect(this->listLatestTemplatePreferentiallyCheckBox, &QCheckBox::stateChanged, [askRestart](int state)
     {
-        Setting::listAllTemplate = (state == Qt::CheckState::Checked);
+        Setting::listLatestTemplatePreferentially = (state == Qt::CheckState::Checked);
 #ifdef Q_OS_ANDROID
         Setting::saveToFile();
 #endif

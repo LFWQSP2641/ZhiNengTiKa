@@ -7,7 +7,7 @@ namespace Setting
 extern void loadFromFile();
 extern void saveToFile();
 
-extern bool listAllTemplate;
+extern bool listLatestTemplatePreferentially;
 extern bool getTemplateCodeDataAfterScanQRCodeSuccessfully;
 extern bool autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully;
 
@@ -19,6 +19,7 @@ extern QString font;
 
 extern UserDataList userDataList;
 extern bool logined();
+extern UserData currentUserData();
 
 extern QJsonObject jsonObjectApiQRCodeScanner;
 };

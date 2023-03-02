@@ -80,7 +80,7 @@ bool UploadWidget::uploadData(const QByteArray &data)
                                     QStringLiteral(""),
                                     QStringLiteral("将提交到 %0 的账号\n"
                                             "且此操作不可撤回\n"
-                                            "是否继续?").arg(Setting::userDataList.at(0).detailData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + Setting::userDataList.at(0).username())) };
+                                            "是否继续?").arg(Setting::currentUserData().detailData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + Setting::currentUserData().username())) };
     if(ret == QMessageBox::No)
     {
         return false;
@@ -259,7 +259,7 @@ void UploadWidget::showEvent(QShowEvent *event)
 
 QJsonObject UploadWidget::getAnswerJsonObject()
 {
-    return getAnswerJsonObject(Setting::userDataList.at(0));
+    return getAnswerJsonObject(Setting::currentUserData());
 }
 
 QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)

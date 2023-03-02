@@ -4,7 +4,7 @@
 
 UserDataList Setting::userDataList;
 
-bool Setting::listAllTemplate;
+bool Setting::listLatestTemplatePreferentially;
 bool Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully;
 bool Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully;
 
@@ -56,7 +56,7 @@ void Setting::loadFromFile()
 
     Setting::compressQRCodeImage = settingJsonObject.value(QStringLiteral("compressQRCodeImage")).toBool(true);
 
-    Setting::listAllTemplate = settingJsonObject.value(QStringLiteral("listAllTemplate")).toBool(false);
+    Setting::listLatestTemplatePreferentially = settingJsonObject.value(QStringLiteral("listLatestTemplatePreferentially")).toBool(true);
     Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully = settingJsonObject.value(QStringLiteral("getTemplateCodeDataAfterScanQRCodeSuccessfully")).toBool(true);
     Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully = settingJsonObject.value(QStringLiteral("autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully")).toBool(true);
 
@@ -88,7 +88,7 @@ void Setting::saveToFile()
 
     settingJsonObject.insert(QStringLiteral("compressQRCodeImage"), compressQRCodeImage);
 
-    settingJsonObject.insert(QStringLiteral("listAllTemplate"), listAllTemplate);
+    settingJsonObject.insert(QStringLiteral("listLatestTemplatePreferentially"), listLatestTemplatePreferentially);
     settingJsonObject.insert(QStringLiteral("getTemplateCodeDataAfterScanQRCodeSuccessfully"), getTemplateCodeDataAfterScanQRCodeSuccessfully);
     settingJsonObject.insert(QStringLiteral("autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully"), autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully);
 
@@ -106,4 +106,16 @@ void Setting::saveToFile()
 bool Setting::logined()
 {
     return !Setting::userDataList.isEmpty();
+}
+
+UserData Setting::currentUserData()
+{
+    if(Setting::logined())
+    {
+        return Setting::userDataList.at(0);
+    }
+    else
+    {
+        return UserData();
+    }
 }

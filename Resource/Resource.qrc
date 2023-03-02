@@ -1,17 +1,17 @@
 <RCC>
     <qresource prefix="/template">
-        <file>templateList/templateList_biography</file>
-        <file>templateList/templateList_chemistry</file>
-        <file>templateList/templateList_chinese</file>
-        <file>templateList/templateList_english</file>
-        <file>templateList/templateList_mathematics</file>
-        <file>templateList/templateList_physics</file>
-        <file>templateList/templateList_biography_current</file>
-        <file>templateList/templateList_chemistry_current</file>
-        <file>templateList/templateList_chinese_current</file>
-        <file>templateList/templateList_english_current</file>
-        <file>templateList/templateList_mathematics_current</file>
-        <file>templateList/templateList_physics_current</file>
+        <file>templateList/all/templateList_biography</file>
+        <file>templateList/all/templateList_chemistry</file>
+        <file>templateList/all/templateList_chinese</file>
+        <file>templateList/all/templateList_english</file>
+        <file>templateList/all/templateList_mathematics</file>
+        <file>templateList/all/templateList_physics</file>
+        <file>templateList/latest/templateList_biography</file>
+        <file>templateList/latest/templateList_chemistry</file>
+        <file>templateList/latest/templateList_chinese</file>
+        <file>templateList/latest/templateList_english</file>
+        <file>templateList/latest/templateList_mathematics</file>
+        <file>templateList/latest/templateList_physics</file>
         <file>templateData/mxzy2022053000010121(01)</file>
         <file>templateData/mxzy2022053000010121(02)</file>
         <file>templateData/mxzy2022053000010121(03)</file>
