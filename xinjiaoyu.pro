@@ -64,6 +64,7 @@ HEADERS += \
     src/GUI/PixmapLabel.h \
     src/GUI/PlusSignLabel.h \
     src/GUI/QuestionWidget.h \
+    src/GUI/SearchWidget.h \
     src/GUI/SelectWidget.h \
     src/GUI/SettingWidget.h \
     src/GUI/ShowFullScreenWidget.h \
@@ -74,6 +75,7 @@ HEADERS += \
     src/Logic/AnalysisWebRawData.h \
     src/Logic/AnswerDetailData.hpp \
     src/Logic/AutoUpdate.h \
+    src/Logic/TemplateSearcher.h \
     src/Logic/UserData.hpp \
     src/Logic/UserDataList.hpp \
     src/StaticClass/CallAndroidNativeComponent.h \
@@ -92,6 +94,7 @@ SOURCES += \
     src/GUI/PixmapLabel.cpp \
     src/GUI/PlusSignLabel.cpp \
     src/GUI/QuestionWidget.cpp \
+    src/GUI/SearchWidget.cpp \
     src/GUI/SelectWidget.cpp \
     src/GUI/SettingWidget.cpp \
     src/GUI/ShowFullScreenWidget.cpp \
@@ -101,6 +104,7 @@ SOURCES += \
     src/GUI/WebViewWidget.cpp \
     src/Logic/AnalysisWebRawData.cpp \
     src/Logic/AutoUpdate.cpp \
+    src/Logic/TemplateSearcher.cpp \
     src/StaticClass/CallAndroidNativeComponent.cpp \
     src/StaticClass/Global.cpp \
     src/StaticClass/Login.cpp \

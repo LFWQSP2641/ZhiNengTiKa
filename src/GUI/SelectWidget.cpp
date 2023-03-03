@@ -5,6 +5,7 @@
 #include "../StaticClass/CallAndroidNativeComponent.h"
 #include "../StaticClass/QRCodeScanner.h"
 #include "../GUI/TemplateDetailWidget.h"
+#include "../GUI/SearchWidget.h"
 
 SelectWidget::SelectWidget(QWidget *parent)
     : QWidget{ parent }
@@ -58,91 +59,10 @@ SelectWidget::SelectWidget(QWidget *parent)
 
 
     connect(OKButton, &QPushButton::clicked, this, &SelectWidget::OKButtonPushed);
+    connect(searchButton, &QPushButton::clicked, this, &SelectWidget::searchButtonPushed);
     connect(previousPageButton, &QPushButton::clicked, this, &SelectWidget::toPreviousPage);
     connect(nextPageButton, &QPushButton::clicked, this, &SelectWidget::toNextPageButton);
-    connect(scanQRCodeButton, &QPushButton::clicked, [this]
-    {
-        scanQRCodeButton->setEnabled(false);
-
-        QMessageBox msgBox1;
-        msgBox1.setText(QStringLiteral("请选择扫码方式:"));
-        const auto takePhotoBtn{ msgBox1.addButton(QStringLiteral("拍照"), QMessageBox::AcceptRole) };
-        const auto selectFileBtn{ msgBox1.addButton(QStringLiteral("选择文件"), QMessageBox::AcceptRole) };
-        msgBox1.addButton(QStringLiteral("取消"), QMessageBox::RejectRole)->setVisible(false);
-        msgBox1.exec();
-
-        QByteArray decodeResult;
-
-        if(msgBox1.clickedButton() == takePhotoBtn)
-        {
-#ifdef Q_OS_ANDROID
-            auto image {CallAndroidNativeComponent::takePhoto()};
-            if(image.isNull())
-            {
-                scanQRCodeButton->setEnabled(true);
-                return;
-            }
-            QMessageBox msgBox2;
-            msgBox2.setText(QStringLiteral("解析中..."));
-            msgBox2.show();
-            try
-            {
-                decodeResult = QRCodeScanner::scanQRCode(image, "JPEG");
-            }
-            catch (const std::exception &e)
-            {
-                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
-                scanQRCodeButton->setEnabled(true);
-                return;
-            }
-
-            msgBox2.close();
-#endif // Q_OS_ANDROID
-        }
-        else if(msgBox1.clickedButton() == selectFileBtn)
-        {
-            const auto imagePath{QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)"))};
-            if(imagePath.isEmpty())
-            {
-                scanQRCodeButton->setEnabled(true);
-                return;
-            }
-            QMessageBox msgBox2;
-            msgBox2.setText(QStringLiteral("解析中..."));
-            msgBox2.show();
-            try
-            {
-                decodeResult = QRCodeScanner::scanQRCode(imagePath, "JPEG");
-            }
-            catch (const std::exception &e)
-            {
-                QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
-                scanQRCodeButton->setEnabled(true);
-                return;
-            }
-            msgBox2.close();
-        }
-        else
-        {
-            scanQRCodeButton->setEnabled(true);
-            return;
-        }
-
-        if(decodeResult.isEmpty())
-        {
-            QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("扫描失败\n"
-                                 "请确保二维码清晰可见"));
-            scanQRCodeButton->setEnabled(true);
-            return;
-        }
-        qDebug() << decodeResult;
-        this->templateCodeLineEdit->setText(decodeResult);
-        if(Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully)
-        {
-            this->getTemplateCodeData(decodeResult);
-        }
-        scanQRCodeButton->setEnabled(true);
-    });
+    connect(scanQRCodeButton, &QPushButton::clicked, this, &SelectWidget::scanQRCode);
 }
 
 void SelectWidget::loadFromFile(const QString &dirPath)
@@ -241,6 +161,16 @@ void SelectWidget::toNextPageButton()
 
 void SelectWidget::searchButtonPushed()
 {
+    auto searchWidget{new SearchWidget};
+    searchWidget->setAttribute(Qt::WA_DeleteOnClose);
+    searchWidget->setAttribute(Qt::WA_QuitOnClose, false);
+    connect(searchWidget, &SearchWidget::searchFinished, [this, searchWidget](const QString & templateCode)
+    {
+        this->templateCodeLineEdit->setText(templateCode);
+        this->OKButtonPushed();
+        searchWidget->close();
+    });
+    searchWidget->show();
 }
 
 void SelectWidget::OKButtonPushed()
@@ -256,6 +186,7 @@ void SelectWidget::OKButtonPushed()
 #else // Q_OS_ANDROID
     auto templateDetailWidget {new TemplateDetailWidget(analysisWebRawData)};
     templateDetailWidget->setAttribute(Qt::WA_DeleteOnClose);
+    templateDetailWidget->setAttribute(Qt::WA_QuitOnClose, false);
     templateDetailWidget->show();
 #endif // Q_OS_ANDROID
 }
@@ -335,4 +266,88 @@ void SelectWidget::itemSelectionChanged(QListWidgetItem *item)
 {
     this->templateCodeLineEdit->setText(templateCodeFinder.value(item));
     OKButton->setEnabled(true);
+}
+
+void SelectWidget::scanQRCode()
+{
+    scanQRCodeButton->setEnabled(false);
+
+    QMessageBox msgBox1;
+    msgBox1.setText(QStringLiteral("请选择扫码方式:"));
+    const auto takePhotoBtn{ msgBox1.addButton(QStringLiteral("拍照"), QMessageBox::AcceptRole) };
+    const auto selectFileBtn{ msgBox1.addButton(QStringLiteral("选择文件"), QMessageBox::AcceptRole) };
+    msgBox1.addButton(QStringLiteral("取消"), QMessageBox::RejectRole)->setVisible(false);
+    msgBox1.exec();
+
+    QByteArray decodeResult;
+
+    if(msgBox1.clickedButton() == takePhotoBtn)
+    {
+#ifdef Q_OS_ANDROID
+        auto image {CallAndroidNativeComponent::takePhoto()};
+        if(image.isNull())
+        {
+            scanQRCodeButton->setEnabled(true);
+            return;
+        }
+        QMessageBox msgBox2;
+        msgBox2.setText(QStringLiteral("解析中..."));
+        msgBox2.show();
+        try
+        {
+            decodeResult = QRCodeScanner::scanQRCode(image, "JPEG");
+        }
+        catch (const std::exception &e)
+        {
+            QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+            scanQRCodeButton->setEnabled(true);
+            return;
+        }
+
+        msgBox2.close();
+#endif // Q_OS_ANDROID
+    }
+    else if(msgBox1.clickedButton() == selectFileBtn)
+    {
+        const auto imagePath{QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)"))};
+        if(imagePath.isEmpty())
+        {
+            scanQRCodeButton->setEnabled(true);
+            return;
+        }
+        QMessageBox msgBox2;
+        msgBox2.setText(QStringLiteral("解析中..."));
+        msgBox2.show();
+        try
+        {
+            decodeResult = QRCodeScanner::scanQRCode(imagePath, "JPEG");
+        }
+        catch (const std::exception &e)
+        {
+            QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+            scanQRCodeButton->setEnabled(true);
+            return;
+        }
+        msgBox2.close();
+    }
+    else
+    {
+        scanQRCodeButton->setEnabled(true);
+        return;
+    }
+
+    if(decodeResult.isEmpty())
+    {
+        QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("扫描失败\n"
+                             "请确保二维码清晰可见"));
+        scanQRCodeButton->setEnabled(true);
+        return;
+    }
+    qDebug() << decodeResult;
+    this->templateCodeLineEdit->setText(decodeResult);
+    if(Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully)
+    {
+        this->getTemplateCodeData(decodeResult);
+    }
+    scanQRCodeButton->setEnabled(true);
 }

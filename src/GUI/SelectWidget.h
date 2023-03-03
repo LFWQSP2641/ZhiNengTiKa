@@ -31,6 +31,7 @@ protected slots:
     void OKButtonPushed();
     AnalysisWebRawData getTemplateCodeData(const QString &templateCode);
     void itemSelectionChanged(QListWidgetItem *item);
+    void scanQRCode();
 
 signals:
     void searchFinished(const AnalysisWebRawData &analysisWebRawData);
