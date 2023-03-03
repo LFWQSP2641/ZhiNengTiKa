@@ -209,6 +209,23 @@ SettingWidget::SettingWidget(QWidget *parent)
             }
         }
     };
+    auto connectCheckBoxWithBool{[askRestart](QCheckBox * checkBox, bool & setting, bool askToRestart = false)
+    {
+        QObject::connect(checkBox, &QCheckBox::stateChanged, [askRestart, &setting, askToRestart](int state)
+        {
+            setting = (state == Qt::CheckState::Checked);
+#ifdef Q_OS_ANDROID
+            Setting::saveToFile();
+#endif
+            if(askToRestart)
+            {
+#ifndef Q_OS_ANDROID
+                Setting::saveToFile();
+#endif
+                askRestart();
+            }
+        });
+    }};
 
     connect(fontComboBox, &QComboBox::currentTextChanged, [this](const QString & text)
     {
@@ -241,28 +258,9 @@ SettingWidget::SettingWidget(QWidget *parent)
 #endif // Q_OS_ANDROID
     });
 
-    connect(this->listLatestTemplatePreferentiallyCheckBox, &QCheckBox::stateChanged, [askRestart](int state)
-    {
-        Setting::listLatestTemplatePreferentially = (state == Qt::CheckState::Checked);
-#ifdef Q_OS_ANDROID
-        Setting::saveToFile();
-#endif
-        askRestart();
-    });
-    connect(this->getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox, &QCheckBox::stateChanged, [](int state)
-    {
-        Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully = (state == Qt::CheckState::Checked);
-#ifdef Q_OS_ANDROID
-        Setting::saveToFile();
-#endif
-    });
-    connect(this->compressQRCodeImageCheckBox, &QCheckBox::stateChanged, [](int state)
-    {
-        Setting::compressQRCodeImage = (state == Qt::CheckState::Checked);
-#ifdef Q_OS_ANDROID
-        Setting::saveToFile();
-#endif
-    });
+    connectCheckBoxWithBool(this->listLatestTemplatePreferentiallyCheckBox, Setting::listLatestTemplatePreferentially, true);
+    connectCheckBoxWithBool(this->getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox, Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully);
+    connectCheckBoxWithBool(this->compressQRCodeImageCheckBox, Setting::compressQRCodeImage);
 
     connect(this->commonProblemButton, &QPushButton::clicked, [this]
     {
