@@ -32,7 +32,6 @@ SettingWidget::SettingWidget(QWidget *parent)
     resultTestLabel = new QLabel(this);
     listLatestTemplatePreferentiallyCheckBox = new QCheckBox(QStringLiteral("优先显示最新题卡"), this);
     getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox = new QCheckBox(QStringLiteral("扫码成功后自动获取"), this);
-    autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox = new QCheckBox(QStringLiteral("获取成功后自动显示答案"), this);
     compressQRCodeImageCheckBox = new QCheckBox(QStringLiteral("压缩二维码图片后解析"), this);
     cleanTempButton = new QPushButton(QStringLiteral("删除缓存"), this);
     showTempSize = new QLabel(this);
@@ -55,7 +54,6 @@ SettingWidget::SettingWidget(QWidget *parent)
 
     listLatestTemplatePreferentiallyCheckBox->setChecked(Setting::listLatestTemplatePreferentially);
     getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox->setChecked(Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully);
-    autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox->setChecked(Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully);
 
     compressQRCodeImageCheckBox->setChecked(Setting::compressQRCodeImage);
 
@@ -75,7 +73,6 @@ SettingWidget::SettingWidget(QWidget *parent)
     appearanceLayout->addRow(QStringLiteral("效果:"), resultTestLabel);
     templateListLayout->addWidget(listLatestTemplatePreferentiallyCheckBox);
     templateListLayout->addWidget(getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox);
-    templateListLayout->addWidget(autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox);
     aboutQRCodeLayout->addWidget(compressQRCodeImageCheckBox);
     cacheLayout->addLayout(addTwoWidgetToHBoxLayout(showTempSize, cleanTempButton));
     problemLayout->addLayout(addTwoWidgetToHBoxLayout(commonProblemButton, knownProblemButton));
@@ -255,13 +252,6 @@ SettingWidget::SettingWidget(QWidget *parent)
     connect(this->getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox, &QCheckBox::stateChanged, [](int state)
     {
         Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully = (state == Qt::CheckState::Checked);
-#ifdef Q_OS_ANDROID
-        Setting::saveToFile();
-#endif
-    });
-    connect(this->autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfullyCheckBox, &QCheckBox::stateChanged, [](int state)
-    {
-        Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully = (state == Qt::CheckState::Checked);
 #ifdef Q_OS_ANDROID
         Setting::saveToFile();
 #endif

@@ -9,7 +9,6 @@ extern void saveToFile();
 
 extern bool listLatestTemplatePreferentially;
 extern bool getTemplateCodeDataAfterScanQRCodeSuccessfully;
-extern bool autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully;
 
 extern bool compressQRCodeImage;
 

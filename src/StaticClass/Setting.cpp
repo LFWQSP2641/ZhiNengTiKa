@@ -6,7 +6,6 @@ UserDataList Setting::userDataList;
 
 bool Setting::listLatestTemplatePreferentially;
 bool Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully;
-bool Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully;
 
 bool Setting::compressQRCodeImage;
 
@@ -58,7 +57,6 @@ void Setting::loadFromFile()
 
     Setting::listLatestTemplatePreferentially = settingJsonObject.value(QStringLiteral("listLatestTemplatePreferentially")).toBool(true);
     Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully = settingJsonObject.value(QStringLiteral("getTemplateCodeDataAfterScanQRCodeSuccessfully")).toBool(true);
-    Setting::autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully = settingJsonObject.value(QStringLiteral("autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully")).toBool(true);
 
     Setting::fontPointSize = settingJsonObject.value(QStringLiteral("fontPointSize")).toInt();
     Setting::smallFontPointSize = settingJsonObject.value(QStringLiteral("smallFontPointSize")).toInt();
@@ -90,7 +88,6 @@ void Setting::saveToFile()
 
     settingJsonObject.insert(QStringLiteral("listLatestTemplatePreferentially"), listLatestTemplatePreferentially);
     settingJsonObject.insert(QStringLiteral("getTemplateCodeDataAfterScanQRCodeSuccessfully"), getTemplateCodeDataAfterScanQRCodeSuccessfully);
-    settingJsonObject.insert(QStringLiteral("autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully"), autoShowDetailWidgetAfterGetTemplateCodeDataSuccessfully);
 
     settingJsonObject.insert(QStringLiteral("fontPointSize"), fontPointSize);
     settingJsonObject.insert(QStringLiteral("smallFontPointSize"), smallFontPointSize);
