@@ -264,15 +264,21 @@ SettingWidget::SettingWidget(QWidget *parent)
 
     connect(this->commonProblemButton, &QPushButton::clicked, [this]
     {
-        QMessageBox::about(this, QStringLiteral("常见问题"), QStringLiteral("<h4>1.如何使用</h4>"
-                           "<p>①搜索题卡名称</p>"
-                           "<p>②或使用微信等软件扫描题卡上的二维码,获取题卡编号</p>"));
+        QMessageBox::about(this, QStringLiteral("常见问题"), QStringLiteral(
+                               "<h4>1.如何使用</h4>"
+                               "<p>①搜索题卡名称</p>"
+                               "<p>②扫描题卡上的二维码</p>"
+                               "<h4>2.登录有什么用</h4>"
+                               "<p>可以获取软件未收录的题卡</p>"
+                               "<p>也可以上传作业</p>"));
     });
     connect(this->knownProblemButton, &QPushButton::clicked, [this]
     {
         QMessageBox::about(this, QStringLiteral("已知问题"),
-                           QStringLiteral("<h4>1.滑动卡顿</h4>"
-                                          "<h4>2.次幂显示有问题</h4>"));
+                           QStringLiteral("<h3>Qt框架的BUG:</h3>"
+                                          "<h4>1.滑动卡顿</h4>"
+                                          "<h4>2.公式显示有问题</h4>"
+                                          "<h4>3.正常退出软件后, 立刻再次启动会闪退</h4>"));
     });
 #if 0
     connect(this->aboutButton, &QPushButton::clicked, [this]
