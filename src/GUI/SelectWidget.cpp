@@ -63,6 +63,10 @@ SelectWidget::SelectWidget(QWidget *parent)
     connect(previousPageButton, &QPushButton::clicked, this, &SelectWidget::toPreviousPage);
     connect(nextPageButton, &QPushButton::clicked, this, &SelectWidget::toNextPageButton);
     connect(scanQRCodeButton, &QPushButton::clicked, this, &SelectWidget::scanQRCode);
+    connect(templateCodeLineEdit, &QLineEdit::textChanged, [this]
+    {
+        this->OKButton->setEnabled(true);
+    });
 }
 
 void SelectWidget::loadFromFile(const QString &dirPath)
@@ -74,8 +78,16 @@ void SelectWidget::loadFromFile(const QString &dirPath)
     }
     templateCodeFinder.clear();
 
-    const auto subjects{ QStringList() << QStringLiteral("语文") << QStringLiteral("数学") << QStringLiteral("英语") << QStringLiteral("物理") << QStringLiteral("化学") << QStringLiteral("生物") };
-    const auto fileListNames{ QStringList() << QStringLiteral("templateList_chinese") << QStringLiteral("templateList_mathematics") << QStringLiteral("templateList_english") << QStringLiteral("templateList_physics") << QStringLiteral("templateList_chemistry") << QStringLiteral("templateList_biography") };
+    const QStringList subjects({QStringLiteral("语文"), QStringLiteral("数学"),
+                                QStringLiteral("英语"), QStringLiteral("物理"),
+                                QStringLiteral("化学"),
+                                QStringLiteral("生物")});
+    const QStringList fileListNames({QStringLiteral("templateList_chinese"),
+                                     QStringLiteral("templateList_mathematics"),
+                                     QStringLiteral("templateList_english"),
+                                     QStringLiteral("templateList_physics"),
+                                     QStringLiteral("templateList_chemistry"),
+                                     QStringLiteral("templateList_biography")});
 
     auto addListWidget{[this](const QString & filePath, const QString & name)
     {
@@ -265,7 +277,6 @@ AnalysisWebRawData SelectWidget::getTemplateCodeData(const QString &templateCode
 void SelectWidget::itemSelectionChanged(QListWidgetItem *item)
 {
     this->templateCodeLineEdit->setText(templateCodeFinder.value(item));
-    OKButton->setEnabled(true);
 }
 
 void SelectWidget::scanQRCode()
@@ -320,7 +331,7 @@ void SelectWidget::scanQRCode()
         msgBox2.show();
         try
         {
-            decodeResult = QRCodeScanner::scanQRCode(imagePath, "JPEG");
+            decodeResult = QRCodeScanner::scanQRCode(imagePath);
         }
         catch (const std::exception &e)
         {
@@ -347,7 +358,7 @@ void SelectWidget::scanQRCode()
     this->templateCodeLineEdit->setText(decodeResult);
     if(Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully)
     {
-        this->getTemplateCodeData(decodeResult);
+        this->OKButtonPushed();
     }
     scanQRCodeButton->setEnabled(true);
 }
