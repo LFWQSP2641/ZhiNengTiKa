@@ -443,6 +443,37 @@
         <file>templateData/mzxy202210110002055522</file>
         <file>templateData/mzxy202210110002055523</file>
         <file>templateData/mzxy202210110002055524</file>
+        <file>templateData/mxzy202212090001062223</file>
+        <file>templateData/mxzy202212090001062224</file>
+        <file>templateData/mxzy202212090001062225</file>
+        <file>templateData/mxzy202212090001062226</file>
+        <file>templateData/mxzy202212090001062227</file>
+        <file>templateData/mxzy202212090001062228</file>
+        <file>templateData/mxzy202212090001062229</file>
+        <file>templateData/mxzy202212090001062230</file>
+        <file>templateData/mxzy202212090001062231</file>
+        <file>templateData/mxzy202212090001062232</file>
+        <file>templateData/mxzy202212090001062233</file>
+        <file>templateData/mxzy202212090001062234</file>
+        <file>templateData/mxzy202212090001062235</file>
+        <file>templateData/mxzy202212090001062236</file>
+        <file>templateData/mxzy202301090041022219</file>
+        <file>templateData/mxzy202301090041022220</file>
+        <file>templateData/mxzy202301090041022221</file>
+        <file>templateData/mxzy202301090041022222</file>
+        <file>templateData/mxzy202301090041022223</file>
+        <file>templateData/mxzy202301090041022224</file>
+        <file>templateData/mxzy202301090041022225</file>
+        <file>templateData/mxzy202301090041022226</file>
+        <file>templateData/mxzy202301090041022227</file>
+        <file>templateData/mxzy202301090041022228</file>
+        <file>templateData/mxzy202301090041022229</file>
+        <file>templateData/mxzy202301090041022230</file>
+        <file>templateData/mxzy202301090041022231</file>
+        <file>templateData/mxzy202301090041022232</file>
+        <file>templateData/mxzy202301090041022233</file>
+        <file>templateData/mxzy202301090041022234</file>
+        <file>templateData/mxzy202301090041022235</file>
     </qresource>
     <qresource prefix="/ico">
         <file>img/xinjiaoyuico.ico</file>
