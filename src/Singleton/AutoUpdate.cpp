@@ -1,14 +1,10 @@
 #include "AutoUpdate.h"
 #include "../StaticClass/CallAndroidNativeComponent.h"
-#include "../StaticClass/Network.h"
+#include "../Singleton/Network.h"
 
 constexpr auto domain {"https://gitee.com/LFWQSP2641/xinjiaoyu/raw/master/"};
 
-AutoUpdate::AutoUpdate(QObject *parent)
-    : QObject{parent}
-{
-
-}
+AutoUpdate *AutoUpdate::instance = nullptr;
 
 AutoUpdate::AutoUpdate(const QString &currentVersion, QObject *parent)
     : QObject{parent}, currentVersion{currentVersion}
@@ -16,8 +12,19 @@ AutoUpdate::AutoUpdate(const QString &currentVersion, QObject *parent)
 
 }
 
-void AutoUpdate::checkUpdate()
+void AutoUpdate::initOnce(const QString &currentVersion, QObject *parent)
 {
+    AutoUpdate::instance = new AutoUpdate(currentVersion, parent);
+}
+
+AutoUpdate *AutoUpdate::getInstance()
+{
+    return AutoUpdate::instance;
+}
+
+void AutoUpdate::checkUpdate(bool showWidget)
+{
+    this->showWidgetWhenDoesntHaveUpdate = showWidget;
     running = true;
     hasNewVersion = false;
     newestVersionReply = nullptr;
@@ -25,7 +32,7 @@ void AutoUpdate::checkUpdate()
     newestVersion = QString();
     changeLog = QString();
 
-    newestVersionReply = Network::networkAccessManager->get(QNetworkRequest(QStringLiteral("newestVersion").prepend(domain)));
+    newestVersionReply = Network::getInstance()->networkAccessManager.get(QNetworkRequest(QStringLiteral("newestVersion").prepend(domain)));
     QTimer::singleShot(5000, newestVersionReply, &QNetworkReply::abort);
     connect(newestVersionReply, &QNetworkReply::finished, this, &AutoUpdate::newestVersionReplyFinished);
 }
@@ -33,78 +40,11 @@ void AutoUpdate::checkUpdate()
 bool AutoUpdate::checkMinimumVersion()
 {
     auto minimumVersionStr{ Network::getData(QNetworkRequest(QStringLiteral("minimumVersion").prepend(domain))) };
-    return compareVersion(minimumVersionStr, APP_VERSION);
+    return compareVersion(minimumVersionStr, currentVersion);
 }
 
 
 void AutoUpdate::showUpdateWidget()
-{
-    if(!hasNewVersion)
-    {
-        return;
-    }
-    showUpdateWidgetPrivate();
-
-}
-
-void AutoUpdate::showResultWidget()
-{
-    if(hasNewVersion)
-    {
-        showUpdateWidget();
-    }
-    else
-    {
-        QDialog dialog;
-        QGridLayout layout(&dialog);
-        QLabel label(&dialog);
-        QPushButton OKButton(QStringLiteral("确定"), &dialog);
-        QPushButton stillUpdataButton(QStringLiteral("更新"), &dialog);
-
-        if(newestVersion.isEmpty())
-        {
-            label.setText(QStringLiteral("当前版本:%0\n请检查网络连接,或使用移动网络再次尝试").arg(currentVersion));
-        }
-        else
-        {
-            label.setText(QStringLiteral("当前版本:%0\n已是最新版本").arg(currentVersion));
-        }
-        layout.addWidget(&label, 0, 0, 1, 2);
-        layout.addWidget(&OKButton, 1, 0, 1, 1);
-        layout.addWidget(&stillUpdataButton, 1, 1, 1, 1);
-
-        QObject::connect(&OKButton, &QPushButton::clicked, [&dialog] { dialog.close(); });
-        QObject::connect(&stillUpdataButton, &QPushButton::clicked, [this, &dialog]
-        {
-            dialog.close();
-            changeLogReply = Network::networkAccessManager->get(QNetworkRequest(QStringLiteral("changeLog").prepend(domain)));
-            Network::waitForFinished(changeLogReply);
-            changeLog = Network::replyReadAll(changeLogReply);
-            showUpdateWidgetPrivate();
-        });
-
-        dialog.exec();
-    }
-}
-
-//如果version1比version2小,则返回true
-bool AutoUpdate::compareVersion(const QString &version1, const QString &version2)
-{
-    QStringList list1 = version1.split(".");
-    QStringList list2 = version2.split(".");
-    if(list1.size() >= 3 && list2.size() >= 3)
-    {
-        qint32 ver1 = (list1.at(0).toInt() << 16) | (list1.at(1).toInt() << 8) | list1.at(2).toInt();
-        qint32 ver2 = (list2.at(0).toInt() << 16) | (list2.at(1).toInt() << 8) | list2.at(2).toInt();
-        return ver2 > ver1;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-void AutoUpdate::showUpdateWidgetPrivate()
 {
 #ifdef Q_OS_ANDROID
     QMessageBox msgBox;
@@ -116,7 +56,7 @@ void AutoUpdate::showUpdateWidgetPrivate()
 
     if(msgBox.clickedButton() == downloadBtn)
     {
-        auto downloadUrlReply{Network::networkAccessManager->get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersionEncryption").prepend(domain))))};
+        auto downloadUrlReply{Network::getInstance()->networkAccessManager.get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersionEncryption").prepend(domain))))};
         auto progressDialog{new QDialog};
         auto progressLayout{new QVBoxLayout(progressDialog)};
         auto progressLabel{new QLabel(progressDialog)};
@@ -127,7 +67,7 @@ void AutoUpdate::showUpdateWidgetPrivate()
         Network::waitForFinished(downloadUrlReply);
         const auto downloadUrl{Network::replyReadAll(downloadUrlReply)};
         qDebug() << "downloadUrl : " << downloadUrl;
-        auto downloadReply{Network::networkAccessManager->get(QNetworkRequest(QUrl(downloadUrl)))};
+        auto downloadReply{Network::getInstance()->networkAccessManager.get(QNetworkRequest(QUrl(downloadUrl)))};
         connect(downloadReply, &QNetworkReply::finished, [progressDialog, downloadReply]
         {
             if(!downloadReply->isFinished())
@@ -162,7 +102,7 @@ void AutoUpdate::showUpdateWidgetPrivate()
     }
     else if(msgBox.clickedButton() == openBrowerBtn)
     {
-        auto reply{Network::networkAccessManager->get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersion").prepend(domain))))};
+        auto reply{Network::getInstance()->networkAccessManager.get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersion").prepend(domain))))};
         QDialog dialog;
         QVBoxLayout mianLayout(&dialog);
 
@@ -213,6 +153,56 @@ void AutoUpdate::showUpdateWidgetPrivate()
 #endif // Q_OS_ANDROID
 }
 
+void AutoUpdate::showResultWidget()
+{
+    QDialog dialog;
+    QGridLayout layout(&dialog);
+    QLabel label(&dialog);
+    QPushButton OKButton(QStringLiteral("确定"), &dialog);
+    QPushButton stillUpdataButton(QStringLiteral("更新"), &dialog);
+
+    if(newestVersion.isEmpty())
+    {
+        label.setText(QStringLiteral("当前版本:%0\n请检查网络连接,或使用移动网络再次尝试").arg(currentVersion));
+    }
+    else
+    {
+        label.setText(QStringLiteral("当前版本:%0\n已是最新版本").arg(currentVersion));
+    }
+    layout.addWidget(&label, 0, 0, 1, 2);
+    layout.addWidget(&OKButton, 1, 0, 1, 1);
+    layout.addWidget(&stillUpdataButton, 1, 1, 1, 1);
+
+    QObject::connect(&OKButton, &QPushButton::clicked, [&dialog] { dialog.close(); });
+    QObject::connect(&stillUpdataButton, &QPushButton::clicked, [this, &dialog]
+    {
+        dialog.close();
+        changeLogReply = Network::getInstance()->networkAccessManager.get(QNetworkRequest(QStringLiteral("changeLog").prepend(domain)));
+        Network::waitForFinished(changeLogReply);
+        changeLog = Network::replyReadAll(changeLogReply);
+        showUpdateWidget();
+    });
+
+    dialog.exec();
+}
+
+//如果version1比version2小,则返回true
+bool AutoUpdate::compareVersion(const QString &version1, const QString &version2)
+{
+    QStringList list1 = version1.split(".");
+    QStringList list2 = version2.split(".");
+    if(list1.size() >= 3 && list2.size() >= 3)
+    {
+        qint32 ver1 = (list1.at(0).toInt() << 16) | (list1.at(1).toInt() << 8) | list1.at(2).toInt();
+        qint32 ver2 = (list2.at(0).toInt() << 16) | (list2.at(1).toInt() << 8) | list2.at(2).toInt();
+        return ver2 > ver1;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void AutoUpdate::newestVersionReplyFinished()
 {
     newestVersion = Network::replyReadAll(newestVersionReply);
@@ -220,7 +210,7 @@ void AutoUpdate::newestVersionReplyFinished()
     if(compareVersion(currentVersion, newestVersion))
     {
         hasNewVersion = true;
-        changeLogReply = Network::networkAccessManager->get(QNetworkRequest(QStringLiteral("changeLog").prepend(domain)));
+        changeLogReply = Network::getInstance()->networkAccessManager.get(QNetworkRequest(QStringLiteral("changeLog").prepend(domain)));
 
         connect(changeLogReply, &QNetworkReply::finished, this, &AutoUpdate::changeLogReplyFinished);
     }
@@ -229,6 +219,10 @@ void AutoUpdate::newestVersionReplyFinished()
         //已是最新版本或newestVersion为空
         running = false;
         emit finished();
+        if(showWidgetWhenDoesntHaveUpdate)
+        {
+            showResultWidget();
+        }
     }
 }
 
@@ -237,4 +231,5 @@ void AutoUpdate::changeLogReplyFinished()
     changeLog = Network::replyReadAll(changeLogReply);
     running = false;
     emit finished();
+    showUpdateWidget();
 }

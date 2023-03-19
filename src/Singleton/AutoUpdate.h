@@ -5,9 +5,9 @@ class AutoUpdate : public QObject
 {
     Q_OBJECT
 public:
-    explicit AutoUpdate(QObject *parent = nullptr);
-    explicit AutoUpdate(const QString &currentVersion, QObject *parent = nullptr);
-    void checkUpdate();
+    static void initOnce(const QString &currentVersion, QObject *parent = nullptr);
+    static AutoUpdate *getInstance();
+    void checkUpdate(bool showWidget);
     void setCurrentVersion(const QString &currentVersion)
     {
         this->currentVersion = currentVersion;
@@ -21,7 +21,7 @@ public:
         return !running;
     }
 
-    static bool checkMinimumVersion();
+    bool checkMinimumVersion();
 
 public slots:
     //仅当有新版本时显示
@@ -30,6 +30,11 @@ public slots:
     void showResultWidget();
 
 private:
+    static AutoUpdate *instance;
+    explicit AutoUpdate(const QString &currentVersion, QObject *parent = nullptr);
+
+    bool showWidgetWhenDoesntHaveUpdate = false;
+
     QNetworkReply *newestVersionReply = nullptr;
     QNetworkReply *changeLogReply = nullptr;
 
@@ -41,9 +46,6 @@ private:
 
     bool running = false;
     bool hasNewVersion = false;
-
-    //起的什么破名字啊~
-    void showUpdateWidgetPrivate();
 
     //int timeoutCount = 0;
 
