@@ -63,7 +63,6 @@ void UserData::initPublicUserData()
         QObject::connect(reply, &QNetworkReply::finished, [reply, byteArray]
         {
             *byteArray = Network::replyReadAll(reply);
-            qDebug() << QString(*byteArray).left(10);
         });
     }};
     getQByteArraybyNetwork(QStringLiteral("publicAccessToken"), &publicAccessToken);
