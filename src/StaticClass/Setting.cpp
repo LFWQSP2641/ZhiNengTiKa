@@ -1,6 +1,5 @@
 #include "Setting.h"
 #include "Global.h"
-#include "Login.h"
 
 UserDataList Setting::userDataList;
 
@@ -71,14 +70,14 @@ void Setting::saveToFile()
     for(const auto &i : userDataList)
     {
         QJsonObject jsonObject;
-        jsonObject.insert(QStringLiteral("accessToken"), QString(i.accessToken()));
-        jsonObject.insert(QStringLiteral("authorization"), QString(i.authorization()));
-        jsonObject.insert(QStringLiteral("clientSession"), QString(i.clientSession()));
-        jsonObject.insert(QStringLiteral("password"), QString(i.password()));
-        jsonObject.insert(QStringLiteral("schoolId"), QString(i.schoolId()));
-        jsonObject.insert(QStringLiteral("detailData"), QString(QJsonDocument(i.detailData()).toJson(QJsonDocument::Compact).toBase64()));
-        jsonObject.insert(QStringLiteral("studentId"), QString(i.studentId()));
-        jsonObject.insert(QStringLiteral("username"), QString(i.username()));
+        jsonObject.insert(QStringLiteral("accessToken"), QString(i.getAccessToken()));
+        jsonObject.insert(QStringLiteral("authorization"), QString(i.getAuthorization()));
+        jsonObject.insert(QStringLiteral("clientSession"), QString(i.getClientSession()));
+        jsonObject.insert(QStringLiteral("password"), QString(i.getPassword()));
+        jsonObject.insert(QStringLiteral("schoolId"), QString(i.getSchoolId()));
+        jsonObject.insert(QStringLiteral("detailData"), QString(QJsonDocument(i.getDetailDataJsonObject()).toJson(QJsonDocument::Compact).toBase64()));
+        jsonObject.insert(QStringLiteral("studentId"), QString(i.getStudentId()));
+        jsonObject.insert(QStringLiteral("username"), QString(i.getUsername()));
 
         accountsJsonArray.append(jsonObject);
     }

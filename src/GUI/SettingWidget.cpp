@@ -1,6 +1,5 @@
 #include "SettingWidget.h"
 #include "../StaticClass/Global.h"
-#include "../StaticClass/Login.h"
 #include "../StaticClass/Setting.h"
 
 SettingWidget::SettingWidget(QWidget *parent)
@@ -142,7 +141,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                 UserData newUserData;
                 try
                 {
-                    newUserData = Login::login(username.toUtf8(), password.toUtf8());
+                    newUserData = UserData::login(username.toUtf8(), password.toUtf8());
                 }
                 catch(const std::exception &e)
                 {
@@ -155,7 +154,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                     OKButton.setEnabled(true);
                     return;
                 }
-                if(newUserData.detailData().isEmpty())
+                if(newUserData.getDetailDataJsonObject().isEmpty())
                 {
                     auto ret{QMessageBox::question(this, QStringLiteral("question"), QStringLiteral("账号部分信息为空,是否继续使用此账号"))};
                     if(ret == QMessageBox::No)
@@ -169,7 +168,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                 Setting::saveToFile();
 #endif // Q_OS_ANDROID
                 setUserList();
-                QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(newUserData.detailData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + newUserData.username()));
+                QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(newUserData.getDetailDataJsonObject().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + newUserData.getUsername()));
                 dialog.close();
             }
         });
@@ -320,13 +319,13 @@ SettingWidget::SettingWidget(QWidget *parent)
     {
         checkNewVersionButton->setText(QStringLiteral("正在检查..."));
         checkNewVersionButton->setEnabled(false);
-        if(autoUpdate.isFinished())
+        auto autoUpdate{AutoUpdate::getInstance()};
+        if(autoUpdate->isFinished())
         {
-            autoUpdate.checkUpdate();
+            autoUpdate->checkUpdate(true);
         }
     });
-    connect(&autoUpdate, &AutoUpdate::finished, &autoUpdate, &AutoUpdate::showResultWidget);
-    connect(&autoUpdate, &AutoUpdate::finished, [this]
+    connect(AutoUpdate::getInstance(), &AutoUpdate::finished, [this]
     {
         checkNewVersionButton->setText(QStringLiteral("检查更新"));
         checkNewVersionButton->setEnabled(true);
@@ -340,7 +339,7 @@ void SettingWidget::setUserList()
     {
         for(const auto &i : Setting::userDataList)
         {
-            userListComboBox->addItem(i.detailData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + i.username());
+            userListComboBox->addItem(i.getDetailDataJsonObject().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + i.getUsername());
         }
     }
     else

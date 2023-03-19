@@ -2,9 +2,8 @@
 #include "UploadChildWidget.h"
 #include "../Logic/AnalysisWebRawData.h"
 #include "../StaticClass/Setting.h"
-#include "../StaticClass/Network.h"
+#include "../Singleton/Network.h"
 #include "../StaticClass/XinjiaoyuNetwork.h"
-#include "../StaticClass/Login.h"
 
 UploadWidget::UploadWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent)
     : QWidget{parent}, analysisWebRawData(analysisWebRawData)
@@ -80,7 +79,7 @@ bool UploadWidget::uploadData(const QByteArray &data)
                                     QStringLiteral(""),
                                     QStringLiteral("将提交到 %0 的账号\n"
                                             "且此操作不可撤回\n"
-                                            "是否继续?").arg(Setting::currentUserData().detailData().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + Setting::currentUserData().username())) };
+                                            "是否继续?").arg(Setting::currentUserData().getDetailDataJsonObject().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + Setting::currentUserData().getUsername())) };
     if(ret == QMessageBox::No)
     {
         return false;
@@ -265,8 +264,8 @@ QJsonObject UploadWidget::getAnswerJsonObject()
 QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)
 {
     QJsonObject rootObject;
-    rootObject.insert(QStringLiteral("schoolId"), QString(userData.schoolId()));
-    rootObject.insert(QStringLiteral("studentId"), QString(userData.studentId()));
+    rootObject.insert(QStringLiteral("schoolId"), QString(userData.getSchoolId()));
+    rootObject.insert(QStringLiteral("studentId"), QString(userData.getStudentId()));
     rootObject.insert(QStringLiteral("templateCode"), analysisWebRawData.getTemplateCode());
     QJsonArray array;
     for(auto &i : uploadChildWidgetList)

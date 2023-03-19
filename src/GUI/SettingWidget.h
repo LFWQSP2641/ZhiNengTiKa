@@ -1,7 +1,7 @@
 #ifndef SETTINGWIDGET_H
 #define SETTINGWIDGET_H
 
-#include "../Logic/AutoUpdate.h"
+#include "../Singleton/AutoUpdate.h"
 
 class SettingWidget : public QWidget
 {
@@ -30,7 +30,6 @@ private:
     QVBoxLayout *layout;
     QPushButton *cleanTempButton;
     QLabel *showTempSize;
-    AutoUpdate autoUpdate = AutoUpdate(APP_VERSION);
 
     void setUserList();
 

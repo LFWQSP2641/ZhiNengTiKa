@@ -1,7 +1,7 @@
 #include "UploadChildWidget.h"
 #include "PixmapLabel.h"
 #include "PlusSignLabel.h"
-#include "../StaticClass/Network.h"
+#include "../Singleton/Network.h"
 
 UploadChildWidget::UploadChildWidget(const AnswerDetailData &answerDetailData, QWidget *parent)
     : QWidget{parent}, answerDetailData(answerDetailData)
@@ -153,7 +153,7 @@ PixmapLabel *UploadChildWidget::addPixmapLabelFromUrl(const QUrl &url)
         return addPixmapLabelByPixmap(QPixmap(url.toLocalFile()));
     }
     auto newPixmapLabel{this->addPixmapLabel()};
-    auto reply{ Network::networkAccessManager->get(QNetworkRequest(url)) };
+    auto reply{ Network::getInstance()->networkAccessManager.get(QNetworkRequest(url)) };
     connect(reply, &QNetworkReply::finished, [newPixmapLabel, reply, url]
     {
         QPixmap pixmap;

@@ -1,8 +1,8 @@
 #include "XinjiaoyuNetwork.h"
 #include "Setting.h"
-#include "Network.h"
+#include "../Singleton/Network.h"
 #include "XinjiaoyuEncryptioner.h"
-#include "../Logic/UserData.hpp"
+#include "../Logic/UserData.h"
 
 QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url, const UserData &userData)
 {
@@ -13,13 +13,13 @@ QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url, const UserData &us
     requestInfo.setRawHeader(QByteArrayLiteral("client"), QByteArrayLiteral("android"));
     requestInfo.setRawHeader(QByteArrayLiteral("Content-Type"), QByteArrayLiteral("application/json"));
     requestInfo.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("okhttp/4.9.3"));
-    requestInfo.setRawHeader(QByteArrayLiteral("Authorization"), userData.authorization());
-    requestInfo.setRawHeader(QByteArrayLiteral("accessToken"), userData.accessToken());
-    requestInfo.setRawHeader(QByteArrayLiteral("clientSession"), userData.clientSession());
+    requestInfo.setRawHeader(QByteArrayLiteral("Authorization"), userData.getAuthorization());
+    requestInfo.setRawHeader(QByteArrayLiteral("accessToken"), userData.getAccessToken());
+    requestInfo.setRawHeader(QByteArrayLiteral("clientSession"), userData.getClientSession());
 
     const auto tVal{QString::number(QDateTime::currentMSecsSinceEpoch()).toUtf8()};
     requestInfo.setRawHeader(QByteArrayLiteral("t"), tVal);
-    const auto encryptVal{XinjiaoyuEncryptioner::getXinjiaoyuMD5(tVal, userData.clientSession())};
+    const auto encryptVal{XinjiaoyuEncryptioner::getXinjiaoyuMD5(tVal, userData.getClientSession())};
     requestInfo.setRawHeader(QByteArrayLiteral("encrypt"), encryptVal);
     return requestInfo;
 }
@@ -40,7 +40,7 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, co
     responseByte = Network::getData(
                        XinjiaoyuNetwork::setRequest(
                            QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_homework/"
-                                          "homework/template/question/list?templateCode=%0&studentId=%1&isEncrypted=true").arg(templateCode, userData.studentId())));
+                                          "homework/template/question/list?templateCode=%0&studentId=%1&isEncrypted=true").arg(templateCode, userData.getStudentId())));
 
     const auto stateCode{responseByte.mid(8, 3)};
 
@@ -153,7 +153,7 @@ QNetworkReply *XinjiaoyuNetwork::uploadFileReply(const QByteArray &fileData, con
 
     request.setHeader(QNetworkRequest::ContentLengthHeader, data.size());
 
-    return Network::networkAccessManager->post(request, data);
+    return Network::getInstance()->networkAccessManager.post(request, data);
 }
 
 QString XinjiaoyuNetwork::getUploadFileReplyUrl(QNetworkReply *reply)

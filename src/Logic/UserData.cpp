@@ -1,8 +1,8 @@
-#include "Login.h"
-#include "XinjiaoyuEncryptioner.h"
-#include "Network.h"
+#include "UserData.h"
+#include "../StaticClass/XinjiaoyuEncryptioner.h"
+#include "../Singleton/Network.h"
 
-UserData Login::login(const QByteArray &username, const QByteArray &password)
+UserData UserData::login(const QByteArray &username, const QByteArray &password)
 {
     const auto encodedUsername{XinjiaoyuEncryptioner::xinjiaoyuEncryption(username)};
     const auto encodedPassword{XinjiaoyuEncryptioner::xinjiaoyuEncryption(password)};
@@ -44,9 +44,8 @@ UserData Login::login(const QByteArray &username, const QByteArray &password)
     }
     else
     {
-        throw std::runtime_error(QStringLiteral("登陆失败\n"
-                                                "返回结果错误\n"
-                                                "返回数据:%0").arg(returnData).toStdString());
-        return UserData();
+        throw std::runtime_error(QStringLiteral("登录失败\n"
+                                                "服务器返回信息:").append(returnData).toStdString());
     }
+    return UserData();
 }
