@@ -168,6 +168,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                 Setting::saveToFile();
 #endif // Q_OS_ANDROID
                 setUserList();
+                this->logoutButton->setEnabled(true);
                 QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(newUserData.getDetailDataJsonObject().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + newUserData.getUsername()));
                 dialog.close();
             }
@@ -179,14 +180,11 @@ SettingWidget::SettingWidget(QWidget *parent)
 
     connect(this->logoutButton, &QPushButton::clicked, [this]
     {
-        if(!Setting::logined())
-        {
-            return;
-        }
         Setting::userDataList.removeFirst();
 #ifdef Q_OS_ANDROID
         Setting::saveToFile();
 #endif // Q_OS_ANDROID
+        this->logoutButton->setEnabled(false);
         QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登出成功"));
         setUserList();
     });
@@ -344,7 +342,8 @@ void SettingWidget::setUserList()
     }
     else
     {
-        userListComboBox->addItem(QStringLiteral("未登录"));
+        this->logoutButton->setEnabled(false);
+        userListComboBox->addItem(QStringLiteral("公共账号"));
     }
     userListComboBox->setCurrentIndex(0);
 }

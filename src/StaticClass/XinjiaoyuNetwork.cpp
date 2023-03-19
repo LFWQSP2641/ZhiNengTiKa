@@ -31,11 +31,6 @@ QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url)
 
 QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, const UserData &userData)
 {
-    if(!Setting::logined())
-    {
-        throw std::runtime_error("获取题卡时处于未登录状态\n"
-                                 "请在设置界面登录");
-    }
     QByteArray responseByte;
     responseByte = Network::getData(
                        XinjiaoyuNetwork::setRequest(

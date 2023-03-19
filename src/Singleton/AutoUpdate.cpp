@@ -2,8 +2,6 @@
 #include "../StaticClass/CallAndroidNativeComponent.h"
 #include "../Singleton/Network.h"
 
-constexpr auto domain {"https://gitee.com/LFWQSP2641/xinjiaoyu/raw/master/"};
-
 AutoUpdate *AutoUpdate::instance = nullptr;
 
 AutoUpdate::AutoUpdate(const QString &currentVersion, QObject *parent)
@@ -32,14 +30,14 @@ void AutoUpdate::checkUpdate(bool showWidget)
     newestVersion = QString();
     changeLog = QString();
 
-    newestVersionReply = Network::getInstance()->networkAccessManager.get(QNetworkRequest(QStringLiteral("newestVersion").prepend(domain)));
+    newestVersionReply = Network::getInstance()->networkAccessManager.get(QNetworkRequest(QStringLiteral("newestVersion").prepend(DATABASE_DOMAIN)));
     QTimer::singleShot(5000, newestVersionReply, &QNetworkReply::abort);
     connect(newestVersionReply, &QNetworkReply::finished, this, &AutoUpdate::newestVersionReplyFinished);
 }
 
 bool AutoUpdate::checkMinimumVersion()
 {
-    auto minimumVersionStr{ Network::getData(QNetworkRequest(QStringLiteral("minimumVersion").prepend(domain))) };
+    auto minimumVersionStr{ Network::getData(QNetworkRequest(QStringLiteral("minimumVersion").prepend(DATABASE_DOMAIN))) };
     return compareVersion(minimumVersionStr, currentVersion);
 }
 
@@ -177,7 +175,7 @@ void AutoUpdate::showResultWidget()
     QObject::connect(&stillUpdataButton, &QPushButton::clicked, [this, &dialog]
     {
         dialog.close();
-        changeLogReply = Network::getInstance()->networkAccessManager.get(QNetworkRequest(QStringLiteral("changeLog").prepend(domain)));
+        changeLogReply = Network::getInstance()->networkAccessManager.get(QNetworkRequest(QStringLiteral("changeLog").prepend(DATABASE_DOMAIN)));
         Network::waitForFinished(changeLogReply);
         changeLog = Network::replyReadAll(changeLogReply);
         showUpdateWidget();
@@ -210,7 +208,7 @@ void AutoUpdate::newestVersionReplyFinished()
     if(compareVersion(currentVersion, newestVersion))
     {
         hasNewVersion = true;
-        changeLogReply = Network::getInstance()->networkAccessManager.get(QNetworkRequest(QStringLiteral("changeLog").prepend(domain)));
+        changeLogReply = Network::getInstance()->networkAccessManager.get(QNetworkRequest(QStringLiteral("changeLog").prepend(DATABASE_DOMAIN)));
 
         connect(changeLogReply, &QNetworkReply::finished, this, &AutoUpdate::changeLogReplyFinished);
     }

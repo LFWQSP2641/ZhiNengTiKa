@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
     Setting::loadFromFile();
     AutoUpdate::initOnce(APP_VERSION);
     QRCodeScanner::initialize(Setting::jsonObjectApiQRCodeScanner);
+    UserData::initPublicUserData();
 
     QFont appFont;
     if(Setting::fontPointSize < 1 || Setting::font.isEmpty())

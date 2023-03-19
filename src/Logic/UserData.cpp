@@ -2,6 +2,11 @@
 #include "../StaticClass/XinjiaoyuEncryptioner.h"
 #include "../Singleton/Network.h"
 
+QByteArray UserData::publicAccessToken;
+QByteArray UserData::publicAuthorization;
+QByteArray UserData::publicClientSession;
+QByteArray UserData::publicStudentId;
+
 UserData UserData::login(const QByteArray &username, const QByteArray &password)
 {
     const auto encodedUsername{XinjiaoyuEncryptioner::xinjiaoyuEncryption(username)};
@@ -35,11 +40,11 @@ UserData UserData::login(const QByteArray &username, const QByteArray &password)
                    dataObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
                    QByteArrayLiteral("JBY ") + dataObject.value(QStringLiteral("token")).toString().toUtf8(),
                    clientSessionVal,
+                   username,
                    password,
                    userSchoolDataJsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
                    userDataJsonObject,
-                   userSchoolDataJsonObject.value(QStringLiteral("studentId")).toString().toUtf8(),
-                   username
+                   userSchoolDataJsonObject.value(QStringLiteral("studentId")).toString().toUtf8()
                );
     }
     else
@@ -48,4 +53,29 @@ UserData UserData::login(const QByteArray &username, const QByteArray &password)
                                                 "服务器返回信息:").append(returnData).toStdString());
     }
     return UserData();
+}
+
+void UserData::initPublicUserData()
+{
+    auto getQByteArraybyNetwork{[](const QString & path, QByteArray * byteArray)
+    {
+        auto reply{ Network::getInstance()->networkAccessManager.get(QNetworkRequest(QUrl(DATABASE_DOMAIN + path))) };
+        QObject::connect(reply, &QNetworkReply::finished, [reply, byteArray]
+        {
+            *byteArray = Network::replyReadAll(reply);
+            qDebug() << QString(*byteArray).left(10);
+        });
+    }};
+    getQByteArraybyNetwork(QStringLiteral("publicAccessToken"), &publicAccessToken);
+    getQByteArraybyNetwork(QStringLiteral("publicAuthorization"), &publicAuthorization);
+    getQByteArraybyNetwork(QStringLiteral("publicClientSession"), &publicClientSession);
+    getQByteArraybyNetwork(QStringLiteral("publicStudentId"), &publicStudentId);
+}
+
+UserData UserData::getPublicUserData()
+{
+    return UserData(UserData::publicAccessToken,
+                    UserData::publicAuthorization,
+                    UserData::publicClientSession,
+                    UserData::publicStudentId);
 }

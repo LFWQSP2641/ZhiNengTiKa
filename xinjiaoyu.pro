@@ -38,6 +38,8 @@ CONFIG += webview
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
+DEFINES += DATABASE_DOMAIN=\\\"https://gitee.com/LFWQSP2641/xinjiaoyu/raw/master/\\\"
+
 DEFINES *= QT_USE_QSTRINGBUILDER
 
 CONFIG += c++17 precompile_header
