@@ -2,6 +2,7 @@
 #define SEARCHDIALOG_H
 
 #include "../Logic/AnalysisWebRawData.h"
+class MultipleSubjectsTemplateListView;
 
 class SelectWidget : public QWidget
 {
@@ -9,28 +10,22 @@ class SelectWidget : public QWidget
 public:
     explicit SelectWidget(QWidget *parent = nullptr);
 
-public slots:
-    void loadFromFile(const QString &dirPath);
-
 protected:
     QVBoxLayout *mainLayout;
-    QTabWidget *listWidgetTabWidget;
+    MultipleSubjectsTemplateListView *multipleSubjectsTemplateListView;
     QPushButton *OKButton;
     QPushButton *searchButton;
-    QPushButton *previousPageButton;
-    QPushButton *nextPageButton;
+//    QPushButton *previousPageButton;
+//    QPushButton *nextPageButton;
     QLineEdit *templateCodeLineEdit;
     QPushButton *scanQRCodeButton;
 
-    QHash<QListWidgetItem*, QString> templateCodeFinder;
-
 protected slots:
-    void toPreviousPage();
-    void toNextPageButton();
+//    void toPreviousPage();
+//    void toNextPageButton();
     void searchButtonPushed();
     void OKButtonPushed();
     AnalysisWebRawData getTemplateCodeData(const QString &templateCode);
-    void itemSelectionChanged(QListWidgetItem *item);
     void scanQRCode();
 
 signals:

@@ -1,5 +1,5 @@
 #include "QRCodeScanner.h"
-#include "../StaticClass/Network.h"
+#include "../Singleton/Network.h"
 #include "Setting.h"
 
 QJsonObject QRCodeScanner::apiArguments;
@@ -121,7 +121,7 @@ QByteArray QRCodeScanner::scanQRCode(const QImage &image, const char *format, in
     imagePart.setBody(ba);
     multiPart.append(imagePart);
 
-    auto replyData{Network::replyReadAll(Network::waitForFinished(Network::networkAccessManager->post(request, &multiPart)))};
+    auto replyData{Network::replyReadAll(Network::waitForFinished(Network::getInstance()->networkAccessManager.post(request, &multiPart)))};
     qDebug() << replyData;
     return QJsonDocument::fromJson(replyData).object().value(QStringLiteral("data")).toString().toUtf8();
 }

@@ -1,9 +1,9 @@
 #include "GUI/MainWidget.h"
-#include "Logic/AutoUpdate.h"
+#include "Singleton/AutoUpdate.h"
 #include "StaticClass/Global.h"
 #include "StaticClass/Setting.h"
 #include "StaticClass/CallAndroidNativeComponent.h"
-#include "StaticClass/Network.h"
+#include "Singleton/Network.h"
 #include "StaticClass/QRCodeScanner.h"
 
 int main(int argc, char *argv[])
@@ -17,13 +17,14 @@ int main(int argc, char *argv[])
 #endif // USE_QTWEBVIEW
     QApplication a(argc, argv);
 
-    Network::networkAccessManager = new QNetworkAccessManager(&a);
+    Network::initOnce();
 
     Global::initOnce();
 
     a.setWindowIcon(QIcon(QStringLiteral(":/ico/xinjiaoyuico.png")));
 
     Setting::loadFromFile();
+    AutoUpdate::initOnce(APP_VERSION);
     QRCodeScanner::initialize(Setting::jsonObjectApiQRCodeScanner);
 
     QFont appFont;
@@ -61,10 +62,9 @@ int main(int argc, char *argv[])
 
 #ifdef Q_OS_ANDROID
     w.setEnabled(false);
-    AutoUpdate autoUpdate(APP_VERSION);
-    QObject::connect(&autoUpdate, &AutoUpdate::finished, &autoUpdate, &AutoUpdate::showUpdateWidget);
-    autoUpdate.checkUpdate();
-    if(AutoUpdate::checkMinimumVersion())
+    auto autoUpdate(AutoUpdate::getInstance());
+    autoUpdate->checkUpdate(false);
+    if(autoUpdate->checkMinimumVersion())
     {
         w.setEnabled(true);
     }

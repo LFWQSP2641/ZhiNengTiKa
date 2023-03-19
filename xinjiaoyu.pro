@@ -60,6 +60,7 @@ HEADERS += \
     src/GUI/AnswerAndAnalysisWidget.h \
     src/GUI/ClickableLabel.hpp \
     src/GUI/MainWidget.h \
+    src/GUI/MultipleSubjectsTemplateListView.h \
     src/GUI/NavigationBarTabWidget.h \
     src/GUI/PixmapLabel.h \
     src/GUI/PlusSignLabel.h \
@@ -69,19 +70,21 @@ HEADERS += \
     src/GUI/SettingWidget.h \
     src/GUI/ShowFullScreenWidget.h \
     src/GUI/TemplateDetailWidget.h \
+    src/GUI/TemplateListView.h \
     src/GUI/UploadChildWidget.h \
     src/GUI/UploadWidget.h \
     src/GUI/WebViewWidget.h \
     src/Logic/AnalysisWebRawData.h \
     src/Logic/AnswerDetailData.hpp \
-    src/Logic/AutoUpdate.h \
+    src/Logic/MultipleSubjectsTemplateListModelList.h \
+    src/Logic/TemplateListModel.h \
     src/Logic/TemplateSearcher.h \
-    src/Logic/UserData.hpp \
+    src/Logic/UserData.h \
     src/Logic/UserDataList.hpp \
+    src/Singleton/AutoUpdate.h \
+    src/Singleton/Network.h \
     src/StaticClass/CallAndroidNativeComponent.h \
     src/StaticClass/Global.h \
-    src/StaticClass/Login.h \
-    src/StaticClass/Network.h \
     src/StaticClass/QRCodeScanner.h \
     src/StaticClass/Setting.h \
     src/StaticClass/XinjiaoyuEncryptioner.h \
@@ -90,6 +93,7 @@ HEADERS += \
 SOURCES += \
     src/GUI/AnswerAndAnalysisWidget.cpp \
     src/GUI/MainWidget.cpp \
+    src/GUI/MultipleSubjectsTemplateListView.cpp \
     src/GUI/NavigationBarTabWidget.cpp \
     src/GUI/PixmapLabel.cpp \
     src/GUI/PlusSignLabel.cpp \
@@ -99,16 +103,19 @@ SOURCES += \
     src/GUI/SettingWidget.cpp \
     src/GUI/ShowFullScreenWidget.cpp \
     src/GUI/TemplateDetailWidget.cpp \
+    src/GUI/TemplateListView.cpp \
     src/GUI/UploadChildWidget.cpp \
     src/GUI/UploadWidget.cpp \
     src/GUI/WebViewWidget.cpp \
     src/Logic/AnalysisWebRawData.cpp \
-    src/Logic/AutoUpdate.cpp \
+    src/Logic/MultipleSubjectsTemplateListModelList.cpp \
+    src/Logic/TemplateListModel.cpp \
     src/Logic/TemplateSearcher.cpp \
+    src/Logic/UserData.cpp \
+    src/Singleton/AutoUpdate.cpp \
+    src/Singleton/Network.cpp \
     src/StaticClass/CallAndroidNativeComponent.cpp \
     src/StaticClass/Global.cpp \
-    src/StaticClass/Login.cpp \
-    src/StaticClass/Network.cpp \
     src/StaticClass/QRCodeScanner.cpp \
     src/StaticClass/Setting.cpp \
     src/StaticClass/XinjiaoyuEncryptioner.cpp \

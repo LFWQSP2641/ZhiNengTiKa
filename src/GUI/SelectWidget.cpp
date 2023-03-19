@@ -6,25 +6,19 @@
 #include "../StaticClass/QRCodeScanner.h"
 #include "../GUI/TemplateDetailWidget.h"
 #include "../GUI/SearchWidget.h"
+#include "../GUI/MultipleSubjectsTemplateListView.h"
 
 SelectWidget::SelectWidget(QWidget *parent)
     : QWidget{ parent }
 {
     mainLayout = new QVBoxLayout(this);
-    listWidgetTabWidget = new QTabWidget(this);
+    multipleSubjectsTemplateListView = new MultipleSubjectsTemplateListView(this);
     OKButton = new QPushButton(QStringLiteral("确定"), this);
     searchButton = new QPushButton(QStringLiteral("搜索"), this);
-    previousPageButton = new QPushButton(QStringLiteral("上一页"), this);
-    nextPageButton = new QPushButton(QStringLiteral("下一页"), this);
+//    previousPageButton = new QPushButton(QStringLiteral("上一页"), this);
+//    nextPageButton = new QPushButton(QStringLiteral("下一页"), this);
     scanQRCodeButton = new QPushButton(QStringLiteral("扫码"), this);
     templateCodeLineEdit = new QLineEdit(this);
-
-#ifdef Q_OS_ANDROID
-    const QString filePath { QStringLiteral("assets:/templateList/") };
-#else
-    const QString filePath { QStringLiteral(":/template/templateList/") };
-#endif
-    loadFromFile(filePath);
 
     templateCodeLineEdit->setPlaceholderText(QStringLiteral("题卡编号"));
     OKButton->setEnabled(false);
@@ -39,10 +33,10 @@ SelectWidget::SelectWidget(QWidget *parent)
     {
         smallFont.setPixelSize(defaultFontPixelSize / 2);
     }
-    listWidgetTabWidget->setFont(smallFont);
+    multipleSubjectsTemplateListView->setFont(smallFont);
 
-    previousPageButton->setVisible(false);
-    nextPageButton->setVisible(false);
+//    previousPageButton->setVisible(false);
+//    nextPageButton->setVisible(false);
 
     auto addHBoxLayoutWithTwoWidget{[](QWidget * widget1, QWidget * widget2)
     {
@@ -52,124 +46,48 @@ SelectWidget::SelectWidget(QWidget *parent)
         return layout;
     }};
     mainLayout->addLayout(addHBoxLayoutWithTwoWidget(scanQRCodeButton, searchButton));
-    mainLayout->addWidget(listWidgetTabWidget);
-    mainLayout->addLayout(addHBoxLayoutWithTwoWidget(previousPageButton, nextPageButton));
+    mainLayout->addWidget(multipleSubjectsTemplateListView);
+//    mainLayout->addLayout(addHBoxLayoutWithTwoWidget(previousPageButton, nextPageButton));
     mainLayout->addWidget(templateCodeLineEdit);
     mainLayout->addWidget(OKButton);
 
 
     connect(OKButton, &QPushButton::clicked, this, &SelectWidget::OKButtonPushed);
     connect(searchButton, &QPushButton::clicked, this, &SelectWidget::searchButtonPushed);
-    connect(previousPageButton, &QPushButton::clicked, this, &SelectWidget::toPreviousPage);
-    connect(nextPageButton, &QPushButton::clicked, this, &SelectWidget::toNextPageButton);
+//    connect(previousPageButton, &QPushButton::clicked, this, &SelectWidget::toPreviousPage);
+//    connect(nextPageButton, &QPushButton::clicked, this, &SelectWidget::toNextPageButton);
     connect(scanQRCodeButton, &QPushButton::clicked, this, &SelectWidget::scanQRCode);
     connect(templateCodeLineEdit, &QLineEdit::textChanged, [this]
     {
         this->OKButton->setEnabled(true);
     });
+    connect(this->multipleSubjectsTemplateListView, &MultipleSubjectsTemplateListView::templateNameClicked, [this](const QString & templateCode)
+    {
+        this->templateCodeLineEdit->setText(templateCode);
+    });
 }
 
-void SelectWidget::loadFromFile(const QString &dirPath)
-{
-    for(auto i{0}; i < listWidgetTabWidget->count(); ++i)
-    {
-        listWidgetTabWidget->removeTab(i);
-        listWidgetTabWidget->widget(i)->deleteLater();
-    }
-    templateCodeFinder.clear();
+//void SelectWidget::toPreviousPage()
+//{
+//    static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
+//    ->verticalScrollBar()
+//    ->setSliderPosition(
+//        static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
+//        ->verticalScrollBar()
+//        ->sliderPosition() -
+//        listWidgetTabWidget->height());
+//}
 
-    const QStringList subjects({QStringLiteral("语文"), QStringLiteral("数学"),
-                                QStringLiteral("英语"), QStringLiteral("物理"),
-                                QStringLiteral("化学"),
-                                QStringLiteral("生物")});
-    const QStringList fileListNames({QStringLiteral("templateList_chinese"),
-                                     QStringLiteral("templateList_mathematics"),
-                                     QStringLiteral("templateList_english"),
-                                     QStringLiteral("templateList_physics"),
-                                     QStringLiteral("templateList_chemistry"),
-                                     QStringLiteral("templateList_biography")});
-
-    auto addListWidget{[this](const QString & filePath, const QString & name)
-    {
-        auto tempListWidget{new QListWidget};
-        QFile file { filePath };
-        if(file.exists())
-        {
-            file.open(QFile::ReadOnly);
-            while (!file.atEnd())
-            {
-                QString tempTemplateName{file.readLine()};
-                tempTemplateName.resize(tempTemplateName.size() - 1);
-                tempTemplateName.squeeze();
-                auto item{ new QListWidgetItem(tempTemplateName, tempListWidget) };
-
-                QString tempTemplateCode{file.readLine()};
-                tempTemplateCode.resize(tempTemplateCode.size() - 1);
-                tempTemplateCode.squeeze();
-
-                templateCodeFinder.insert(item, tempTemplateCode);
-            }
-            file.close();
-        }
-        QScroller::grabGesture(tempListWidget->viewport(), QScroller::TouchGesture);
-        tempListWidget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-        tempListWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-        tempListWidget->setAutoScroll(false);
-        listWidgetTabWidget->addTab(tempListWidget, name);
-        connect(tempListWidget, &QListWidget::itemSelectionChanged, [this, tempListWidget]
-        {
-            this->itemSelectionChanged(tempListWidget->currentItem());
-        });
-        return tempListWidget;
-    }};
-
-    const QDir allDir {dirPath + QStringLiteral("all")};
-    const QDir latestDir{dirPath + QStringLiteral("latest")};
-
-    auto callFunc{[&addListWidget, &fileListNames, &subjects](const QDir & dir, int index)
-    {
-        addListWidget(dir.filePath(fileListNames.at(index)), subjects.at(index));
-    }};
-
-    if(Setting::listLatestTemplatePreferentially && latestDir.exists())
-    {
-        for(auto i(0); i < 6; ++i)
-        {
-            callFunc(latestDir, i);
-        }
-    }
-    else if(allDir.exists())
-    {
-        for(auto i(0); i < 6; ++i)
-        {
-            callFunc(allDir, i);
-        }
-    }
-
-    addListWidget(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"), QStringLiteral("undefined"));
-}
-
-void SelectWidget::toPreviousPage()
-{
-    static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
-    ->verticalScrollBar()
-    ->setSliderPosition(
-        static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
-        ->verticalScrollBar()
-        ->sliderPosition() -
-        listWidgetTabWidget->height());
-}
-
-void SelectWidget::toNextPageButton()
-{
-    static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
-    ->verticalScrollBar()
-    ->setSliderPosition(
-        static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
-        ->verticalScrollBar()
-        ->sliderPosition() +
-        listWidgetTabWidget->height());
-}
+//void SelectWidget::toNextPageButton()
+//{
+//    static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
+//    ->verticalScrollBar()
+//    ->setSliderPosition(
+//        static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
+//        ->verticalScrollBar()
+//        ->sliderPosition() +
+//        listWidgetTabWidget->height());
+//}
 
 void SelectWidget::searchButtonPushed()
 {
@@ -214,18 +132,12 @@ AnalysisWebRawData SelectWidget::getTemplateCodeData(const QString &templateCode
     QString templateName;
     auto addTemplate{[&templateName, &templateCode, this]
         {
-            auto namedUndefinedListWidget{static_cast<QListWidget*>(listWidgetTabWidget->widget(6))};
             const QString data{templateName + QStringLiteral("\n") + templateCode + QStringLiteral("\n")};
             QFile f(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"));
             f.open(QFile::ReadWrite | QFile::Append);
             f.write(data.toUtf8());
             f.close();
-            //NOTE 和总数目相关,undefined在第7个
-            auto newItem{new QListWidgetItem(templateName, static_cast<QListWidget*>(listWidgetTabWidget->widget(6)))};
-            templateCodeFinder.insert(newItem, templateCode);
-            namedUndefinedListWidget->setCurrentItem(newItem);
-            namedUndefinedListWidget->scrollToItem(newItem);
-            listWidgetTabWidget->setCurrentIndex(6);
+            this->multipleSubjectsTemplateListView->addNewTemplate(QPair<QString, QString>(templateName, templateCode));
         }};
 #ifdef Q_OS_ANDROID
     QFile file { QStringLiteral("assets:/templateData/") + templateCode };
@@ -246,8 +158,10 @@ AnalysisWebRawData SelectWidget::getTemplateCodeData(const QString &templateCode
         webRawData = fileTemp.readAll();
         fileTemp.close();
         templateName = QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
-        auto namedUndefinedListWidget{static_cast<QListWidget*>(listWidgetTabWidget->widget(6))};
-        if(namedUndefinedListWidget->findItems(templateName, Qt::MatchExactly).isEmpty())
+        if (this->multipleSubjectsTemplateListView
+                ->getMultipleSubjectsTemplateListModelList()
+                .at(MultipleSubjectsTemplateListModelList::Subjects::Undefined)
+                ->hasTemplateCode(templateCode))
         {
             addTemplate();
         }
@@ -272,11 +186,6 @@ AnalysisWebRawData SelectWidget::getTemplateCodeData(const QString &templateCode
     }
 
     return AnalysisWebRawData(webRawData, templateName, templateCode);
-}
-
-void SelectWidget::itemSelectionChanged(QListWidgetItem *item)
-{
-    this->templateCodeLineEdit->setText(templateCodeFinder.value(item));
 }
 
 void SelectWidget::scanQRCode()
