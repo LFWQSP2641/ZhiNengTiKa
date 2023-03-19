@@ -54,7 +54,7 @@ void AutoUpdate::showUpdateWidget()
 
     if(msgBox.clickedButton() == downloadBtn)
     {
-        auto downloadUrlReply{Network::getInstance()->networkAccessManager.get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersionEncryption").prepend(domain))))};
+        auto downloadUrlReply{Network::getInstance()->networkAccessManager.get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersionEncryption").prepend(DATABASE_DOMAIN))))};
         auto progressDialog{new QDialog};
         auto progressLayout{new QVBoxLayout(progressDialog)};
         auto progressLabel{new QLabel(progressDialog)};
@@ -100,7 +100,7 @@ void AutoUpdate::showUpdateWidget()
     }
     else if(msgBox.clickedButton() == openBrowerBtn)
     {
-        auto reply{Network::getInstance()->networkAccessManager.get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersion").prepend(domain))))};
+        auto reply{Network::getInstance()->networkAccessManager.get(QNetworkRequest(QUrl(QStringLiteral("getNewestVersion").prepend(DATABASE_DOMAIN))))};
         QDialog dialog;
         QVBoxLayout mianLayout(&dialog);
 

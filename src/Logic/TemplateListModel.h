@@ -5,6 +5,7 @@ class TemplateListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
+    using QAbstractListModel::QAbstractListModel;
     explicit TemplateListModel(const QList<QPair<QString, QString>> &templateList, QObject *parent = nullptr)
         : QAbstractListModel{parent}, templateList(templateList) {}
     explicit TemplateListModel(const QList<QString> &templateNameList, const QList<QString> &templateCodeList, QObject *parent = nullptr);

@@ -26,6 +26,10 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList()
             file.close();
             this->append(new TemplateListModel(tempTemplateList));
         }
+        else
+        {
+            this->append(new TemplateListModel());
+        }
     }};
 
     const QStringList fileListNames({QStringLiteral("templateList_chinese"),
@@ -57,7 +61,6 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList()
             importTemplateList(QDir(allDir).filePath(fileName));
         }
     }
-
     importTemplateList(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"));
 }
 
