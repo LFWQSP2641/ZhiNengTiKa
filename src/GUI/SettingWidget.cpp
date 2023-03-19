@@ -1,6 +1,7 @@
 #include "SettingWidget.h"
 #include "../StaticClass/Global.h"
 #include "../StaticClass/Setting.h"
+#include "../Singleton/AutoUpdate.h"
 
 SettingWidget::SettingWidget(QWidget *parent)
     : QWidget{ parent }

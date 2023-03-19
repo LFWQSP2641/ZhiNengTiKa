@@ -1,8 +1,6 @@
 #ifndef SETTINGWIDGET_H
 #define SETTINGWIDGET_H
 
-#include "../Singleton/AutoUpdate.h"
-
 class SettingWidget : public QWidget
 {
     Q_OBJECT
