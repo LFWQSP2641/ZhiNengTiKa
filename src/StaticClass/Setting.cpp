@@ -45,11 +45,11 @@ void Setting::loadFromFile()
                                 jsonObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
                                 jsonObject.value(QStringLiteral("authorization")).toString().toUtf8(),
                                 jsonObject.value(QStringLiteral("clientSession")).toString(QUuid::createUuid().toString(QUuid::WithoutBraces)).toUtf8(),
-                                jsonObject.value(QStringLiteral("username")).toString().toUtf8(),
+                                jsonObject.value(QStringLiteral("studentId")).toString().toUtf8(),
+                                QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("detailData")).toString().toUtf8())).object(),
                                 jsonObject.value(QStringLiteral("password")).toString().toUtf8(),
                                 jsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
-                                QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("detailData")).toString().toUtf8())).object(),
-                                jsonObject.value(QStringLiteral("studentId")).toString().toUtf8()));
+                                jsonObject.value(QStringLiteral("username")).toString().toUtf8()));
     }
 
     Setting::compressQRCodeImage = settingJsonObject.value(QStringLiteral("compressQRCodeImage")).toBool(true);

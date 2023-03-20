@@ -8,11 +8,11 @@ public:
     UserData() = default;
     UserData(const QByteArray &accessToken, const QByteArray &authorization,
              const QByteArray &clientSession, const QByteArray &studentId,
-             const QByteArray &password = QByteArray(), const QByteArray &schoolId = QByteArray(),
-             const QJsonObject &detailData = QJsonObject(), const QByteArray &username = QByteArray())
+             const QJsonObject &detailData = QJsonObject(), const QByteArray &password = QByteArray(),
+             const QByteArray &schoolId = QByteArray(), const QByteArray &username = QByteArray())
         : accessToken(accessToken), authorization(authorization),
-          clientSession(clientSession), password(password),
-          schoolId(schoolId), detailDataJsonObject(detailData),
+          clientSession(clientSession), detailDataJsonObject(detailData),
+          password(password), schoolId(schoolId),
           studentId(studentId), username(username) {}
 
     QByteArray getAccessToken() const
@@ -63,9 +63,9 @@ private:
     QByteArray accessToken;
     QByteArray authorization;
     QByteArray clientSession;
+    QJsonObject detailDataJsonObject;
     QByteArray password;
     QByteArray schoolId;
-    QJsonObject detailDataJsonObject;
     QByteArray studentId;
     QByteArray username;
 

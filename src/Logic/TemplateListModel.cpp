@@ -72,20 +72,22 @@ QString TemplateListModel::getTemplateCode(const QModelIndex &index) const
 
 bool TemplateListModel::hasTemplateName(const QString &templateName) const
 {
-    return std::any_of(
-               this->templateList.begin(), this->templateList.end(),
-               [&templateName](const QPair<QString, QString> &templateInfo)
+    const auto result{std::any_of(
+                          this->templateList.begin(), this->templateList.end(),
+                          [&templateName](const QPair<QString, QString> &templateInfo)
     {
         return templateInfo.first == templateName;
-    });
+    })};
+    return result;
 }
 
 bool TemplateListModel::hasTemplateCode(const QString &templateCode) const
 {
-    return std::any_of(
-               this->templateList.begin(), this->templateList.end(),
-               [&templateCode](const QPair<QString, QString> &templateInfo)
+    const auto result{std::any_of(
+                          this->templateList.begin(), this->templateList.end(),
+                          [&templateCode](const QPair<QString, QString> &templateInfo)
     {
         return templateInfo.second == templateCode;
-    });
+    })};
+    return result;
 }

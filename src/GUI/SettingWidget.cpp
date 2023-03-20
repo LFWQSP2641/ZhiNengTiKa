@@ -185,7 +185,6 @@ SettingWidget::SettingWidget(QWidget *parent)
 #ifdef Q_OS_ANDROID
         Setting::saveToFile();
 #endif // Q_OS_ANDROID
-        this->logoutButton->setEnabled(false);
         QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登出成功"));
         setUserList();
     });

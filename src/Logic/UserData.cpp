@@ -40,12 +40,10 @@ UserData UserData::login(const QByteArray &username, const QByteArray &password)
                    dataObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
                    QByteArrayLiteral("JBY ") + dataObject.value(QStringLiteral("token")).toString().toUtf8(),
                    clientSessionVal,
-                   username,
-                   password,
+                   userSchoolDataJsonObject.value(QStringLiteral("studentId")).toString().toUtf8(),
+                   userDataJsonObject, password,
                    userSchoolDataJsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
-                   userDataJsonObject,
-                   userSchoolDataJsonObject.value(QStringLiteral("studentId")).toString().toUtf8()
-               );
+                   username);
     }
     else
     {
