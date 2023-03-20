@@ -158,7 +158,7 @@ AnalysisWebRawData SelectWidget::getTemplateCodeData(const QString &templateCode
         webRawData = fileTemp.readAll();
         fileTemp.close();
         templateName = QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
-        if (this->multipleSubjectsTemplateListView
+        if (!this->multipleSubjectsTemplateListView
                 ->getMultipleSubjectsTemplateListModelList()
                 .at(MultipleSubjectsTemplateListModelList::Subjects::Undefined)
                 ->hasTemplateCode(templateCode))
