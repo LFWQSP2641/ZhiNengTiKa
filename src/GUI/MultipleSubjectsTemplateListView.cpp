@@ -18,7 +18,7 @@ MultipleSubjectsTemplateListView::MultipleSubjectsTemplateListView(QWidget *pare
     multipleSubjectsTabBar->setDrawBase(false);
     multipleSubjectsTabBar->setElideMode(Qt::ElideRight);
 
-    templateListView->setTemplateListModel(this->multipleSubjectsTemplateListModelList[0]);
+    templateListView->setTemplateListModel(this->multipleSubjectsTemplateListModelList.at(0));
 
     mainLayout->setSpacing(0);
     mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -29,7 +29,7 @@ MultipleSubjectsTemplateListView::MultipleSubjectsTemplateListView(QWidget *pare
     {
         if(index > -1)
         {
-            templateListView->setTemplateListModel(this->multipleSubjectsTemplateListModelList[index]);
+            templateListView->setTemplateListModel(this->multipleSubjectsTemplateListModelList.at(index));
         }
     });
     connect(templateListView, &TemplateListView::templateNameClicked, this, &MultipleSubjectsTemplateListView::templateNameClicked);

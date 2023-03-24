@@ -3,11 +3,12 @@
 
 #include "TemplateListModel.h"
 
-class MultipleSubjectsTemplateListModelList : public QList<TemplateListModel*>
+class MultipleSubjectsTemplateListModelList : public QObject
 {
+//    Q_OBJECT
 public:
-    MultipleSubjectsTemplateListModelList();
-    void addNewTemplate(QPair<QString, QString> templateInfo);
+    explicit MultipleSubjectsTemplateListModelList(QObject *parent = nullptr);
+    ~MultipleSubjectsTemplateListModelList();
     enum Subjects
     {
         Chinese = 0,
@@ -18,6 +19,15 @@ public:
         Biography = 5,
         Undefined = 6
     };
+    Q_INVOKABLE TemplateListModel *at(qsizetype index) const
+    {
+        return templateListModelList.at(index);
+    }
+public slots:
+    void addNewTemplate(QPair<QString, QString> templateInfo);
+
+protected:
+    QList<TemplateListModel*> templateListModelList;
 };
 
 #endif // MULTIPLESUBJECTSTEMPLATELISTMODELLIST_H

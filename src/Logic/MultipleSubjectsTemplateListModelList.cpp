@@ -2,7 +2,8 @@
 #include "../StaticClass/Setting.h"
 #include "../StaticClass/Global.h"
 
-MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList()
+MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QObject *parent)
+    : QObject{parent}
 {
     auto importTemplateList{[this](QString filePath)
     {
@@ -24,11 +25,11 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList()
                 tempTemplateList.append(QPair<QString, QString>(tempTemplateName, tempTemplateCode));
             }
             file.close();
-            this->append(new TemplateListModel(tempTemplateList));
+            templateListModelList.append(new TemplateListModel(tempTemplateList));
         }
         else
         {
-            this->append(new TemplateListModel());
+            templateListModelList.append(new TemplateListModel());
         }
     }};
 
@@ -64,7 +65,15 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList()
     importTemplateList(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"));
 }
 
+MultipleSubjectsTemplateListModelList::~MultipleSubjectsTemplateListModelList()
+{
+    for(auto &i : templateListModelList)
+    {
+        i->deleteLater();
+    }
+}
+
 void MultipleSubjectsTemplateListModelList::addNewTemplate(QPair<QString, QString> templateInfo)
 {
-    (*this)[Subjects::Undefined]->addNewTemplate(templateInfo);
+    templateListModelList[Subjects::Undefined]->addNewTemplate(templateInfo);
 }
