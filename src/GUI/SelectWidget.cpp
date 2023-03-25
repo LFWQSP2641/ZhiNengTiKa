@@ -265,9 +265,6 @@ void SelectWidget::scanQRCode()
     }
     qDebug() << decodeResult;
     this->templateCodeLineEdit->setText(decodeResult);
-    if(Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully)
-    {
-        this->OKButtonPushed();
-    }
+    this->OKButtonPushed();
     scanQRCodeButton->setEnabled(true);
 }

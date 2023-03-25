@@ -16,13 +16,16 @@ private:
     QSpinBox *fontPointSizeSpinBox;
     QSpinBox *smallFontPointSizeSpinBox;
     QLabel *resultTestLabel;
+    QComboBox *schoolNameComboBox;
+    QComboBox *levelComboBox;
     QCheckBox *listLatestTemplatePreferentiallyCheckBox;
-    QCheckBox *getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox;
     QCheckBox *compressQRCodeImageCheckBox;
     QPushButton *commonProblemButton;
     QPushButton *knownProblemButton;
     QPushButton *aboutButton;
     QPushButton *aboutQtButton;
+    QPushButton *usedSourceButton;
+    QPushButton *openSourceLicenseButton;
     QLabel *currentVersionLabel;
     QPushButton *checkNewVersionButton;
     QVBoxLayout *layout;

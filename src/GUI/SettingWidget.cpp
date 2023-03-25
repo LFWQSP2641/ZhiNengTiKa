@@ -30,8 +30,9 @@ SettingWidget::SettingWidget(QWidget *parent)
     fontPointSizeSpinBox = new QSpinBox(this);
     smallFontPointSizeSpinBox = new QSpinBox(this);
     resultTestLabel = new QLabel(this);
+    schoolNameComboBox = new QComboBox(this);
+    levelComboBox = new QComboBox(this);
     listLatestTemplatePreferentiallyCheckBox = new QCheckBox(QStringLiteral("优先显示最新题卡"), this);
-    getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox = new QCheckBox(QStringLiteral("扫码成功后自动获取"), this);
     compressQRCodeImageCheckBox = new QCheckBox(QStringLiteral("压缩二维码图片后解析"), this);
     cleanTempButton = new QPushButton(QStringLiteral("删除缓存"), this);
     showTempSize = new QLabel(this);
@@ -41,6 +42,8 @@ SettingWidget::SettingWidget(QWidget *parent)
     checkNewVersionButton = new QPushButton(QStringLiteral("检查更新"), this);
     aboutButton = new QPushButton(QStringLiteral("关于"), this);
     aboutQtButton = new QPushButton(QStringLiteral("关于Qt"), this);
+    usedSourceButton = new QPushButton(QStringLiteral("使用软件"), this);
+    openSourceLicenseButton = new QPushButton(QStringLiteral("开源许可"), this);
     layout = new QVBoxLayout(this);
 
     setUserList();
@@ -49,11 +52,14 @@ SettingWidget::SettingWidget(QWidget *parent)
     resultTestLabel->setText(QStringLiteral("AbCd字体测试1234"));
     fontComboBox->addItems(QFontDatabase::families(QFontDatabase::SimplifiedChinese));
     fontComboBox->setCurrentText(Setting::font);
+    smallFontPointSizeSpinBox->setMinimum(1);
+    fontPointSizeSpinBox->setMinimum(1);
     smallFontPointSizeSpinBox->setValue(Setting::smallFontPointSize);
     fontPointSizeSpinBox->setValue(Setting::fontPointSize);
 
+    schoolNameComboBox->addItem(QStringLiteral("金川高级中学"));
+    levelComboBox->addItem(QStringLiteral("2021级"));
     listLatestTemplatePreferentiallyCheckBox->setChecked(Setting::listLatestTemplatePreferentially);
-    getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox->setChecked(Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully);
 
     compressQRCodeImageCheckBox->setChecked(Setting::compressQRCodeImage);
 
@@ -71,13 +77,14 @@ SettingWidget::SettingWidget(QWidget *parent)
     appearanceLayout->addRow(QStringLiteral("字体大小:"), fontPointSizeSpinBox);
     appearanceLayout->addRow(QStringLiteral("小字体部件:"), smallFontPointSizeSpinBox);
     appearanceLayout->addRow(QStringLiteral("效果:"), resultTestLabel);
+    templateListLayout->addLayout(addTwoWidgetToHBoxLayout(schoolNameComboBox, levelComboBox));
     templateListLayout->addWidget(listLatestTemplatePreferentiallyCheckBox);
-    templateListLayout->addWidget(getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox);
     aboutQRCodeLayout->addWidget(compressQRCodeImageCheckBox);
     cacheLayout->addLayout(addTwoWidgetToHBoxLayout(showTempSize, cleanTempButton));
     problemLayout->addLayout(addTwoWidgetToHBoxLayout(commonProblemButton, knownProblemButton));
     versionLayout->addLayout(addTwoWidgetToHBoxLayout(currentVersionLabel, checkNewVersionButton));
     aboutLayout->addLayout(addTwoWidgetToHBoxLayout(aboutButton, aboutQtButton));
+    aboutLayout->addLayout(addTwoWidgetToHBoxLayout(usedSourceButton, openSourceLicenseButton));
 
     layout->addWidget(accountGroupBox);
     layout->addWidget(appearanceGroupBox);
@@ -256,7 +263,6 @@ SettingWidget::SettingWidget(QWidget *parent)
     });
 
     connectCheckBoxWithBool(this->listLatestTemplatePreferentiallyCheckBox, Setting::listLatestTemplatePreferentially, true);
-    connectCheckBoxWithBool(this->getTemplateCodeDataAfterScanQRCodeSuccessfullyCheckBox, Setting::getTemplateCodeDataAfterScanQRCodeSuccessfully);
     connectCheckBoxWithBool(this->compressQRCodeImageCheckBox, Setting::compressQRCodeImage);
 
     connect(this->commonProblemButton, &QPushButton::clicked, [this]
@@ -277,29 +283,39 @@ SettingWidget::SettingWidget(QWidget *parent)
                                           "<h4>2.公式显示有问题</h4>"
                                           "<h4>3.正常退出软件后, 立刻再次启动会闪退</h4>"));
     });
-#if 0
     connect(this->aboutButton, &QPushButton::clicked, [this]
     {
         QMessageBox::about(this, QStringLiteral("关于"),
                            QStringLiteral(
                                "<p>使用 Qt 框架的跨平台软件,支持 Windows, Android, Linux</p>"
-                               "<p>内测版</p>"
                                "<p>作者:LFWQSP2641( <a href=\"%0\">%0</a> )</p>"
-                               "<p><b>只在Github有账号,其他平台同名账号与本人无关!</b></p>"
                                "<p>Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserved.</p>"
-                               "<br />"
-                               "<p>鸣谢:</p>"
-                               "<p>Qt ( <a href=\"%1\">%1</a> )</p>"
-                               "<p>android_openssl ( <a href=\"%2\">%2</a> )</p>"
-                               "<p>Qt-AES ( <a href=\"%3\">%3</a> )</p>"
+                               "<p>项目地址: <a href=\"%1\">%1</a> <small><s>(欢迎来提交PR)</s></small></p>"
                            ).arg(QStringLiteral("https://github.com/LFWQSP2641"),
-                                 QStringLiteral("https://www.qt.io"),
+                                 QStringLiteral("https://github.com/LFWQSP2641/xinjiaoyu")));
+    });
+    connect(this->usedSourceButton, &QPushButton::clicked, [this]
+    {
+        QMessageBox::about(this, QStringLiteral("使用软件"),
+                           QStringLiteral(
+                               "<p>Qt ( <a href=\"%0\">%0</a> )</p>"
+                               "<p><small>GNU (Lesser) General Public License v3.0</small></p>"
+                               "<br/>"
+                               "<p>android_openssl ( <a href=\"%1\">%1</a> )</p>"
+                               "<p><small>Apache License 2.0</small></p>"
+                               "<br/>"
+                               "<p>Qt-AES ( <a href=\"%2\">%2</a> )</p>"
+                               "<p><small>The Unlicense</small></p>"
+                           ).arg(QStringLiteral("https://www.qt.io"),
                                  QStringLiteral("https://github.com/KDAB/android_openssl"),
                                  QStringLiteral("https://github.com/bricke/Qt-AES")));
     });
-#else
-    this->aboutButton->setEnabled(false);
-#endif
+    connect(this->openSourceLicenseButton, &QPushButton::clicked, [this]
+    {
+        QMessageBox::about(this, QStringLiteral("开源许可"),
+                           QStringLiteral("<p>程序源码以 GNU Affero General Public License v3.0 方式开源</p>"
+                                          "<p>题卡数据所有权归<b> 山东金榜苑文化传媒有限责任公司 </b>所有</p>"));
+    });
     connect(this->aboutQtButton, &QPushButton::clicked, [this]
     {
         QMessageBox::aboutQt(this);

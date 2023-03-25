@@ -8,7 +8,6 @@ extern void loadFromFile();
 extern void saveToFile();
 
 extern bool listLatestTemplatePreferentially;
-extern bool getTemplateCodeDataAfterScanQRCodeSuccessfully;
 
 extern bool compressQRCodeImage;
 
