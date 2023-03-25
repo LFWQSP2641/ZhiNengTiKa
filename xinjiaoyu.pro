@@ -1,9 +1,8 @@
-VERSION = 1.7.1
-
-
+QT       += core widgets gui network
+VERSION = 1.8.0
 android{
 
-QT       += core widgets gui network core-private
+QT       += core-private
 
 ANDROID_VERSION_NAME = $$VERSION
 
@@ -16,8 +15,6 @@ ANDROID_PACKAGE_SOURCE_DIR = \
 
 }
 win32{
-
-QT       += core widgets gui network
 
 RC_ICONS = Resource/img/xinjiaoyuico.ico
 
@@ -37,7 +34,7 @@ CONFIG += webview
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
-DEFINES += DATABASE_DOMAIN=\\\"https://gitee.com/LFWQSP2641/xinjiaoyu/raw/master/\\\"
+DEFINES += DATABASE_DOMAIN=\\\"https://gitee.com/LFWQSP2641/zhinengtika_database/raw/master/\\\"
 
 DEFINES *= QT_USE_QSTRINGBUILDER
 
