@@ -43,7 +43,7 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
 #ifdef Q_OS_ANDROID
     const QString dirPath { QStringLiteral("assets:/templateList/") };
 #else
-    const QString dirPath { QStringLiteral(":/template/templateList/") };
+    const QString dirPath { QStringLiteral(":/templateList/") };
 #endif
     const QDir allDir {dirPath + QStringLiteral("all")};
     const QDir latestDir{dirPath + QStringLiteral("latest")};

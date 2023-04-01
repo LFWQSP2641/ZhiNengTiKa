@@ -22,7 +22,7 @@ void TemplateSearcher::run()
 #ifdef Q_OS_ANDROID
     const QString dirPath { QStringLiteral("assets:/templateList/") };
 #else
-    const QString dirPath { QStringLiteral(":/template/templateList/") };
+    const QString dirPath { QStringLiteral(":/templateList/") };
 #endif
 
     QDir allDir {dirPath + QStringLiteral("all")};

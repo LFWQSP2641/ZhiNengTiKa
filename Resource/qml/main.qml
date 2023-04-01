@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt.labs.platform
 import WebRawDataQML
 
 Window {
@@ -9,6 +10,15 @@ Window {
     height: 480
     visible: true
     title: "智能题卡"
+
+    MessageDialog {
+        id: messageDialog
+
+        function show(caption) {
+            messageDialog.text = caption;
+            messageDialog.open();
+        }
+    }
 
     WebRawData {
         id: webRawData
@@ -25,6 +35,11 @@ Window {
         SelectWidget {
             onOkButtonClicked: function(templateCode){
                 webRawData.setValue(templateCode)
+                if(!webRawData.getValid())
+                {
+                    messageDialog.show(webRawData.getErrorStr())
+                    return
+                }
                 templateDetailWidget.setAnalysisWebRawData(webRawData.toAnalysisWebRawDataQML())
                 tabBar.setCurrentIndex(1)
             }

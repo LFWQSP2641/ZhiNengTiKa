@@ -1,5 +1,5 @@
-#ifndef WEBRAWDATA_H
-#define WEBRAWDATA_H
+#ifndef WEBRAWDATAQML_H
+#define WEBRAWDATAQML_H
 
 #include "AnalysisWebRawDataQML.h"
 
@@ -44,4 +44,4 @@ protected:
     AnalysisWebRawDataQML *newAnalysisWebRawDataQMLPointer = nullptr;
 };
 
-#endif // WEBRAWDATA_H
+#endif // WEBRAWDATAQML_H

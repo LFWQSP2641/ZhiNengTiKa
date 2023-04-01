@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ANALYSISWEBRAWDATAQML_H
+#define ANALYSISWEBRAWDATAQML_H
 
 #include "AnswerDetailData.hpp"
 
@@ -50,3 +51,4 @@ protected:
     static void callFunc(const QJsonArray &jsonArray, const qsizetype index, f1 func1, f2 func2);
 };
 
+#endif // ANALYSISWEBRAWDATAQML_H

@@ -1,5 +1,5 @@
-#ifndef PCH_H
-#define PCH_H
+#ifndef PCHQML_H
+#define PCHQML_H
 
 #include <QApplication>
 #include <QtWidgets>
@@ -26,8 +26,10 @@
 #endif // Q_OS_ANDROID
 #include <QQmlApplicationEngine>
 #include <QtWebView>
+#include <QSGRendererInterface>
+#include <QQuickWindow>
 
 #include "D:/Softwares/scr/Qt-AES/qaesencryption.h"
 #include "D:/Softwares/scr/WebView/WebView.h"
 
-#endif // PCH_H
+#endif // PCHQML_H

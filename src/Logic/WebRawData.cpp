@@ -8,7 +8,7 @@ WebRawData::WebRawData(const QString &templateCode)
 #ifdef Q_OS_ANDROID
     QFile file { QStringLiteral("assets:/templateData/") + templateCode };
 #else
-    QFile file { QStringLiteral(":/template/templateData/") + templateCode };
+    QFile file { QStringLiteral(":/templateData/") + templateCode };
 #endif
     QFile fileTemp { Global::tempPath() + QDir::separator() + QStringLiteral("TemplateFile") + QDir::separator() + templateCode };
     if (file.exists())

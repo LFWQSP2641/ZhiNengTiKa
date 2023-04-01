@@ -2,7 +2,7 @@ VERSION = 2.0.0
 
 QT       += core network
 
-#CONFIG += useQuick
+CONFIG += useQuick
 
 useQuick{
 QT       += core widgets gui network quick webview
@@ -14,8 +14,6 @@ android{
 QT       += core-private
 
 ANDROID_VERSION_NAME = $$VERSION
-
-RESOURCES += Resource/Resource_Android.qrc
 
 include(D:/Softwares/scr/AndroidSDK/android_openssl/openssl.pri)
 
@@ -34,7 +32,8 @@ QMAKE_TARGET_COPYRIGHT = "Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserve
 
 RC_LANG = 0x0004
 
-RESOURCES += Resource/Resource.qrc
+RESOURCES += \
+    Resource/template.qrc
 
 }
 
@@ -71,6 +70,9 @@ SOURCES += \
     src/Logic/WebRawDataQML.cpp \
     src/mainQML.cpp \
     src/pchQML.h.cpp
+
+RESOURCES += \
+    Resource/qml.qrc
 }else{
 PRECOMPILED_HEADER = src/pch.h
 
@@ -146,6 +148,8 @@ SOURCES += \
     src/StaticClass/Setting.cpp \
     src/StaticClass/XinjiaoyuEncryptioner.cpp \
     src/StaticClass/XinjiaoyuNetwork.cpp
+
+RESOURCES += Resource/Resource.qrc
 
 android{
 DISTFILES += \
