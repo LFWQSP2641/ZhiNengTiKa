@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/MultipleSubjectsTemplateListView.qml</file>
+        <file>qml/SelectWidget.qml</file>
+        <file>qml/SettingWidget.qml</file>
+        <file>qml/TemplateDetailWidget.qml</file>
+        <file>qml/TemplateListView.qml</file>
+    </qresource>
+</RCC>
