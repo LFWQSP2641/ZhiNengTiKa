@@ -70,6 +70,11 @@ QString TemplateListModel::getTemplateCode(const QModelIndex &index) const
     return templateList.at(index.row()).second;
 }
 
+QString TemplateListModel::getTemplateCode(int index) const
+{
+    return templateList.at(index).second;
+}
+
 bool TemplateListModel::hasTemplateName(const QString &templateName) const
 {
     const auto result{std::any_of(

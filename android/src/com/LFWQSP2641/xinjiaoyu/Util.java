@@ -1,4 +1,4 @@
-package com.LFWQSP2641.xinjiaoyu;
+package com.LFWQSP2641.ZhiNengTiKa;
 
 import org.qtproject.qt.android.bindings.QtActivity;
 

@@ -15,7 +15,8 @@ public:
 
     void addNewTemplate(QPair<QString, QString> templateInfo);
 
-    QString getTemplateCode(const QModelIndex &index) const;
+    Q_INVOKABLE QString getTemplateCode(const QModelIndex &index) const;
+    Q_INVOKABLE QString getTemplateCode(int index) const;
     bool hasTemplateName(const QString &templateName) const;
     bool hasTemplateCode(const QString &templateCode) const;
 private:

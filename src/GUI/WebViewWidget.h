@@ -2,6 +2,24 @@
 
 #include "../Logic/AnalysisWebRawData.h"
 
+class WebView: public QWebEngineView
+{
+    Q_OBJECT
+public:
+    using QWebEngineView::QWebEngineView;
+    void setHtml(const QString &html, const QUrl &baseUrl = QUrl())
+    {
+        this->html = html;
+        this->QWebEngineView::setHtml(html, baseUrl);
+    }
+    QString getHtml() const
+    {
+        return html;
+    }
+protected:
+    QString html;
+};
+
 class WebViewWidget : public QWidget
 {
     Q_OBJECT

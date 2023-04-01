@@ -1,4 +1,4 @@
-package com.LFWQSP2641.xinjiaoyu;
+package com.LFWQSP2641.ZhiNengTiKa;
 
 import org.qtproject.qt.android.bindings.QtActivity;
 import java.io.File;
@@ -26,7 +26,7 @@ public class CallNativeComponent extends org.qtproject.qt.android.bindings.QtAct
             //  这样做的原因：Android 7.0 开始，直接使用本地真实路径的Uri是被认为是不安全的，会抛出FileUriExposedException异常；
             //      而FileProvider是一种特殊的ContentProvider，他使用了和ContentProvider类似的机制对数据进行保护，可以选择性地将封装过的Uri共享给外部。
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                imageUri = FileProvider.getUriForFile(activity, "com.LFWQSP2641.xinjiaoyu.permissiontest.fileprovider", outputImage);
+                imageUri = FileProvider.getUriForFile(activity, "com.LFWQSP2641.ZhiNengTiKa.permissiontest.fileprovider", outputImage);
             } else {
                 //  否则，就调用Uri的fromFile()方法将File对象转换成Uri对象
                 imageUri = Uri.fromFile(outputImage);

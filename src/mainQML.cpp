@@ -2,11 +2,16 @@
 #include "Singleton/AutoUpdate.h"
 #include "StaticClass/Global.h"
 #include "StaticClass/Setting.h"
+#include "StaticClass/CallAndroidNativeComponent.h"
 #include "Singleton/Network.h"
 #include "StaticClass/QRCodeScanner.h"
+#include "Logic/MultipleSubjectsTemplateListModelList.h"
+#include "Logic/AnalysisWebRawDataQML.h"
+#include "Logic/WebRawDataQML.h"
 
 int main(int argc, char *argv[])
 {
+    QtWebView::initialize();
 #ifdef USE_QTWEBVIEW
 #ifndef Q_OS_WINDOWS
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
@@ -56,7 +61,7 @@ int main(int argc, char *argv[])
 #else
 #endif // Q_OS_ANDROID
 
-#if 1
+#if 0
     MainWidget w;
     w.setAttribute(Qt::WA_QuitOnClose);
     w.show();

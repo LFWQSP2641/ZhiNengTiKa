@@ -5,7 +5,7 @@
 
 class MultipleSubjectsTemplateListModelList : public QObject
 {
-//    Q_OBJECT
+    Q_OBJECT
 public:
     explicit MultipleSubjectsTemplateListModelList(QObject *parent = nullptr);
     ~MultipleSubjectsTemplateListModelList();

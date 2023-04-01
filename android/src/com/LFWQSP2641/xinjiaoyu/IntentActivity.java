@@ -1,4 +1,4 @@
-package com.LFWQSP2641.xinjiaoyu;
+package com.LFWQSP2641.ZhiNengTiKa;
 
 import org.qtproject.qt.android.bindings.QtActivity;
 import java.io.File;
@@ -17,7 +17,7 @@ public class IntentActivity extends org.qtproject.qt.android.bindings.QtActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
         {
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            Uri contentUri = FileProvider.getUriForFile(activity, "com.LFWQSP2641.xinjiaoyu.permissiontest.fileprovider", apkFile);
+            Uri contentUri = FileProvider.getUriForFile(activity, "com.LFWQSP2641.ZhiNengTiKa.permissiontest.fileprovider", apkFile);
             intent.setDataAndType(contentUri, "application/vnd.android.package-archive");
         }
         else

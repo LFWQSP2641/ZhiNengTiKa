@@ -7,7 +7,7 @@ QImage CallAndroidNativeComponent::takePhoto()
     QtAndroidPrivate::requestPermission(QtAndroidPrivate::Camera).waitForFinished();
     QJniObject activity = QtAndroidPrivate::activity();
     QJniObject::callStaticMethod<void>(
-        "com/LFWQSP2641/xinjiaoyu/CallNativeComponent",
+        "com/LFWQSP2641/ZhiNengTiKa/CallNativeComponent",
         "callNativeCamera",
         "(Lorg/qtproject/qt/android/bindings/QtActivity;)V",
         activity.object<jobject>());
@@ -37,7 +37,7 @@ void CallAndroidNativeComponent::openUrl(const QString &url)
     QJniObject activity = QtAndroidPrivate::activity();
 
     QJniObject::callStaticMethod<void>(
-        "com/LFWQSP2641/xinjiaoyu/IntentActivity",
+        "com/LFWQSP2641/ZhiNengTiKa/IntentActivity",
         "openUrl",
         "(Ljava/lang/String;Lorg/qtproject/qt/android/bindings/QtActivity;)V",
         jUrl.object<jstring>(),
@@ -54,7 +54,7 @@ void CallAndroidNativeComponent::installApk(const QString &filePath)
     QJniObject activity = QtAndroidPrivate::activity();
 
     QJniObject::callStaticMethod<void>(
-        "com/LFWQSP2641/xinjiaoyu/IntentActivity",
+        "com/LFWQSP2641/ZhiNengTiKa/IntentActivity",
         "installApk",
         "(Ljava/lang/String;Lorg/qtproject/qt/android/bindings/QtActivity;)V",
         jFilePath.object<jstring>(),
@@ -66,7 +66,7 @@ QString CallAndroidNativeComponent::getCacheDir()
 {
     QJniObject activity = QtAndroidPrivate::activity();
     return QJniObject::callStaticMethod<jstring>(
-               "com/LFWQSP2641/xinjiaoyu/Util",
+               "com/LFWQSP2641/ZhiNengTiKa/Util",
                "getCacheDir",
                "(Lorg/qtproject/qt/android/bindings/QtActivity;)Ljava/lang/String;",
                activity.object<jobject>()).toString();

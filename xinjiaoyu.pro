@@ -1,7 +1,16 @@
-QT       += core widgets gui network
-VERSION = 1.8.0
-android{
+VERSION = 2.0.0
 
+QT       += core network
+
+#CONFIG += useQuick
+
+useQuick{
+QT       += core widgets gui network quick webview
+}else{
+QT       += widgets gui
+}
+
+android{
 QT       += core-private
 
 ANDROID_VERSION_NAME = $$VERSION
@@ -15,6 +24,7 @@ ANDROID_PACKAGE_SOURCE_DIR = \
 
 }
 win32{
+QT       += webenginewidgets
 
 RC_ICONS = Resource/img/xinjiaoyuico.ico
 
@@ -28,8 +38,6 @@ RESOURCES += Resource/Resource.qrc
 
 }
 
-CONFIG += webview
-
 #DEFINES += LIMITED
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
@@ -39,8 +47,6 @@ DEFINES += DATABASE_DOMAIN=\\\"https://gitee.com/LFWQSP2641/zhinengtika_database
 DEFINES *= QT_USE_QSTRINGBUILDER
 
 CONFIG += c++17 precompile_header
-
-PRECOMPILED_HEADER = src/pch.h
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -52,7 +58,21 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 include(D:/Softwares/scr/Qt-AES/QAESEncryption.pri)
-include(D:/Softwares/scr/WebView/WebView.pri)
+
+useQuick{
+PRECOMPILED_HEADER = src/pchQML.h
+
+HEADERS += \
+    src/Logic/AnalysisWebRawDataQML.h \
+    src/Logic/WebRawDataQML.h \
+
+SOURCES += \
+    src/Logic/AnalysisWebRawDataQML.cpp \
+    src/Logic/WebRawDataQML.cpp \
+    src/mainQML.cpp \
+    src/pchQML.h.cpp
+}else{
+PRECOMPILED_HEADER = src/pch.h
 
 HEADERS += \
     src/GUI/AnswerAndAnalysisWidget.h \
@@ -73,20 +93,7 @@ HEADERS += \
     src/GUI/UploadWidget.h \
     src/GUI/WebViewWidget.h \
     src/Logic/AnalysisWebRawData.h \
-    src/Logic/AnswerDetailData.hpp \
-    src/Logic/MultipleSubjectsTemplateListModelList.h \
-    src/Logic/TemplateListModel.h \
-    src/Logic/TemplateSearcher.h \
-    src/Logic/UserData.h \
-    src/Logic/UserDataList.hpp \
-    src/Singleton/AutoUpdate.h \
-    src/Singleton/Network.h \
-    src/StaticClass/CallAndroidNativeComponent.h \
-    src/StaticClass/Global.h \
-    src/StaticClass/QRCodeScanner.h \
-    src/StaticClass/Setting.h \
-    src/StaticClass/XinjiaoyuEncryptioner.h \
-    src/StaticClass/XinjiaoyuNetwork.h
+    src/Logic/WebRawData.h \
 
 SOURCES += \
     src/GUI/AnswerAndAnalysisWidget.cpp \
@@ -106,6 +113,27 @@ SOURCES += \
     src/GUI/UploadWidget.cpp \
     src/GUI/WebViewWidget.cpp \
     src/Logic/AnalysisWebRawData.cpp \
+    src/Logic/WebRawData.cpp \
+    src/main.cpp \
+    src/pch.h.cpp
+}
+HEADERS += \
+    src/Logic/AnswerDetailData.hpp \
+    src/Logic/MultipleSubjectsTemplateListModelList.h \
+    src/Logic/TemplateListModel.h \
+    src/Logic/TemplateSearcher.h \
+    src/Logic/UserData.h \
+    src/Logic/UserDataList.hpp \
+    src/Singleton/AutoUpdate.h \
+    src/Singleton/Network.h \
+    src/StaticClass/CallAndroidNativeComponent.h \
+    src/StaticClass/Global.h \
+    src/StaticClass/QRCodeScanner.h \
+    src/StaticClass/Setting.h \
+    src/StaticClass/XinjiaoyuEncryptioner.h \
+    src/StaticClass/XinjiaoyuNetwork.h
+
+SOURCES += \
     src/Logic/MultipleSubjectsTemplateListModelList.cpp \
     src/Logic/TemplateListModel.cpp \
     src/Logic/TemplateSearcher.cpp \
@@ -117,9 +145,7 @@ SOURCES += \
     src/StaticClass/QRCodeScanner.cpp \
     src/StaticClass/Setting.cpp \
     src/StaticClass/XinjiaoyuEncryptioner.cpp \
-    src/StaticClass/XinjiaoyuNetwork.cpp \
-    src/main.cpp \
-    src/pch.h.cpp
+    src/StaticClass/XinjiaoyuNetwork.cpp
 
 android{
 DISTFILES += \

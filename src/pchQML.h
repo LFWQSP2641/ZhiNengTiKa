@@ -23,10 +23,11 @@
 #include <QtCore/private/qandroidextras_p.h>
 #include <QJniEnvironment>
 #include <QJniObject>
-#else
-#include <QWebEngineView>
 #endif // Q_OS_ANDROID
+#include <QQmlApplicationEngine>
+#include <QtWebView>
 
 #include "D:/Softwares/scr/Qt-AES/qaesencryption.h"
+#include "D:/Softwares/scr/WebView/WebView.h"
 
 #endif // PCH_H
