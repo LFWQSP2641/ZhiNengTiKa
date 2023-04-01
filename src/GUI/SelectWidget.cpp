@@ -176,52 +176,11 @@ void SelectWidget::scanQRCode()
 
     if(msgBox1.clickedButton() == takePhotoBtn)
     {
-#ifdef Q_OS_ANDROID
-        auto image {CallAndroidNativeComponent::takePhoto()};
-        if(image.isNull())
-        {
-            scanQRCodeButton->setEnabled(true);
-            return;
-        }
-        QMessageBox msgBox2;
-        msgBox2.setText(QStringLiteral("解析中..."));
-        msgBox2.show();
-        try
-        {
-            decodeResult = QRCodeScanner::scanQRCode(image, "JPEG");
-        }
-        catch (const std::exception &e)
-        {
-            QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
-            scanQRCodeButton->setEnabled(true);
-            return;
-        }
-
-        msgBox2.close();
-#endif // Q_OS_ANDROID
+        decodeResult = QRCodeScanner::scanQRCodeByTakePhoto();
     }
     else if(msgBox1.clickedButton() == selectFileBtn)
     {
-        const auto imagePath{QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)"))};
-        if(imagePath.isEmpty())
-        {
-            scanQRCodeButton->setEnabled(true);
-            return;
-        }
-        QMessageBox msgBox2;
-        msgBox2.setText(QStringLiteral("解析中..."));
-        msgBox2.show();
-        try
-        {
-            decodeResult = QRCodeScanner::scanQRCode(imagePath);
-        }
-        catch (const std::exception &e)
-        {
-            QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
-            scanQRCodeButton->setEnabled(true);
-            return;
-        }
-        msgBox2.close();
+        decodeResult = QRCodeScanner::scanQRCodeFromPictureFile();
     }
     else
     {

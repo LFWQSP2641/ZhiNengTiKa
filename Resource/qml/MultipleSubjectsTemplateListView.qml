@@ -5,6 +5,10 @@ import MultipleSubjectsTemplateListModelList
 
 Item {
     signal multipleSubjectsTemplateNameClicked(string templateCode)
+    FontMetrics {
+        id: fm
+        font: Qt.application.font
+    }
     ColumnLayout {
         id: mainColumnLayout
         width: parent.width
@@ -15,9 +19,11 @@ Item {
             Repeater {
                 model: ["语文", "数学", "英语", "物理", "化学", "生物", "自定义"]
 
+
+
                 TabButton {
                     text: modelData
-                    width: Math.max(50, mainColumnLayout.width / 7)
+                    width: Math.max(fm.maximumCharacterWidth * 2, mainColumnLayout.width / 7)
                 }
             }
         }

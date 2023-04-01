@@ -8,6 +8,7 @@
 #include "Logic/MultipleSubjectsTemplateListModelList.h"
 #include "Logic/AnalysisWebRawDataQML.h"
 #include "Logic/WebRawDataQML.h"
+#include "Singleton/QRCodeScannerQML.h"
 
 int main(int argc, char *argv[])
 {
@@ -47,6 +48,8 @@ int main(int argc, char *argv[])
         a.setFont(appFont);
     }
 
+    QRCodeScannerQML::initOnce();
+
 #ifdef Q_OS_ANDROID
     //删除新版本文件
     QFile file(CallAndroidNativeComponent::getCacheDir() + QDir::separator() + QStringLiteral("newVersion.apk"));
@@ -62,14 +65,15 @@ int main(int argc, char *argv[])
     autoUpdate->checkUpdate(false);
     if(!autoUpdate->checkMinimumVersion())
     {
-        QMessageBox::warning(&w, QStringLiteral("warning"), QStringLiteral("请更新版本或检查网络连接"));
+        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("请更新版本或检查网络连接"));
         QApplication::exit(1);
         return 1;
     }
 #endif
 
-    const auto multipleSubjectsTemplateListModelListInstance {new MultipleSubjectsTemplateListModelList};
-    qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0, "MultipleSubjectsTemplateListModelList", multipleSubjectsTemplateListModelListInstance);
+    MultipleSubjectsTemplateListModelList multipleSubjectsTemplateListModelListInstance;
+    qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0, "MultipleSubjectsTemplateListModelList", &multipleSubjectsTemplateListModelListInstance);
+    qmlRegisterSingletonInstance("QRCodeScannerQML", 1, 0, "QRCodeScanner", QRCodeScannerQML::getInstance());
     qmlRegisterType<AnalysisWebRawDataQML>("AnalysisWebRawDataQML", 1, 0, "AnalysisWebRawData");
     qmlRegisterType<WebRawDataQML>("WebRawDataQML", 1, 0, "WebRawData");
     QQmlApplicationEngine engine;

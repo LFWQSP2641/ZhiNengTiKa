@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CALLANDROIDNATIVECOMPONENT_H
+#define CALLANDROIDNATIVECOMPONENT_H
 
 #ifdef Q_OS_ANDROID
 
@@ -11,3 +12,5 @@ QString getCacheDir();
 };
 
 #endif // Q_OS_ANDROID
+
+#endif // CALLANDROIDNATIVECOMPONENT_H

@@ -22,6 +22,15 @@ public:
     {
         return questionsCountsStrList;
     }
+    Q_INVOKABLE QStringListModel *getQuestionsCountsStrListModel()
+    {
+        if(this->newAnalysisWebRawDataQMLPointer != nullptr)
+        {
+            this->newAnalysisWebRawDataQMLPointer->deleteLater();
+        }
+        newAnalysisWebRawDataQMLPointer = new QStringListModel{questionsCountsStrList};
+        return newAnalysisWebRawDataQMLPointer;
+    }
     Q_INVOKABLE QString getTemplateName() const
     {
         return templateName;
@@ -41,6 +50,8 @@ protected:
     QStringList questionsCountsStrList;
 
     QJsonArray answerDataList;
+
+    QStringListModel *newAnalysisWebRawDataQMLPointer = nullptr;
 
     void analysis(const QByteArray &webRawData);
 

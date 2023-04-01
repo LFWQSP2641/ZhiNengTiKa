@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QRCodeScannerQML
 
 Item {
     signal okButtonClicked(string templateCode)
@@ -11,6 +12,9 @@ Item {
             Button {
                 Layout.fillWidth: true
                 text: "扫码"
+                onClicked: {
+                    templateCodeTextInput.text = QRCodeScanner.scanQRCodeByTakePhoto()
+                }
             }
             Button {
                 Layout.fillWidth: true
@@ -22,7 +26,7 @@ Item {
             Layout.fillHeight: true
             onMultipleSubjectsTemplateNameClicked: function(templateCode) {
                 templateCodeTextInput.clear()
-                templateCodeTextInput.insert(0,templateCode)
+                templateCodeTextInput.insert(0, templateCode)
             }
         }
         TextInput {

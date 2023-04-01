@@ -1,6 +1,7 @@
 #include "QRCodeScanner.h"
 #include "../Singleton/Network.h"
 #include "Setting.h"
+#include "../StaticClass/CallAndroidNativeComponent.h"
 
 QJsonObject QRCodeScanner::apiArguments;
 
@@ -16,7 +17,7 @@ void QRCodeScanner::initialize(const QJsonObject &apiJsonObject)
     }
 }
 
-QByteArray QRCodeScanner::scanQRCode(const QImage &image, const char *format, int quality)
+QByteArray QRCodeScanner::analysisQRCode(const QImage &image, const char *format, int quality)
 {
     if(QRCodeScanner::apiArguments.value(QStringLiteral("expire")).toInt(0) < QDateTime::currentSecsSinceEpoch())
     {
@@ -126,7 +127,7 @@ QByteArray QRCodeScanner::scanQRCode(const QImage &image, const char *format, in
     return QJsonDocument::fromJson(replyData).object().value(QStringLiteral("data")).toString().toUtf8();
 }
 
-QByteArray QRCodeScanner::scanQRCode(const QString &imagePath, const char *format, int quality)
+QByteArray QRCodeScanner::analysisQRCode(const QString &imagePath, const char *format, int quality)
 {
     QFileInfo fileInfo(imagePath);
     if(!fileInfo.exists())
@@ -135,9 +136,9 @@ QByteArray QRCodeScanner::scanQRCode(const QString &imagePath, const char *forma
     }
     if(format == nullptr)
     {
-        return scanQRCode(QImage(imagePath), fileInfo.suffix().toStdString().c_str(), quality);
+        return analysisQRCode(QImage(imagePath), fileInfo.suffix().toStdString().c_str(), quality);
     }
-    return scanQRCode(QImage(imagePath), format, quality);
+    return analysisQRCode(QImage(imagePath), format, quality);
 }
 
 void QRCodeScanner::apiInitialize()
@@ -203,4 +204,64 @@ void QRCodeScanner::apiInitialize()
         Setting::saveToFile();
 #endif // Q_OS_ANDROID
     }
+}
+
+QByteArray QRCodeScanner::scanQRCodeByTakePhoto()
+{
+    QByteArray decodeResult;
+#ifdef Q_OS_ANDROID
+    auto image {CallAndroidNativeComponent::takePhoto()};
+    if(image.isNull())
+    {
+        return QByteArray();
+    }
+    QMessageBox msgBox2;
+    msgBox2.setText(QStringLiteral("解析中..."));
+    msgBox2.show();
+    try
+    {
+        decodeResult = QRCodeScanner::analysisQRCode(image, "JPEG");
+    }
+    catch (const std::exception &e)
+    {
+        QMessageBox::warning(Q_NULLPTR, QStringLiteral("critical"), e.what());
+        return QByteArray();
+    }
+    msgBox2.close();
+    if(decodeResult.isEmpty())
+    {
+        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("扫描失败\n"
+                             "请确保二维码清晰可见"));
+    }
+#endif // Q_OS_ANDROID
+    return decodeResult;
+}
+
+QByteArray QRCodeScanner::scanQRCodeFromPictureFile()
+{
+    QByteArray decodeResult;
+    const auto imagePath{QFileDialog::getOpenFileName(Q_NULLPTR, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)"))};
+    if(imagePath.isEmpty())
+    {
+        return QByteArray();
+    }
+    QMessageBox msgBox2;
+    msgBox2.setText(QStringLiteral("解析中..."));
+    msgBox2.show();
+    try
+    {
+        decodeResult = QRCodeScanner::analysisQRCode(imagePath);
+    }
+    catch (const std::exception &e)
+    {
+        QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+        return QByteArray();
+    }
+    msgBox2.close();
+    if(decodeResult.isEmpty())
+    {
+        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("扫描失败\n"
+                             "请确保二维码清晰可见"));
+    }
+    return decodeResult;
 }

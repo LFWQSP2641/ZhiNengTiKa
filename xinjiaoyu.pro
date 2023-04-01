@@ -128,6 +128,7 @@ HEADERS += \
     src/Logic/UserDataList.hpp \
     src/Singleton/AutoUpdate.h \
     src/Singleton/Network.h \
+    src/Singleton/QRCodeScannerQML.h \
     src/StaticClass/CallAndroidNativeComponent.h \
     src/StaticClass/Global.h \
     src/StaticClass/QRCodeScanner.h \
@@ -142,6 +143,7 @@ SOURCES += \
     src/Logic/UserData.cpp \
     src/Singleton/AutoUpdate.cpp \
     src/Singleton/Network.cpp \
+    src/Singleton/QRCodeScannerQML.cpp \
     src/StaticClass/CallAndroidNativeComponent.cpp \
     src/StaticClass/Global.cpp \
     src/StaticClass/QRCodeScanner.cpp \
