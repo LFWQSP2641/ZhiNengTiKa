@@ -7,6 +7,7 @@
 #include "../GUI/TemplateDetailWidget.h"
 #include "../GUI/SearchWidget.h"
 #include "../GUI/MultipleSubjectsTemplateListView.h"
+#include "../Logic/WebRawData.h"
 
 SelectWidget::SelectWidget(QWidget *parent)
     : QWidget{ parent }
@@ -128,64 +129,36 @@ AnalysisWebRawData SelectWidget::getTemplateCodeData(const QString &templateCode
         QMessageBox::warning(this, QStringLiteral(""), QStringLiteral("题卡编号不能为空"));
         return AnalysisWebRawData();
     }
-    QByteArray webRawData;
-    QString templateName;
-    auto addTemplate{[&templateName, &templateCode, this]
-        {
-            const QString data{templateName + QStringLiteral("\n") + templateCode + QStringLiteral("\n")};
-            QFile f(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"));
-            f.open(QFile::ReadWrite | QFile::Append);
-            f.write(data.toUtf8());
-            f.close();
-            this->multipleSubjectsTemplateListView->addNewTemplate(QPair<QString, QString>(templateName, templateCode));
-        }};
-#ifdef Q_OS_ANDROID
-    QFile file { QStringLiteral("assets:/templateData/") + templateCode };
-#else
-    QFile file { QStringLiteral(":/template/templateData/") + templateCode };
-#endif
-    QFile fileTemp { Global::tempPath() + QDir::separator() + QStringLiteral("TemplateFile") + QDir::separator() + templateCode };
-    if (file.exists())
+    auto appendTemplateList{[&templateCode, this](const QString & templateName)
     {
-        file.open(QFile::ReadOnly);
-        webRawData = file.readAll();
-        templateName = QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
-        file.close();
+        const QString data{templateName + QStringLiteral("\n") + templateCode + QStringLiteral("\n")};
+        QFile f(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"));
+        f.open(QFile::ReadWrite | QFile::Append);
+        f.write(data.toUtf8());
+        f.close();
+        this->multipleSubjectsTemplateListView->addNewTemplate(QPair<QString, QString>(templateName, templateCode));
+    }};
+    WebRawData webRawData(templateCode);
+    if(!webRawData.getValid())
+    {
+        QMessageBox::warning(this, QStringLiteral(""), webRawData.getErrorStr());
+        return AnalysisWebRawData();
     }
-    else if (fileTemp.exists())
+    else if(webRawData.getExternal())
     {
-        fileTemp.open(QFile::ReadOnly);
-        webRawData = fileTemp.readAll();
-        fileTemp.close();
-        templateName = QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
         if (!this->multipleSubjectsTemplateListView
                 ->getMultipleSubjectsTemplateListModelList()
                 .at(MultipleSubjectsTemplateListModelList::Subjects::Undefined)
                 ->hasTemplateCode(templateCode))
         {
-            addTemplate();
+            appendTemplateList(webRawData.getTemplateName());
         }
     }
-    else
+    else if(webRawData.getNetwork())
     {
-        try
-        {
-            webRawData = XinjiaoyuNetwork::getTemplateCodeData(templateCode);
-        }
-        catch (const std::exception &e)
-        {
-            QMessageBox::critical(this, QStringLiteral("critical"), e.what());
-            return AnalysisWebRawData();
-        }
-        fileTemp.open(QFile::WriteOnly);
-        fileTemp.write(webRawData);
-        fileTemp.close();
-        templateName = QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
-
-        addTemplate();
+        appendTemplateList(webRawData.getTemplateName());
     }
-
-    return AnalysisWebRawData(webRawData, templateName, templateCode);
+    return webRawData.toAnalysisWebRawData();
 }
 
 void SelectWidget::scanQRCode()

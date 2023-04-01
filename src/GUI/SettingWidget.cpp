@@ -292,7 +292,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                                "<p>Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserved.</p>"
                                "<p>项目地址: <a href=\"%1\">%1</a> <small><s>(欢迎来提交PR)</s></small></p>"
                            ).arg(QStringLiteral("https://github.com/LFWQSP2641"),
-                                 QStringLiteral("https://github.com/LFWQSP2641/xinjiaoyu")));
+                                 QStringLiteral("https://github.com/LFWQSP2641/ZhiNengTiKa")));
     });
     connect(this->usedSourceButton, &QPushButton::clicked, [this]
     {

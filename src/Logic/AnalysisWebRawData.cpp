@@ -132,6 +132,11 @@ void AnalysisWebRawData::analysis(const QByteArray &webRawData)
     answerDataList = QJsonArray();
     questionsCountsStrList.clear();
 
+    if(webRawData.isEmpty())
+    {
+        return;
+    }
+
     auto funCreateAnswerData{[](const QJsonObject & object, const QString & count)
     {
         const auto answerContent{ object.value(QStringLiteral("answer")).toString() };
