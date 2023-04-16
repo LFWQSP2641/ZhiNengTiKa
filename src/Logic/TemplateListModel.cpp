@@ -5,7 +5,7 @@ TemplateListModel::TemplateListModel(const QList<QString> &templateNameList, con
 {
     for(auto it1{templateNameList.begin()}, it2{templateCodeList.begin()}; (it1 < templateNameList.end() && it2 < templateCodeList.end()); ++it1, ++it2)
     {
-        templateList.append(QPair<QString, QString>(*it1, *it2));
+        templateList.append(TemplateSummary(*it1, *it2));
     }
 }
 
@@ -26,7 +26,7 @@ QVariant TemplateListModel::data(const QModelIndex &index, int role) const
     }
     if(role == Qt::DisplayRole)
     {
-        return templateList.at(index.row()).first;
+        return templateList.at(index.row()).getTemplateName();
     }
     else
     {
@@ -50,7 +50,7 @@ QVariant TemplateListModel::headerData(int section, Qt::Orientation orientation,
     }
 }
 
-void TemplateListModel::addNewTemplate(QPair<QString, QString> templateInfo)
+void TemplateListModel::addNewTemplate(const TemplateSummary &templateInfo)
 {
     beginInsertRows(QModelIndex(), this->templateList.size(), 1);
     this->templateList.append(templateInfo);
@@ -67,21 +67,21 @@ QString TemplateListModel::getTemplateCode(const QModelIndex &index) const
     {
         return QString();
     }
-    return templateList.at(index.row()).second;
+    return templateList.at(index.row()).getTemplateCode();
 }
 
 QString TemplateListModel::getTemplateCode(int index) const
 {
-    return templateList.at(index).second;
+    return templateList.at(index).getTemplateCode();
 }
 
 bool TemplateListModel::hasTemplateName(const QString &templateName) const
 {
     const auto result{std::any_of(
                           this->templateList.begin(), this->templateList.end(),
-                          [&templateName](const QPair<QString, QString> &templateInfo)
+                          [&templateName](const TemplateSummary & templateInfo)
     {
-        return templateInfo.first == templateName;
+        return templateInfo.getTemplateName() == templateName;
     })};
     return result;
 }
@@ -90,9 +90,9 @@ bool TemplateListModel::hasTemplateCode(const QString &templateCode) const
 {
     const auto result{std::any_of(
                           this->templateList.begin(), this->templateList.end(),
-                          [&templateCode](const QPair<QString, QString> &templateInfo)
+                          [&templateCode](const TemplateSummary & templateInfo)
     {
-        return templateInfo.second == templateCode;
+        return templateInfo.getTemplateCode() == templateCode;
     })};
     return result;
 }

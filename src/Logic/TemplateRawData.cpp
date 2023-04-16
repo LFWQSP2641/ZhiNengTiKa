@@ -1,10 +1,10 @@
-#include "WebRawData.h"
+#include "TemplateRawData.h"
 #include "../StaticClass/Global.h"
 #include "../StaticClass/XinjiaoyuNetwork.h"
 
-WebRawData::WebRawData(const QString &templateCode)
+TemplateRawData::TemplateRawData(const TemplateSummary &templateSummary)
+    : TemplateSummary(templateSummary)
 {
-    this->templateCode = templateCode;
 #ifdef Q_OS_ANDROID
     QFile file { QStringLiteral("assets:/templateData/") + templateCode };
 #else
@@ -16,7 +16,6 @@ WebRawData::WebRawData(const QString &templateCode)
         this->internal = true;
         file.open(QFile::ReadOnly);
         rawData = file.readAll();
-        templateName = QJsonDocument::fromJson(rawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
         file.close();
     }
     else if (fileTemp.exists())
@@ -25,7 +24,6 @@ WebRawData::WebRawData(const QString &templateCode)
         fileTemp.open(QFile::ReadOnly);
         rawData = fileTemp.readAll();
         fileTemp.close();
-        templateName = QJsonDocument::fromJson(rawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
     }
     else
     {
@@ -42,53 +40,43 @@ WebRawData::WebRawData(const QString &templateCode)
         fileTemp.open(QFile::WriteOnly);
         fileTemp.write(rawData);
         fileTemp.close();
-        templateName = QJsonDocument::fromJson(rawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
     }
     this->valid = true;
 }
 
-bool WebRawData::getInternal() const
+TemplateRawData::TemplateRawData(const QString &templateCode)
+    : TemplateRawData(TemplateSummary(QString(), templateCode))
+{
+    templateName = QJsonDocument::fromJson(rawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
+}
+
+
+bool TemplateRawData::isInternal() const
 {
     return internal;
 }
 
-bool WebRawData::getExternal() const
+bool TemplateRawData::isExternal() const
 {
     return external;
 }
 
-bool WebRawData::getNetwork() const
+bool TemplateRawData::isNetwork() const
 {
     return network;
 }
 
-bool WebRawData::getValid() const
+bool TemplateRawData::isValid() const
 {
     return valid;
 }
 
-QString WebRawData::getErrorStr() const
+QString TemplateRawData::getErrorStr() const
 {
     return errorStr;
 }
 
-AnalysisWebRawData WebRawData::toAnalysisWebRawData() const
-{
-    return AnalysisWebRawData(this->rawData, this->templateName, this->templateCode);
-}
-
-QByteArray WebRawData::getRawData() const
+QByteArray TemplateRawData::getRawData() const
 {
     return rawData;
 }
-
-QString WebRawData::getTemplateCode() const
-{
-    return templateCode;
-}
-
-QString WebRawData::getTemplateName() const
-{
-    return templateName;
-}
-

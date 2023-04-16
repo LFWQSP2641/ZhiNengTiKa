@@ -1,26 +1,12 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QRCodeScannerQML
 
 Item {
     signal okButtonClicked(string templateCode)
     ColumnLayout {
         width: parent.width
         height: parent.height
-        RowLayout {
-            Button {
-                Layout.fillWidth: true
-                text: "扫码"
-                onClicked: {
-                    templateCodeTextInput.text = QRCodeScanner.scanQRCodeByTakePhoto()
-                }
-            }
-            Button {
-                Layout.fillWidth: true
-                text: "搜索"
-            }
-        }
         MultipleSubjectsTemplateListView {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -39,5 +25,14 @@ Item {
             text: "确认"
             onClicked: okButtonClicked(templateCodeTextInput.text)
         }
+    }
+    function setTemplateCode(templateCode) {
+        if(templateCode)
+        {
+            console.log("templateCode is empty, return")
+            return
+        }
+
+        templateCodeTextInput.text = templateCode
     }
 }

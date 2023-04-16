@@ -4,7 +4,7 @@
 
 QImage CallAndroidNativeComponent::takePhoto()
 {
-    QtAndroidPrivate::requestPermission(QtAndroidPrivate::Camera).waitForFinished();
+    QtAndroidPrivate::requestPermission(QStringLiteral("android.permission-group.CAMERA")).waitForFinished();
     QJniObject activity = QtAndroidPrivate::activity();
     QJniObject::callStaticMethod<void>(
         "com/LFWQSP2641/ZhiNengTiKa/CallNativeComponent",
@@ -47,7 +47,7 @@ void CallAndroidNativeComponent::openUrl(const QString &url)
 
 void CallAndroidNativeComponent::installApk(const QString &filePath)
 {
-    QtAndroidPrivate::requestPermission(QtAndroidPrivate::Storage).waitForFinished();
+//    QtAndroidPrivate::requestPermission(QStringLiteral("android.permission-group.STORAGE")).waitForFinished();
     QtAndroidPrivate::requestPermission(QStringLiteral("android.permission.INSTALL_PACKAGES")).waitForFinished();
     QtAndroidPrivate::requestPermission(QStringLiteral("android.permission.REQUEST_INSTALL_PACKAGES")).waitForFinished();
     QJniObject jFilePath = QJniObject::fromString(filePath);

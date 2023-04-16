@@ -2,14 +2,144 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.platform
-import WebRawDataQML
+import TemplateRawDataQML
+import QRCodeScannerQML
 
-Window {
-    id: window
+ApplicationWindow {
+    id: applicationWindow
     width: 640
     height: 480
     visible: true
     title: "智能题卡"
+
+    Shortcut {
+        sequences: ["Esc", "Back"]
+        enabled: stackView.depth > 1
+        onActivated: navigateBackAction.trigger()
+    }
+
+    Action {
+        id: navigateBackAction
+        text: stackView.depth > 1 ? "返回" : "菜单"
+        onTriggered: {
+            if (stackView.depth > 1) {
+                stackView.pop()
+                listView.currentIndex = 0
+            } else {
+                drawer.open()
+            }
+        }
+    }
+
+    Shortcut {
+        sequence: "Menu"
+        onActivated: optionsMenuAction.trigger()
+    }
+
+    Action {
+        id: optionsMenuAction
+        icon.name: "menu"
+        onTriggered: optionsMenu.open()
+    }
+
+    header: ToolBar {
+        RowLayout {
+            anchors.fill: parent
+            ToolButton {
+                action: navigateBackAction
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+            }
+            Label {
+                id: titleLabel
+                text: listView.currentItem ? listView.currentItem.text : "智能题卡"
+                font.pixelSize: 20
+                elide: Label.ElideRight
+                horizontalAlignment: Qt.AlignHCenter
+                verticalAlignment: Qt.AlignVCenter
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+            }
+            ToolButton {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                text: "扫码"
+                onClicked: {
+                    while(stackView.depth > 1)
+                    {
+                        stackView.pop()
+                    }
+                    selectWidget.setTemplateCode(QRCodeScanner.scanQRCodeByTakePhoto())
+                }
+            }
+        }
+    }
+
+    Drawer {
+        id: drawer
+        width: Math.min(applicationWindow.width, applicationWindow.height) / 3 * 2
+        height: applicationWindow.height
+        interactive: stackView.depth === 1
+
+        ListView {
+            id: listView
+
+            focus: true
+            currentIndex: -1
+            anchors.fill: parent
+
+            delegate: ItemDelegate {
+                width: listView.width
+                text: model.title
+                highlighted: ListView.isCurrentItem
+                onClicked: {
+                    listView.currentIndex = index
+                    switch (index)
+                    {
+                    case 0:
+                        while(stackView.depth > 1)
+                        {
+                            stackView.pop()
+                        }
+                        break
+                    case 1:
+                        stackView.push("qrc:/qml/SearchWidget.qml")
+                        break
+                    case 2:
+                        stackView.push("qrc:/qml/SettingWidget.qml")
+                        break
+                    }
+                    drawer.close()
+                }
+            }
+
+            model: ListModel {
+                ListElement { title: "题卡列表" }
+                ListElement { title: "搜索" }
+                ListElement { title: "设置" }
+            }
+
+            ScrollIndicator.vertical: ScrollIndicator { }
+        }
+    }
+
+    StackView {
+        id: stackView
+        anchors.fill: parent
+
+        initialItem: SelectWidget {
+            id: selectWidget
+            onOkButtonClicked: function(templateCode){
+                templateRawDataQML.setValue(templateCode)
+                if(!templateRawDataQML.isValid())
+                {
+                    messageDialog.show(templateRawDataQML.getErrorStr())
+                    return
+                }
+                stackView.push("qrc:/qml/TemplateDetailWidget.qml",{templateRawDataQMLPointer: templateRawDataQML})
+            }
+        }
+    }
 
     MessageDialog {
         id: messageDialog
@@ -20,53 +150,14 @@ Window {
         }
     }
 
-    WebRawData {
-        id: webRawData
+    TemplateRawDataQML {
+        id: templateRawDataQML
     }
 
-    SwipeView {
-        id: swipeView
-        anchors.top: tabBar.bottom
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        currentIndex: tabBar.currentIndex
-
-        SelectWidget {
-            onOkButtonClicked: function(templateCode){
-                webRawData.setValue(templateCode)
-                if(!webRawData.getValid())
-                {
-                    messageDialog.show(webRawData.getErrorStr())
-                    return
-                }
-                templateDetailWidget.setAnalysisWebRawData(webRawData.toAnalysisWebRawDataQML())
-                tabBar.setCurrentIndex(1)
-            }
-        }
-        TemplateDetailWidget {
-            id: templateDetailWidget
-        }
-
-        SettingWidget {
-        }
-    }
-
-    TabBar {
-        anchors.left: parent.left
-        anchors.right: parent.right
-
-        id: tabBar
-        currentIndex: swipeView.currentIndex
-
-        TabButton {
-            text: "题卡"
-        }
-        TabButton {
-            text: "解析"
-        }
-        TabButton {
-            text: "设置"
-        }
+    TemplateDetailWidget {
+        id: templateDetailWidget
+        width: applicationWindow.width
+        height: applicationWindow.height
+        visible: false
     }
 }

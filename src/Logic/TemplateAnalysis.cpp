@@ -1,12 +1,81 @@
-#include "AnalysisWebRawData.h"
+#include "TemplateAnalysis.h"
 
-AnalysisWebRawData::AnalysisWebRawData(const QByteArray &webRawData, const QString &templateName, const QString &templateCode)
-    : templateName(templateName), templateCode(templateCode)
+TemplateAnalysis::TemplateAnalysis(const TemplateRawData &templateRawData)
+    : TemplateRawData(templateRawData)
 {
-    analysis(webRawData);
+    if(!this->isValid())
+    {
+        return;
+    }
+
+    auto funCreateAnswerData{[](const QJsonObject & object, const QString & count)
+    {
+        const auto answerContent{ object.value(QStringLiteral("answer")).toString() };
+        const auto answerExplanation{ object.value(QStringLiteral("answerExplanation")).toString() };
+        const auto questionContent{ object.value(QStringLiteral("content")).toString() };
+        const auto questionId{object.value(QStringLiteral("id")).toString()};
+        QJsonArray optionsArray;
+        bool choiceQuestion{!object.value(QStringLiteral("optionA")).toString().isEmpty()};
+        if(choiceQuestion)
+        {
+            for(auto i{0}; i < 7; ++i)
+            {
+                auto option{ QString(QByteArray::fromHex(QString::number(41 + i).toUtf8())) };
+                auto questionOption{object.value(QStringLiteral("option").append(option)).toString()};
+                if(questionOption.isEmpty())
+                {
+                    break;
+                }
+                else
+                {
+                    optionsArray.append(option.append(QStringLiteral(".")).append(questionOption));
+                }
+            }
+        }
+
+        QJsonObject outputObject;
+        outputObject.insert(QStringLiteral("answerContent"), answerContent);
+        outputObject.insert(QStringLiteral("answerExplanation"), answerExplanation);
+        outputObject.insert(QStringLiteral("count"), count);
+        outputObject.insert(QStringLiteral("questionContent"), questionContent);
+        outputObject.insert(QStringLiteral("questionId"), questionId);
+        outputObject.insert(QStringLiteral("options"), optionsArray);
+        return outputObject;
+    }};
+
+    QJsonArray array{ QJsonDocument::fromJson(this->rawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
+    for (auto i{ 0 }; i < array.size(); ++i)
+    {
+        auto jsonObject{ array.at(i) };
+        QJsonArray childQuestionList{ jsonObject.toObject().value(QStringLiteral("childQuestionList")).toArray() };
+        QJsonObject question{ jsonObject.toObject().value(QStringLiteral("question")).toObject() };
+        const auto count{QString::number(jsonObject.toObject().value(QStringLiteral("ordered")).toInt())};
+
+        auto answerData{funCreateAnswerData(question, count)};
+        QJsonArray childQuestionArray;
+
+        QString questionsCountsStr{QString::number(i + 1)};
+        if (!childQuestionList.isEmpty())
+        {
+            for (auto j{ 0 }; j < childQuestionList.size(); ++j)
+            {
+                QJsonObject childQuestion{ childQuestionList.at(j).toObject().value(QStringLiteral("question")).toObject() };
+                const auto childCount{QString::number(childQuestionList.at(j).toObject().value(QStringLiteral("ordered")).toInt()).append(QStringLiteral("(")).append(QString::number(j + 1)).append(QStringLiteral(")"))};
+                childQuestionArray.append(funCreateAnswerData(childQuestion, childCount));
+            }
+            questionsCountsStr.append(QStringLiteral("(%0~%1)").arg(QString::number(childQuestionList.at(0).toObject().value(QStringLiteral("ordered")).toInt()), QString::number(childQuestionList.at(childQuestionList.size() - 1).toObject().value(QStringLiteral("ordered")).toInt())));
+        }
+        else if(i + 1 != count.toInt())
+        {
+            questionsCountsStr.append(QStringLiteral("(%0)").arg(count));
+        }
+        questionsCountsStrList.append(questionsCountsStr);
+        answerData.insert(QStringLiteral("childQuestionList"), childQuestionArray);
+        answerDataList.append(answerData);
+    }
 }
 
-QString AnalysisWebRawData::getAnswerAndAnalysisHtml(const qsizetype index) const
+QString TemplateAnalysis::getAnswerAndAnalysisHtml(const qsizetype index) const
 {
     QString webStr;
 
@@ -30,7 +99,7 @@ QString AnalysisWebRawData::getAnswerAndAnalysisHtml(const qsizetype index) cons
     return webStr;
 }
 
-QString AnalysisWebRawData::getAnswerHtml(const qsizetype index) const
+QString TemplateAnalysis::getAnswerHtml(const qsizetype index) const
 {
     QString webStr;
 
@@ -52,7 +121,7 @@ QString AnalysisWebRawData::getAnswerHtml(const qsizetype index) const
     return webStr;
 }
 
-QString AnalysisWebRawData::getQuestionHtml(const qsizetype index) const
+QString TemplateAnalysis::getQuestionHtml(const qsizetype index) const
 {
     QString webStr;
 
@@ -98,7 +167,7 @@ QString AnalysisWebRawData::getQuestionHtml(const qsizetype index) const
     return webStr;
 }
 
-QList<AnswerDetailData> AnalysisWebRawData::getCountAndAnswer(const qsizetype index) const
+QList<AnswerDetailData> TemplateAnalysis::getCountAndAnswer(const qsizetype index) const
 {
     QList<AnswerDetailData> data;
 
@@ -127,85 +196,8 @@ QList<AnswerDetailData> AnalysisWebRawData::getCountAndAnswer(const qsizetype in
     return data;
 }
 
-void AnalysisWebRawData::analysis(const QByteArray &webRawData)
-{
-    answerDataList = QJsonArray();
-    questionsCountsStrList.clear();
-
-    if(webRawData.isEmpty())
-    {
-        return;
-    }
-
-    auto funCreateAnswerData{[](const QJsonObject & object, const QString & count)
-    {
-        const auto answerContent{ object.value(QStringLiteral("answer")).toString() };
-        const auto answerExplanation{ object.value(QStringLiteral("answerExplanation")).toString() };
-        const auto questionContent{ object.value(QStringLiteral("content")).toString() };
-        const auto questionId{object.value(QStringLiteral("id")).toString()};
-        QJsonArray optionsArray;
-        bool choiceQuestion{!object.value(QStringLiteral("optionA")).toString().isEmpty()};
-        if(choiceQuestion)
-        {
-            for(auto i{0}; i < 7; ++i)
-            {
-                auto option{ QString(QByteArray::fromHex(QString::number(41 + i).toUtf8())) };
-                auto questionOption{object.value(QStringLiteral("option").append(option)).toString()};
-                if(questionOption.isEmpty())
-                {
-                    break;
-                }
-                else
-                {
-                    optionsArray.append(option.append(QStringLiteral(".")).append(questionOption));
-                }
-            }
-        }
-
-        QJsonObject outputObject;
-        outputObject.insert(QStringLiteral("answerContent"), answerContent);
-        outputObject.insert(QStringLiteral("answerExplanation"), answerExplanation);
-        outputObject.insert(QStringLiteral("count"), count);
-        outputObject.insert(QStringLiteral("questionContent"), questionContent);
-        outputObject.insert(QStringLiteral("questionId"), questionId);
-        outputObject.insert(QStringLiteral("options"), optionsArray);
-        return outputObject;
-    }};
-
-    QJsonArray array{ QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
-    for (auto i{ 0 }; i < array.size(); ++i)
-    {
-        auto jsonObject{ array.at(i) };
-        QJsonArray childQuestionList{ jsonObject.toObject().value(QStringLiteral("childQuestionList")).toArray() };
-        QJsonObject question{ jsonObject.toObject().value(QStringLiteral("question")).toObject() };
-        const auto count{QString::number(jsonObject.toObject().value(QStringLiteral("ordered")).toInt())};
-
-        auto answerData{funCreateAnswerData(question, count)};
-        QJsonArray childQuestionArray;
-
-        QString questionsCountsStr{QString::number(i + 1)};
-        if (!childQuestionList.isEmpty())
-        {
-            for (auto j{ 0 }; j < childQuestionList.size(); ++j)
-            {
-                QJsonObject childQuestion{ childQuestionList.at(j).toObject().value(QStringLiteral("question")).toObject() };
-                const auto childCount{QString::number(childQuestionList.at(j).toObject().value(QStringLiteral("ordered")).toInt()).append(QStringLiteral("(")).append(QString::number(j + 1)).append(QStringLiteral(")"))};
-                childQuestionArray.append(funCreateAnswerData(childQuestion, childCount));
-            }
-            questionsCountsStr.append(QStringLiteral("(%0~%1)").arg(QString::number(childQuestionList.at(0).toObject().value(QStringLiteral("ordered")).toInt()), QString::number(childQuestionList.at(childQuestionList.size() - 1).toObject().value(QStringLiteral("ordered")).toInt())));
-        }
-        else if(i + 1 != count.toInt())
-        {
-            questionsCountsStr.append(QStringLiteral("(%0)").arg(count));
-        }
-        questionsCountsStrList.append(questionsCountsStr);
-        answerData.insert(QStringLiteral("childQuestionList"), childQuestionArray);
-        answerDataList.append(answerData);
-    }
-}
-
 template<typename f>
-void AnalysisWebRawData::callFunc(const QJsonArray &jsonArray, const qsizetype index, f func)
+void TemplateAnalysis::callFunc(const QJsonArray &jsonArray, const qsizetype index, f func)
 {
     //不知道起啥名了,用于简化流程
     auto func2{[&func](const QJsonObject & object)
@@ -238,7 +230,7 @@ void AnalysisWebRawData::callFunc(const QJsonArray &jsonArray, const qsizetype i
 }
 
 template<typename f1, typename f2>
-void AnalysisWebRawData::callFunc(const QJsonArray &jsonArray, const qsizetype index, f1 func1, f2 func2)
+void TemplateAnalysis::callFunc(const QJsonArray &jsonArray, const qsizetype index, f1 func1, f2 func2)
 {
     //不知道起啥名了,用于简化流程
     auto func3{[&func1, &func2](const QJsonObject & object)
@@ -270,3 +262,4 @@ void AnalysisWebRawData::callFunc(const QJsonArray &jsonArray, const qsizetype i
         func3(jsonArray.at(index).toObject());
     }
 }
+

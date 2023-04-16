@@ -1,12 +1,14 @@
-#pragma once
+#ifndef TEMPLATEANALYSIS_H
+#define TEMPLATEANALYSIS_H
 
+#include "TemplateRawData.h"
 #include "AnswerDetailData.hpp"
 
-class AnalysisWebRawData
+class TemplateAnalysis : public TemplateRawData
 {
 public:
-    AnalysisWebRawData() = default;
-    AnalysisWebRawData(const QByteArray &webRawData, const QString &templateName, const QString &templateCode);
+    TemplateAnalysis() = default;
+    explicit TemplateAnalysis(const TemplateRawData &templateRawData);
 
     QString getAnswerAndAnalysisHtml(const qsizetype index = -1) const;
     QString getAnswerHtml(const qsizetype index = -1) const;
@@ -17,28 +19,12 @@ public:
     {
         return questionsCountsStrList;
     }
-    QString getTemplateName() const
-    {
-        return templateName;
-    }
-    QString getTemplateCode() const
-    {
-        return templateCode;
-    }
-    bool isEmpty() const
-    {
-        return answerDataList.isEmpty();
-    }
 
 protected:
-    QString templateName;
-    QString templateCode;
     QStringList questionsCountsStrList;
-
     QJsonArray answerDataList;
 
-    void analysis(const QByteArray &webRawData);
-
+private:
     template<typename f>
     static void callFunc(const QJsonArray &jsonArray, const qsizetype index, f func);
 
@@ -46,3 +32,6 @@ protected:
     static void callFunc(const QJsonArray &jsonArray, const qsizetype index, f1 func1, f2 func2);
 };
 
+Q_DECLARE_METATYPE(TemplateAnalysis)
+
+#endif // TEMPLATEANALYSIS_H

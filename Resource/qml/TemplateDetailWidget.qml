@@ -2,11 +2,13 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtWebView
-import AnalysisWebRawDataQML
+import TemplateAnalysisQML
 
 Item {
-    AnalysisWebRawData {
-        id: analysisWebRawData
+    property var templateRawDataQMLPointer: null
+
+    TemplateAnalysisQML {
+        id: templateAnalysisQML
     }
 
     ColumnLayout {
@@ -20,21 +22,21 @@ Item {
             TabButton {
                 text: "答案和解析"
                 onClicked: {
-                    webView.loadHtml(analysisWebRawData.getAnswerAndAnalysisHtml())
+                    webView.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml())
                     width: Math.max(50, mainColumnLayout.width / 3)
                 }
             }
             TabButton {
                 text: "答案"
                 onClicked: {
-                    webView.loadHtml(analysisWebRawData.getAnswerHtml())
+                    webView.loadHtml(templateAnalysisQML.getAnswerHtml())
                     width: Math.max(50, mainColumnLayout.width / 3)
                 }
             }
             TabButton {
                 text: "原题"
                 onClicked: {
-                    webView.loadHtml(analysisWebRawData.getQuestionHtml())
+                    webView.loadHtml(templateAnalysisQML.getQuestionHtml())
                     width: Math.max(50, mainColumnLayout.width / 3)
                 }
             }
@@ -44,37 +46,30 @@ Item {
             height: fm.ascent
             Layout.fillWidth: true
             orientation: Qt.Horizontal
-            delegate: Item {
-                    height: mainColumnLayout.height
-                    width: Math.max(30, itemText.width * 5 / 4)
-                    Text {
-                        id: itemText
-                        text: model.display
-                    }
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: questionsCountsListView.currentIndex = index
-                    }
+            delegate: ItemDelegate {
+                height: questionsCountsListView.height
+                text: model.display
+                highlighted: ListView.isCurrentItem
+                onClicked: {
+                    questionsCountsListView.currentIndex = index
                 }
-            highlight: Rectangle {
-                color: 'steelblue'
             }
             FontMetrics {
                 id: fm
                 font: Qt.application.font
             }
             onCurrentItemChanged: {
-                if(tabBar.currentIndex==0)
+                if(tabBar.currentIndex===0)
                 {
-                    webView.loadHtml(analysisWebRawData.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
+                    webView.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
                 }
-                else if(tabBar.currentIndex==1)
+                else if(tabBar.currentIndex===1)
                 {
-                    webView.loadHtml(analysisWebRawData.getAnswerHtml(questionsCountsListView.currentIndex))
+                    webView.loadHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
                 }
-                else if(tabBar.currentIndex==2)
+                else if(tabBar.currentIndex===2)
                 {
-                    webView.loadHtml(analysisWebRawData.getQuestionHtml(questionsCountsListView.currentIndex))
+                    webView.loadHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
                 }
             }
         }
@@ -86,21 +81,27 @@ Item {
         }
     }
 
-    function setAnalysisWebRawData(newAnalysisWebRawData){
-        analysisWebRawData.setValue(newAnalysisWebRawData)
-        questionsCountsListView.model = analysisWebRawData.getQuestionsCountsStrListModel()
-//                questionsCountsListView.model = ["ss"]
-        if(tabBar.currentIndex==0)
+    Component.onCompleted: {
+        if(templateRawDataQMLPointer !== null)
         {
-            webView.loadHtml(analysisWebRawData.getAnswerAndAnalysisHtml())
+            setTemplateRawDataQML(templateRawDataQMLPointer)
         }
-        else if(tabBar.currentIndex==1)
+    }
+
+    function setTemplateRawDataQML(newTemplateAnalysisQML){
+        templateAnalysisQML.setValue(newTemplateAnalysisQML)
+        questionsCountsListView.model = templateAnalysisQML.getQuestionsCountsStrListModel()
+        if(tabBar.currentIndex===0)
         {
-            webView.loadHtml(analysisWebRawData.getAnswerHtml())
+            webView.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml())
         }
-        else if(tabBar.currentIndex==2)
+        else if(tabBar.currentIndex===1)
         {
-            webView.loadHtml(analysisWebRawData.getQuestionHtml())
+            webView.loadHtml(templateAnalysisQML.getAnswerHtml())
+        }
+        else if(tabBar.currentIndex===2)
+        {
+            webView.loadHtml(templateAnalysisQML.getQuestionHtml())
         }
     }
 }

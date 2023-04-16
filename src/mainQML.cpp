@@ -6,9 +6,10 @@
 #include "Singleton/Network.h"
 #include "StaticClass/QRCodeScanner.h"
 #include "Logic/MultipleSubjectsTemplateListModelList.h"
-#include "Logic/AnalysisWebRawDataQML.h"
-#include "Logic/WebRawDataQML.h"
-#include "Singleton/QRCodeScannerQML.h"
+#include "QMLIntermediary/QRCodeScannerQML.h"
+#include "QMLIntermediary/TemplateSummaryQML.h"
+#include "QMLIntermediary/TemplateRawDataQML.h"
+#include "QMLIntermediary/TemplateAnalysisQML.h"
 
 int main(int argc, char *argv[])
 {
@@ -48,8 +49,6 @@ int main(int argc, char *argv[])
         a.setFont(appFont);
     }
 
-    QRCodeScannerQML::initOnce();
-
 #ifdef Q_OS_ANDROID
     //删除新版本文件
     QFile file(CallAndroidNativeComponent::getCacheDir() + QDir::separator() + QStringLiteral("newVersion.apk"));
@@ -61,21 +60,22 @@ int main(int argc, char *argv[])
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_ANDROID
-    auto autoUpdate(AutoUpdate::getInstance());
-    autoUpdate->checkUpdate(false);
-    if(!autoUpdate->checkMinimumVersion())
-    {
-        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("请更新版本或检查网络连接"));
-        QApplication::exit(1);
-        return 1;
-    }
+//    auto autoUpdate(AutoUpdate::getInstance());
+//    autoUpdate->checkUpdate(false);
+//    if(!autoUpdate->checkMinimumVersion())
+//    {
+//        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("请更新版本或检查网络连接"));
+//        QApplication::exit(1);
+//        return 1;
+//    }
 #endif
 
     MultipleSubjectsTemplateListModelList multipleSubjectsTemplateListModelListInstance;
     qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0, "MultipleSubjectsTemplateListModelList", &multipleSubjectsTemplateListModelListInstance);
-    qmlRegisterSingletonInstance("QRCodeScannerQML", 1, 0, "QRCodeScanner", QRCodeScannerQML::getInstance());
-    qmlRegisterType<AnalysisWebRawDataQML>("AnalysisWebRawDataQML", 1, 0, "AnalysisWebRawData");
-    qmlRegisterType<WebRawDataQML>("WebRawDataQML", 1, 0, "WebRawData");
+    qmlRegisterSingletonInstance("QRCodeScannerQML", 1, 0, "QRCodeScanner", new QRCodeScannerQML);
+    qmlRegisterType<TemplateSummaryQML>("TemplateSummaryQML", 1, 0, "TemplateSummaryQML");
+    qmlRegisterType<TemplateRawDataQML>("TemplateRawDataQML", 1, 0, "TemplateRawDataQML");
+    qmlRegisterType<TemplateAnalysisQML>("TemplateAnalysisQML", 1, 0, "TemplateAnalysisQML");
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/qml/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

@@ -1,6 +1,8 @@
 #ifndef TEMPLATESEARCHER_H
 #define TEMPLATESEARCHER_H
 
+#include "TemplateSummary.h"
+
 class TemplateSearcher : public QThread
 {
     Q_OBJECT
@@ -18,7 +20,7 @@ protected:
     void run() override;
 
 signals:
-    void searchResult(const QString &templateName, const QString &templateCode);
+    void searchResult(const TemplateSummary &templateSummary);
     void searchFinished(bool success);
     void searchStoped();
 };

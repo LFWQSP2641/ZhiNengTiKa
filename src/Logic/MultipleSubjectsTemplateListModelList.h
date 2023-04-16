@@ -24,7 +24,8 @@ public:
         return templateListModelList.at(index);
     }
 public slots:
-    void addNewTemplate(QPair<QString, QString> templateInfo);
+    void addNewTemplate(const TemplateSummary &templateSummary);
+    void addNewTemplate(const QString &templateName, const QString &templateCode);
 
 protected:
     QList<TemplateListModel*> templateListModelList;

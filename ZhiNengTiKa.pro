@@ -1,4 +1,4 @@
-VERSION = 2.0.0
+VERSION = 2.0.1
 
 QT       += core network
 
@@ -62,12 +62,9 @@ useQuick{
 PRECOMPILED_HEADER = src/pchQML.h
 
 HEADERS += \
-    src/Logic/AnalysisWebRawDataQML.h \
-    src/Logic/WebRawDataQML.h \
-
+    src/QMLIntermediary/QRCodeScannerQML.h
 SOURCES += \
-    src/Logic/AnalysisWebRawDataQML.cpp \
-    src/Logic/WebRawDataQML.cpp \
+    src/QMLIntermediary/QRCodeScannerQML.cpp \
     src/mainQML.cpp \
     src/pchQML.h.cpp
 
@@ -94,8 +91,6 @@ HEADERS += \
     src/GUI/UploadChildWidget.h \
     src/GUI/UploadWidget.h \
     src/GUI/WebViewWidget.h \
-    src/Logic/AnalysisWebRawData.h \
-    src/Logic/WebRawData.h \
 
 SOURCES += \
     src/GUI/AnswerAndAnalysisWidget.cpp \
@@ -114,21 +109,24 @@ SOURCES += \
     src/GUI/UploadChildWidget.cpp \
     src/GUI/UploadWidget.cpp \
     src/GUI/WebViewWidget.cpp \
-    src/Logic/AnalysisWebRawData.cpp \
-    src/Logic/WebRawData.cpp \
     src/main.cpp \
     src/pch.h.cpp
 }
 HEADERS += \
     src/Logic/AnswerDetailData.hpp \
     src/Logic/MultipleSubjectsTemplateListModelList.h \
+    src/Logic/TemplateAnalysis.h \
     src/Logic/TemplateListModel.h \
+    src/Logic/TemplateRawData.h \
     src/Logic/TemplateSearcher.h \
+    src/Logic/TemplateSummary.h \
     src/Logic/UserData.h \
     src/Logic/UserDataList.hpp \
+    src/QMLIntermediary/TemplateAnalysisQML.h \
+    src/QMLIntermediary/TemplateRawDataQML.h \
+    src/QMLIntermediary/TemplateSummaryQML.h \
     src/Singleton/AutoUpdate.h \
     src/Singleton/Network.h \
-    src/Singleton/QRCodeScannerQML.h \
     src/StaticClass/CallAndroidNativeComponent.h \
     src/StaticClass/Global.h \
     src/StaticClass/QRCodeScanner.h \
@@ -138,12 +136,17 @@ HEADERS += \
 
 SOURCES += \
     src/Logic/MultipleSubjectsTemplateListModelList.cpp \
+    src/Logic/TemplateAnalysis.cpp \
     src/Logic/TemplateListModel.cpp \
+    src/Logic/TemplateRawData.cpp \
     src/Logic/TemplateSearcher.cpp \
+    src/Logic/TemplateSummary.cpp \
     src/Logic/UserData.cpp \
+    src/QMLIntermediary/TemplateAnalysisQML.cpp \
+    src/QMLIntermediary/TemplateRawDataQML.cpp \
+    src/QMLIntermediary/TemplateSummaryQML.cpp \
     src/Singleton/AutoUpdate.cpp \
     src/Singleton/Network.cpp \
-    src/Singleton/QRCodeScannerQML.cpp \
     src/StaticClass/CallAndroidNativeComponent.cpp \
     src/StaticClass/Global.cpp \
     src/StaticClass/QRCodeScanner.cpp \
@@ -174,3 +177,4 @@ DISTFILES += \
     android/src/com/LFWQSP2641/xinjiaoyu/Util.java \
     android/res/xml/provider_paths.xml
 }
+android: include(D:/Softwares/scr/AndroidSDK/android_openssl/openssl.pri)

@@ -1,6 +1,7 @@
 #pragma once
 
 class UserData;
+
 namespace XinjiaoyuNetwork
 {
 extern QNetworkRequest setRequest(const QUrl &url, const UserData &userData);

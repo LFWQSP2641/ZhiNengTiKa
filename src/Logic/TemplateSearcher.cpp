@@ -53,7 +53,7 @@ void TemplateSearcher::run()
 
                 if(tempTemplateName.contains(this->templateName, Qt::CaseInsensitive))
                 {
-                    emit this->searchResult(tempTemplateName, tempTemplateCode);
+                    emit this->searchResult(TemplateSummary(tempTemplateName, tempTemplateCode));
                 }
             }
         }

@@ -38,6 +38,7 @@ void AutoUpdate::checkUpdate(bool showWidget)
 bool AutoUpdate::checkMinimumVersion()
 {
     auto minimumVersionStr{ Network::getData(QNetworkRequest(QStringLiteral("minimumVersion").prepend(DATABASE_DOMAIN))) };
+    qDebug() << minimumVersionStr;
     return compareVersion(minimumVersionStr, currentVersion);
 }
 
