@@ -14,6 +14,8 @@ QString Setting::font;
 
 QJsonObject Setting::jsonObjectApiQRCodeScanner;
 
+QString Setting::uuid;
+
 void Setting::loadFromFile()
 {
     QByteArray fileData;
@@ -59,6 +61,7 @@ void Setting::loadFromFile()
     Setting::smallFontPointSize = settingJsonObject.value(QStringLiteral("smallFontPointSize")).toInt();
     Setting::font = settingJsonObject.value(QStringLiteral("font")).toString();
     Setting::jsonObjectApiQRCodeScanner = settingJsonObject.value(QStringLiteral("apiQRCodeScanner")).toObject();
+    Setting::uuid = settingJsonObject.value(QStringLiteral("uuid")).toString(QUuid::createUuid().toString(QUuid::WithoutBraces));
 }
 
 void Setting::saveToFile()
@@ -89,6 +92,7 @@ void Setting::saveToFile()
     settingJsonObject.insert(QStringLiteral("smallFontPointSize"), smallFontPointSize);
     settingJsonObject.insert(QStringLiteral("font"), font);
     settingJsonObject.insert(QStringLiteral("apiQRCodeScanner"), jsonObjectApiQRCodeScanner);
+    settingJsonObject.insert(QStringLiteral("uuid"), uuid);
 
     QFile file{ Global::configPath() + QDir::separator() + QStringLiteral("setting.json") };
     file.open(QFile::WriteOnly);

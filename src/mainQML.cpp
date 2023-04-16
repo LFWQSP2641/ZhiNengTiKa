@@ -69,7 +69,6 @@ int main(int argc, char *argv[])
 //        return 1;
 //    }
 #endif
-
     MultipleSubjectsTemplateListModelList multipleSubjectsTemplateListModelListInstance;
     qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0, "MultipleSubjectsTemplateListModelList", &multipleSubjectsTemplateListModelListInstance);
     qmlRegisterSingletonInstance("QRCodeScannerQML", 1, 0, "QRCodeScanner", new QRCodeScannerQML);

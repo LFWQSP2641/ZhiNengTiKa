@@ -20,5 +20,7 @@ extern bool logined();
 extern UserData currentUserData();
 
 extern QJsonObject jsonObjectApiQRCodeScanner;
+
+extern QString uuid;
 };
 
