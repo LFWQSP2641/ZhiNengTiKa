@@ -8,6 +8,7 @@ Item {
         width: parent.width
         height: parent.height
         MultipleSubjectsTemplateListView {
+            id: multipleSubjectsTemplateListView
             Layout.fillWidth: true
             Layout.fillHeight: true
             onMultipleSubjectsTemplateNameClicked: function(templateCode) {
@@ -27,12 +28,15 @@ Item {
         }
     }
     function setTemplateCode(templateCode) {
-        if(templateCode)
+        if(templateCode.length === 0)
         {
             console.log("templateCode is empty, return")
             return
         }
-
         templateCodeTextInput.text = templateCode
+        okButtonClicked(templateCode)
+    }
+    function addNewTemplate(templateRawDataQML) {
+        multipleSubjectsTemplateListView.addNewTemplate(templateRawDataQML)
     }
 }

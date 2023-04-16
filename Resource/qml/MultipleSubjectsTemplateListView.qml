@@ -57,4 +57,9 @@ Item {
         model: MultipleSubjectsTemplateListModelList.at(subjectsTabBar.currentIndex > 0 ? subjectsTabBar.currentIndex : 0)
         onTemplateNameClicked: function(templateCode){ multipleSubjectsTemplateNameClicked(templateCode) }
     }
+
+    function addNewTemplate(templateRawDataQML) {
+        MultipleSubjectsTemplateListModelList.addNewTemplate(templateRawDataQML)
+        subjectsTabBar.currentIndex = 6
+    }
 }

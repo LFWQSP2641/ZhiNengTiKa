@@ -136,6 +136,11 @@ ApplicationWindow {
                     messageDialog.show(templateRawDataQML.getErrorStr())
                     return
                 }
+                if(templateRawDataQML.isNetwork())
+                {
+                    selectWidget.addNewTemplate(templateRawDataQML)
+                }
+
                 stackView.push("qrc:/qml/TemplateDetailWidget.qml",{templateRawDataQMLPointer: templateRawDataQML})
             }
         }

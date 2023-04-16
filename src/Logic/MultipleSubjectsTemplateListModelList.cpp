@@ -1,11 +1,12 @@
 #include "MultipleSubjectsTemplateListModelList.h"
 #include "../StaticClass/Setting.h"
 #include "../StaticClass/Global.h"
+#include "../QMLIntermediary/TemplateRawDataQML.h"
 
 MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QObject *parent)
     : QObject{parent}
 {
-    auto importTemplateList{[this](QString filePath)
+    auto importTemplateList{[this](QString filePath, bool split = true)
     {
         QFile file { filePath };
         if(file.exists())
@@ -16,31 +17,39 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
             {
                 QString tempTemplateName{file.readLine()};
                 tempTemplateName.resize(tempTemplateName.size() - 1);
-                QStringList tempTemplateNameData(3);
-                qsizetype index{0};
-                for(const auto &i : qAsConst(tempTemplateName))
-                {
-                    if((index < 2) && (i == QChar(32)))
-                    {
-                        ++index;
-                    }
-                    else
-                    {
-                        tempTemplateNameData[index].append(i);
-                    }
-                }
-                for(auto &i : tempTemplateNameData)
-                {
-                    i.squeeze();
-                }
-
+                tempTemplateName.squeeze();
                 QString tempTemplateCode{file.readLine()};
                 tempTemplateCode.resize(tempTemplateCode.size() - 1);
                 tempTemplateCode.squeeze();
+                if(split)
+                {
+                    QStringList tempTemplateNameData(3);
+                    qsizetype index{0};
+                    for(const auto &i : qAsConst(tempTemplateName))
+                    {
+                        if((index < 2) && (i == QChar(32)))
+                        {
+                            ++index;
+                        }
+                        else
+                        {
+                            tempTemplateNameData[index].append(i);
+                        }
+                    }
+                    for(auto &i : tempTemplateNameData)
+                    {
+                        i.squeeze();
+                    }
 
-                tempTemplateList.append(TemplateSummary(
-                                            tempTemplateNameData.at(2), tempTemplateCode,
-                                            tempTemplateNameData.at(0), tempTemplateNameData.at(1)));
+
+                    tempTemplateList.append(TemplateSummary(
+                                                tempTemplateNameData.at(2), tempTemplateCode,
+                                                tempTemplateNameData.at(0), tempTemplateNameData.at(1)));
+                }
+                else
+                {
+                    tempTemplateList.append(TemplateSummary(tempTemplateName, tempTemplateCode));
+                }
             }
             file.close();
             templateListModelList.append(new TemplateListModel(tempTemplateList));
@@ -80,7 +89,7 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
             importTemplateList(QDir(allDir).filePath(fileName));
         }
     }
-    importTemplateList(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"));
+    importTemplateList(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"), false);
 }
 
 MultipleSubjectsTemplateListModelList::~MultipleSubjectsTemplateListModelList()
@@ -95,9 +104,30 @@ MultipleSubjectsTemplateListModelList::~MultipleSubjectsTemplateListModelList()
 void MultipleSubjectsTemplateListModelList::addNewTemplate(const TemplateSummary &templateSummary)
 {
     templateListModelList[Subjects::Undefined]->addNewTemplate(templateSummary);
+    this->addTemplateList(templateSummary);
+}
+
+void MultipleSubjectsTemplateListModelList::addNewTemplate(TemplateRawDataQML *templateRawDataQML)
+{
+    const auto templateSummary{templateRawDataQML->getTemplateRawData()};
+    this->addNewTemplate(templateSummary);
 }
 
 void MultipleSubjectsTemplateListModelList::addNewTemplate(const QString &templateName, const QString &templateCode)
 {
     this->addNewTemplate(TemplateSummary(templateName, templateCode));
+}
+
+void MultipleSubjectsTemplateListModelList::addTemplateList(const TemplateSummary &templateSummary)
+{
+    this->addTemplateList(templateSummary.getTemplateName(), templateSummary.getTemplateCode());
+}
+
+void MultipleSubjectsTemplateListModelList::addTemplateList(const QString &templateName, const QString &templateCode)
+{
+    const QString data{templateName + QStringLiteral("\n") + templateCode + QStringLiteral("\n")};
+    QFile f(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"));
+    f.open(QFile::ReadWrite | QFile::Append);
+    f.write(data.toUtf8());
+    f.close();
 }
