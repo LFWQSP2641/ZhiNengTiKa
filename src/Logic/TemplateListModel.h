@@ -15,12 +15,13 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    void addNewTemplate(const TemplateSummary &templateInfo);
-
     Q_INVOKABLE QString getTemplateCode(const QModelIndex &index) const;
     Q_INVOKABLE QString getTemplateCode(int index) const;
-    bool hasTemplateName(const QString &templateName) const;
-    bool hasTemplateCode(const QString &templateCode) const;
+    Q_INVOKABLE bool hasTemplateName(const QString &templateName) const;
+    Q_INVOKABLE bool hasTemplateCode(const QString &templateCode) const;
+public slots:
+    void addNewTemplate(const TemplateSummary &templateInfo);
+    void clear();
 private:
     QList<TemplateSummary> templateList;
 };

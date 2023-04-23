@@ -57,6 +57,13 @@ void TemplateListModel::addNewTemplate(const TemplateSummary &templateInfo)
     endInsertRows();
 }
 
+void TemplateListModel::clear()
+{
+    beginRemoveRows(QModelIndex(), 0, this->templateList.size());
+    this->templateList.clear();
+    endRemoveRows();
+}
+
 QString TemplateListModel::getTemplateCode(const QModelIndex &index) const
 {
     if(!index.isValid())

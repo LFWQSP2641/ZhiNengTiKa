@@ -8,9 +8,9 @@ class TemplateSearcher : public QThread
     Q_OBJECT
 public:
     explicit TemplateSearcher(QObject *parent = nullptr);
-    void setSearchedTemplateName(const QString &searcheredTemplateName);
 
 public slots:
+    void setSearchedTemplateName(const QString &searcheredTemplateName);
     void stop();
 
 protected:

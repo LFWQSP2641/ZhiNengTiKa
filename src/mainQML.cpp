@@ -1,4 +1,3 @@
-#include "GUI/MainWidget.h"
 #include "Singleton/AutoUpdate.h"
 #include "StaticClass/Global.h"
 #include "StaticClass/Setting.h"
@@ -6,10 +5,13 @@
 #include "Singleton/Network.h"
 #include "StaticClass/QRCodeScanner.h"
 #include "Logic/MultipleSubjectsTemplateListModelList.h"
+#include "Logic/TemplateSearcher.h"
+#include "Logic/TemplateListModel.h"
 #include "QMLIntermediary/QRCodeScannerQML.h"
 #include "QMLIntermediary/TemplateSummaryQML.h"
 #include "QMLIntermediary/TemplateRawDataQML.h"
 #include "QMLIntermediary/TemplateAnalysisQML.h"
+#include "QMLIntermediary/SettingOperator.h"
 
 int main(int argc, char *argv[])
 {
@@ -75,6 +77,9 @@ int main(int argc, char *argv[])
     qmlRegisterType<TemplateSummaryQML>("TemplateSummaryQML", 1, 0, "TemplateSummaryQML");
     qmlRegisterType<TemplateRawDataQML>("TemplateRawDataQML", 1, 0, "TemplateRawDataQML");
     qmlRegisterType<TemplateAnalysisQML>("TemplateAnalysisQML", 1, 0, "TemplateAnalysisQML");
+    qmlRegisterType<TemplateSearcher>("TemplateSearcher", 1, 0, "TemplateSearcher");
+    qmlRegisterType<TemplateListModel>("TemplateListModel", 1, 0, "TemplateListModel");
+    qmlRegisterType<SettingOperator>("SettingOperator", 1, 0, "SettingOperator");
     QQmlApplicationEngine engine;
     const QUrl url(u"qrc:/qml/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

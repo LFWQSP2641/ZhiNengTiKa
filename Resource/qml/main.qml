@@ -103,7 +103,7 @@ ApplicationWindow {
                         }
                         break
                     case 1:
-                        stackView.push("qrc:/qml/SearchWidget.qml")
+                        stackView.push(searchWidgetComponent)
                         break
                     case 2:
                         stackView.push("qrc:/qml/SettingWidget.qml")
@@ -130,18 +130,7 @@ ApplicationWindow {
         initialItem: SelectWidget {
             id: selectWidget
             onOkButtonClicked: function(templateCode){
-                templateRawDataQML.setValue(templateCode)
-                if(!templateRawDataQML.isValid())
-                {
-                    messageDialog.show(templateRawDataQML.getErrorStr())
-                    return
-                }
-                if(templateRawDataQML.isNetwork())
-                {
-                    selectWidget.addNewTemplate(templateRawDataQML)
-                }
-
-                stackView.push("qrc:/qml/TemplateDetailWidget.qml",{templateRawDataQMLPointer: templateRawDataQML})
+                showTemplateDetailWidget(templateCode)
             }
         }
     }
@@ -164,5 +153,32 @@ ApplicationWindow {
         width: applicationWindow.width
         height: applicationWindow.height
         visible: false
+    }
+
+    // stackView.push在第二个参数连接信号槽好像有点问题
+    // TypeError: Cannot assign to read-only property "okButtonClicked"
+    // 所以拿个Component包一下
+    Component {
+        id: searchWidgetComponent
+        SearchWidget {
+            onOkButtonClicked: function(templateCode){
+                showTemplateDetailWidget(templateCode)
+            }
+        }
+    }
+
+    function showTemplateDetailWidget(templateCode) {
+        templateRawDataQML.setValue(templateCode)
+        if(!templateRawDataQML.isValid())
+        {
+            messageDialog.show(templateRawDataQML.getErrorStr())
+            return
+        }
+        if(templateRawDataQML.isNetwork())
+        {
+            selectWidget.addNewTemplate(templateRawDataQML)
+        }
+
+        stackView.push("qrc:/qml/TemplateDetailWidget.qml", {templateRawDataQMLPointer: templateRawDataQML})
     }
 }

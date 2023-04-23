@@ -12,19 +12,19 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             onMultipleSubjectsTemplateNameClicked: function(templateCode) {
-                templateCodeTextInput.clear()
-                templateCodeTextInput.insert(0, templateCode)
+                templateCodeTextField.clear()
+                templateCodeTextField.insert(0, templateCode)
             }
         }
-        TextInput {
-            id: templateCodeTextInput
-            Layout.alignment: Qt.AlignHCenter
-            text: "输入框"
+        TextField {
+            id: templateCodeTextField
+            Layout.fillWidth: true
+            placeholderText: "题卡编号"
         }
         Button {
             Layout.fillWidth: true
             text: "确认"
-            onClicked: okButtonClicked(templateCodeTextInput.text)
+            onClicked: okButtonClicked(templateCodeTextField.text)
         }
     }
     function setTemplateCode(templateCode) {
@@ -33,7 +33,7 @@ Item {
             console.log("templateCode is empty, return")
             return
         }
-        templateCodeTextInput.text = templateCode
+        templateCodeTextField.text = templateCode
         okButtonClicked(templateCode)
     }
     function addNewTemplate(templateRawDataQML) {
