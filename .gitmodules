@@ -1,0 +1,6 @@
+[submodule "3rd/android_openssl"]
+	path = 3rd/android_openssl
+	url = git@github.com:KDAB/android_openssl.git
+[submodule "3rd/Qt-AES"]
+	path = 3rd/Qt-AES
+	url = git@github.com:LFWQSP2641/Qt-AES.git
