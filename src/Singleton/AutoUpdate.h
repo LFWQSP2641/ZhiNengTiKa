@@ -7,11 +7,6 @@ class AutoUpdate : public QObject
 public:
     static void initOnce(const QString &currentVersion, QObject *parent = nullptr);
     static AutoUpdate *getInstance();
-    void checkUpdate(bool showWidget);
-    void setCurrentVersion(const QString &currentVersion)
-    {
-        this->currentVersion = currentVersion;
-    }
     bool isRunning() const
     {
         return running;
@@ -24,6 +19,11 @@ public:
     bool checkMinimumVersion();
 
 public slots:
+    void checkUpdate(bool showWidget);
+    void setCurrentVersion(const QString &currentVersion)
+    {
+        this->currentVersion = currentVersion;
+    }
     //仅当有新版本时显示
     void showUpdateWidget();
     //所有情况都显示

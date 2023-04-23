@@ -51,6 +51,15 @@ int main(int argc, char *argv[])
         a.setFont(appFont);
     }
 
+    if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE"))
+        QQuickStyle::setStyle(Setting::qmlStyle);
+
+    // If this is the first time we're running the application,
+    // we need to set a style in the settings so that the QML
+    // can find it in the list of built-in styles.
+    if (Setting::qmlStyle.isEmpty())
+        Setting::qmlStyle = QQuickStyle::name();
+
 #ifdef Q_OS_ANDROID
     //删除新版本文件
     QFile file(CallAndroidNativeComponent::getCacheDir() + QDir::separator() + QStringLiteral("newVersion.apk"));
@@ -62,18 +71,19 @@ int main(int argc, char *argv[])
 #endif // Q_OS_ANDROID
 
 #ifdef Q_OS_ANDROID
-//    auto autoUpdate(AutoUpdate::getInstance());
-//    autoUpdate->checkUpdate(false);
-//    if(!autoUpdate->checkMinimumVersion())
-//    {
-//        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("请更新版本或检查网络连接"));
-//        QApplication::exit(1);
-//        return 1;
-//    }
+    auto autoUpdate(AutoUpdate::getInstance());
+    autoUpdate->checkUpdate(false);
+    if(!autoUpdate->checkMinimumVersion())
+    {
+        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("请更新版本或检查网络连接"));
+        QApplication::exit(1);
+        return 1;
+    }
 #endif
     MultipleSubjectsTemplateListModelList multipleSubjectsTemplateListModelListInstance;
     qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0, "MultipleSubjectsTemplateListModelList", &multipleSubjectsTemplateListModelListInstance);
     qmlRegisterSingletonInstance("QRCodeScannerQML", 1, 0, "QRCodeScanner", new QRCodeScannerQML);
+    qmlRegisterSingletonInstance("AutoUpdate", 1, 0, "AutoUpdate", AutoUpdate::getInstance());
     qmlRegisterType<TemplateSummaryQML>("TemplateSummaryQML", 1, 0, "TemplateSummaryQML");
     qmlRegisterType<TemplateRawDataQML>("TemplateRawDataQML", 1, 0, "TemplateRawDataQML");
     qmlRegisterType<TemplateAnalysisQML>("TemplateAnalysisQML", 1, 0, "TemplateAnalysisQML");
@@ -81,6 +91,21 @@ int main(int argc, char *argv[])
     qmlRegisterType<TemplateListModel>("TemplateListModel", 1, 0, "TemplateListModel");
     qmlRegisterType<SettingOperator>("SettingOperator", 1, 0, "SettingOperator");
     QQmlApplicationEngine engine;
+
+    QStringList builtInStyles = { QLatin1String("Basic"), QLatin1String("Fusion"),
+                                  QLatin1String("Imagine"), QLatin1String("Material"), QLatin1String("Universal")
+                                };
+#if defined(Q_OS_MACOS)
+    builtInStyles << QLatin1String("macOS");
+    builtInStyles << QLatin1String("iOS");
+#elif defined(Q_OS_IOS)
+    builtInStyles << QLatin1String("iOS");
+#elif defined(Q_OS_WINDOWS)
+    builtInStyles << QLatin1String("Windows");
+#endif
+
+    engine.setInitialProperties({{ "builtInStyles", builtInStyles }});
+
     const QUrl url(u"qrc:/qml/main.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &a, [url](const QObject * obj, const QUrl & objUrl)

@@ -14,6 +14,7 @@ extern bool compressQRCodeImage;
 extern int fontPointSize;
 extern int smallFontPointSize;
 extern QString font;
+extern QString qmlStyle;
 
 extern UserDataList userDataList;
 extern bool logined();

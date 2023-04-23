@@ -3,17 +3,42 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.platform as Platform
 import SettingOperator
+import AutoUpdate
 
 Item {
+    required property var builtInStyles
+
     SettingOperator {
         id: settingOperator
     }
 
     Dialog {
         id: dialog
-        visible: false
         anchors.centerIn: parent
-        ColumnLayout {
+        modal: true
+        focus: true
+
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        onAccepted: {
+            if(settingOperator.login(userIdTextField.text, userPwTextField.text))
+            {
+                settingOperator.save()
+                accountComboBox.model = settingOperator.getUserDataListModel()
+                logoutButton.enabled = true
+                dialog.close()
+            }
+            else
+            {
+                messageDialog.show("登录失败,请确认账号密码是否正确")
+            }
+        }
+        onRejected: {
+            userIdTextField.clear()
+            userPwTextField.clear()
+            dialog.close()
+        }
+
+        contentItem: ColumnLayout {
             width: parent.width
             height: parent.height
             TextField {
@@ -25,35 +50,6 @@ Item {
                 id: userPwTextField
                 Layout.fillWidth: true
                 placeholderText: "密码"
-            }
-            RowLayout {
-                Layout.fillWidth: true
-                Button {
-                    id: dialogLoginButton
-                    Layout.fillWidth: true
-                    text: "登录"
-                    onClicked: {
-                        if(settingOperator.login(userIdTextField.text, userPwTextField.text))
-                        {
-                            settingOperator.save()
-                            accountComboBox.model = settingOperator.getUserDataListModel()
-                            logoutButton.enabled = true
-                            dialog.close()
-                        }
-                        else
-                        {
-                            messageDialog.show("登录失败,请确认账号密码是否正确")
-                        }
-                    }
-                }
-                Button {
-                    id: dialogCancelButton
-                    Layout.fillWidth: true
-                    text: "取消"
-                    onClicked: {
-                        dialog.close()
-                    }
-                }
             }
         }
     }
@@ -80,6 +76,14 @@ Item {
                         Layout.fillHeight: true
                         model: settingOperator.getUserDataListModel()
                         textRole: "display"
+
+                        onCurrentIndexChanged: {
+                            if(accountComboBox.currentIndex > 0)
+                            {
+                                settingOperator.userDataListToFirst(accountComboBox.currentIndex)
+                                accountComboBox.model = settingOperator.getUserDataListModel()
+                            }
+                        }
                     }
                     RowLayout {
                         Layout.fillWidth: true
@@ -104,6 +108,128 @@ Item {
                                 settingOperator.save()
                                 logoutButton.enabled = settingOperator.logined()
                                 accountComboBox.model = settingOperator.getUserDataListModel()
+                            }
+                        }
+                    }
+                }
+            }
+            GroupBox {
+                Layout.fillWidth: true
+                title: "外观(重启生效)"
+                ColumnLayout {
+                    width: parent.width
+                    height: parent.height
+                    RowLayout {
+                        Label {
+                            text: "主题:"
+                        }
+                        ComboBox {
+                            id: styleComboBox
+                            Layout.fillWidth: true
+                            property int styleIndex: -1
+                            property bool saving: false
+                            model: builtInStyles
+                            onActivated: {
+                                if(saving)
+                                {
+                                    settingOperator.setStyle(styleComboBox.currentText)
+                                    settingOperator.save()
+                                }
+                            }
+
+                            Component.onCompleted: {
+                                styleIndex = find(settingOperator.getStyle(), Qt.MatchFixedString)
+                                if (styleIndex !== -1)
+                                    currentIndex = styleIndex
+                                saving = true
+                            }
+                        }
+                    }
+                    RowLayout {
+                        Label {
+                            text: "字体:"
+                        }
+                        ComboBox {
+                            id: fontComboBox
+                            Layout.fillWidth: true
+                            property int fontIndex: -1
+                            property bool saving: false
+                            model: Qt.fontFamilies()
+                            onActivated: {
+                                if(saving)
+                                {
+                                    settingOperator.setFont(currentText)
+                                    settingOperator.save()
+                                }
+                            }
+
+                            Component.onCompleted: {
+                                fontIndex = find(settingOperator.getFont(), Qt.MatchFixedString)
+                                if (fontIndex !== -1)
+                                    currentIndex = fontIndex
+                                saving = true
+                            }
+                        }
+                    }
+                }
+            }
+            GroupBox {
+                Layout.fillWidth: true
+                title: "题卡列表"
+                ColumnLayout {
+                    width: parent.width
+                    height: parent.height
+                    RowLayout {
+                        ComboBox {
+                            Layout.fillWidth: true
+                            model: ["金川高级中学"]
+                        }
+                        ComboBox {
+                            Layout.fillWidth: true
+                            model: ["2021级"]
+                        }
+                    }
+                    Switch {
+                        text: "优先显示最新题卡"
+                        checked: settingOperator.getListLatestTemplatePreferentially()
+                        onCheckedChanged: {
+                            settingOperator.setListLatestTemplatePreferentially(checked)
+                        }
+                    }
+                }
+            }
+            GroupBox {
+                Layout.fillWidth: true
+                title: "扫码相关"
+                Switch {
+                    text: "压缩二维码图片"
+                    checked: settingOperator.getCompressQRCodeImage()
+                    onCheckedChanged: {
+                        settingOperator.setCompressQRCodeImage(checked)
+                    }
+                }
+            }
+            GroupBox {
+                Layout.fillWidth: true
+                title: "版本"
+                RowLayout {
+                    width: parent.width
+                    height: parent.height
+                    Label {
+                        text: settingOperator.getVersion()
+                    }
+                    Button {
+                        id: checkUpdate
+                        text: "检查更新"
+                        Layout.fillWidth: true
+                        onClicked: {
+                            AutoUpdate.checkUpdate(true)
+                            checkUpdate.enabled = false
+                        }
+                        Connections {
+                            target: AutoUpdate
+                            function onFinished() {
+                                checkUpdate.enabled = true
                             }
                         }
                     }

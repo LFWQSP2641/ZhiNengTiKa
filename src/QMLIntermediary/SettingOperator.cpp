@@ -48,6 +48,51 @@ QStringListModel *SettingOperator::getUserDataListModel()
     return userDataListModel;
 }
 
+QString SettingOperator::getStyle()
+{
+    return Setting::qmlStyle;
+}
+
+void SettingOperator::setStyle(const QString &style)
+{
+    Setting::qmlStyle = style;
+}
+
+QString SettingOperator::getFont()
+{
+    return Setting::font;
+}
+
+void SettingOperator::setFont(const QString &font)
+{
+    Setting::font = font;
+}
+
+bool SettingOperator::getListLatestTemplatePreferentially()
+{
+    return Setting::listLatestTemplatePreferentially;
+}
+
+void SettingOperator::setListLatestTemplatePreferentially(bool state)
+{
+    Setting::listLatestTemplatePreferentially = state;
+}
+
+bool SettingOperator::getCompressQRCodeImage()
+{
+    return Setting::compressQRCodeImage;
+}
+
+void SettingOperator::setCompressQRCodeImage(bool state)
+{
+    Setting::compressQRCodeImage = state;
+}
+
+QString SettingOperator::getVersion()
+{
+    return QStringLiteral(APP_VERSION);
+}
+
 void SettingOperator::save()
 {
     Setting::saveToFile();

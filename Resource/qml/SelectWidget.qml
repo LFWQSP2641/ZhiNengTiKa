@@ -28,12 +28,12 @@ Item {
         }
     }
     function setTemplateCode(templateCode) {
-        if(templateCode.length === 0)
+        templateCodeTextField.text = templateCode
+        if(templateCodeTextField.text.length === 0)
         {
             console.log("templateCode is empty, return")
             return
         }
-        templateCodeTextField.text = templateCode
         okButtonClicked(templateCode)
     }
     function addNewTemplate(templateRawDataQML) {

@@ -12,6 +12,8 @@ ApplicationWindow {
     visible: true
     title: "智能题卡"
 
+    required property var builtInStyles
+
     Shortcut {
         sequences: ["Esc", "Back"]
         enabled: stackView.depth > 1
@@ -106,7 +108,7 @@ ApplicationWindow {
                         stackView.push(searchWidgetComponent)
                         break
                     case 2:
-                        stackView.push("qrc:/qml/SettingWidget.qml")
+                        stackView.push("qrc:/qml/SettingWidget.qml", {builtInStyles: applicationWindow.builtInStyles})
                         break
                     }
                     drawer.close()

@@ -15,6 +15,13 @@ Item {
         }
         onSearchFinished: {
             templateListView.model = templateListModel
+            // WARNING 第二次搜索之后只显示三个结果
+            if (templateListView.count !== templateListModel.rowCount())
+            {
+                templateListView.model = null
+                templateListView.model = templateListModel
+            }
+
             stateText.text = templateListView.count + " 个搜索结果"
             stopSearchButton.visible = false
             startSearchButton.visible = true

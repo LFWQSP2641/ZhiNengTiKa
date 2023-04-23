@@ -11,6 +11,7 @@ bool Setting::compressQRCodeImage;
 int Setting::fontPointSize;
 int Setting::smallFontPointSize;
 QString Setting::font;
+QString Setting::qmlStyle;
 
 QJsonObject Setting::jsonObjectApiQRCodeScanner;
 
@@ -60,6 +61,8 @@ void Setting::loadFromFile()
     Setting::fontPointSize = settingJsonObject.value(QStringLiteral("fontPointSize")).toInt();
     Setting::smallFontPointSize = settingJsonObject.value(QStringLiteral("smallFontPointSize")).toInt();
     Setting::font = settingJsonObject.value(QStringLiteral("font")).toString();
+    Setting::qmlStyle = settingJsonObject.value(QStringLiteral("qmlStyle")).toString();
+
     Setting::jsonObjectApiQRCodeScanner = settingJsonObject.value(QStringLiteral("apiQRCodeScanner")).toObject();
     Setting::uuid = settingJsonObject.value(QStringLiteral("uuid")).toString(QUuid::createUuid().toString(QUuid::WithoutBraces));
 }
@@ -91,6 +94,8 @@ void Setting::saveToFile()
     settingJsonObject.insert(QStringLiteral("fontPointSize"), fontPointSize);
     settingJsonObject.insert(QStringLiteral("smallFontPointSize"), smallFontPointSize);
     settingJsonObject.insert(QStringLiteral("font"), font);
+
+    settingJsonObject.insert(QStringLiteral("qmlStyle"), qmlStyle);
     settingJsonObject.insert(QStringLiteral("apiQRCodeScanner"), jsonObjectApiQRCodeScanner);
     settingJsonObject.insert(QStringLiteral("uuid"), uuid);
 

@@ -3,6 +3,7 @@ import QtQuick.Controls
 
 ListView {
     id: templateListView
+    clip: true
     delegate: ItemDelegate {
         width: templateListView.width
         text: model.display

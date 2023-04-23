@@ -28,6 +28,7 @@
 #include <QtWebView>
 #include <QSGRendererInterface>
 #include <QQuickWindow>
+#include <QQuickStyle>
 
 #include "D:/Softwares/scr/Qt-AES/qaesencryption.h"
 #include "D:/Softwares/scr/WebView/WebView.h"
