@@ -57,7 +57,7 @@ void UserData::initPublicUserData()
 {
     auto getQByteArraybyNetwork{[](const QString & path, QByteArray * byteArray)
     {
-        auto reply{ Network::getGlobalNetworkManager()->get(QNetworkRequest(QUrl(DATABASE_DOMAIN + path))) };
+        auto reply{ Network::getGlobalNetworkManager()->get(QNetworkRequest(QUrl(QStringLiteral("Update/").prepend(DATABASE_DOMAIN).append(path)))) };
         QObject::connect(reply, &QNetworkReply::finished, [reply, byteArray]
         {
             *byteArray = Network::getGlobalNetworkManager()->replyReadAll(reply);

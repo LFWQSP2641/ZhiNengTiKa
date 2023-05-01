@@ -36,7 +36,7 @@ int UpdateChecker::compareVersion(const QString &version1, const QString &versio
 
 bool UpdateChecker::checkMinimumVersion() const
 {
-    auto minimumVersionStr{ Network::Network::getGlobalNetworkManager()->getDataByStrUrl(QStringLiteral("minimumVersion").prepend(DATABASE_DOMAIN)) };
+    auto minimumVersionStr{ Network::Network::getGlobalNetworkManager()->getDataByStrUrl(QStringLiteral("Update/minimumVersion").prepend(DATABASE_DOMAIN)) };
     qDebug() << minimumVersionStr;
     return compareVersion(minimumVersionStr, UpdateChecker::currentVersion) < 0;
 }
@@ -68,7 +68,7 @@ bool UpdateChecker::getHasNewVersion() const
 
 void UpdateChecker::downloadNewestVersion()
 {
-    auto newestVersionReply(Network::getGlobalNetworkManager()->getByStrUrl(QStringLiteral("getNewestVersionEncryption").prepend(DATABASE_DOMAIN)));
+    auto newestVersionReply(Network::getGlobalNetworkManager()->getByStrUrl(QStringLiteral("Update/getNewestVersionEncryption").prepend(DATABASE_DOMAIN)));
     auto file(new QFile(Global::tempPath().append(QDir::separator()).append(QStringLiteral("new.apk"))));
     file->remove();
     file->open(QFile::ReadWrite | QFile::Append);
@@ -107,8 +107,8 @@ void UpdateChecker::run()
 
     NetworkAccessManagerBlockable networkAccessManagerBlockable;
 
-    auto newestVersionReply{networkAccessManagerBlockable.getByStrUrl(QStringLiteral("newestVersion").prepend(DATABASE_DOMAIN))};
-    auto changeLogReply{networkAccessManagerBlockable.getByStrUrl(QStringLiteral("changeLog").prepend(DATABASE_DOMAIN))};
+    auto newestVersionReply{networkAccessManagerBlockable.getByStrUrl(QStringLiteral("Update/newestVersion").prepend(DATABASE_DOMAIN))};
+    auto changeLogReply{networkAccessManagerBlockable.getByStrUrl(QStringLiteral("Update/changeLog").prepend(DATABASE_DOMAIN))};
 
     this->newestVersion = networkAccessManagerBlockable.replyReadAll(networkAccessManagerBlockable.replyWaitForFinished(newestVersionReply));
     this->changeLog = networkAccessManagerBlockable.replyReadAll(networkAccessManagerBlockable.replyWaitForFinished(changeLogReply));
