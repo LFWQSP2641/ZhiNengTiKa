@@ -51,8 +51,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 include(3rd/Qt-AES/QAESEncryption.pri)
 
 HEADERS += \
+    $$PWD/src/Logic/UpdateChecker.h \
     src/Logic/AnswerDetailData.hpp \
     src/Logic/MultipleSubjectsTemplateListModelList.h \
+    src/Logic/NetworkAccessManagerBlockable.h \
     src/Logic/TemplateAnalysis.h \
     src/Logic/TemplateListModel.h \
     src/Logic/TemplateRawData.h \
@@ -63,7 +65,6 @@ HEADERS += \
     src/QMLIntermediary/TemplateAnalysisQML.h \
     src/QMLIntermediary/TemplateRawDataQML.h \
     src/QMLIntermediary/TemplateSummaryQML.h \
-    src/Singleton/AutoUpdate.h \
     src/Singleton/Network.h \
     src/StaticClass/CallAndroidNativeComponent.h \
     src/StaticClass/Global.h \
@@ -73,7 +74,9 @@ HEADERS += \
     src/StaticClass/XinjiaoyuNetwork.h
 
 SOURCES += \
+    $$PWD/src/Logic/UpdateChecker.cpp \
     src/Logic/MultipleSubjectsTemplateListModelList.cpp \
+    src/Logic/NetworkAccessManagerBlockable.cpp \
     src/Logic/TemplateAnalysis.cpp \
     src/Logic/TemplateListModel.cpp \
     src/Logic/TemplateRawData.cpp \
@@ -83,7 +86,6 @@ SOURCES += \
     src/QMLIntermediary/TemplateAnalysisQML.cpp \
     src/QMLIntermediary/TemplateRawDataQML.cpp \
     src/QMLIntermediary/TemplateSummaryQML.cpp \
-    src/Singleton/AutoUpdate.cpp \
     src/Singleton/Network.cpp \
     src/StaticClass/CallAndroidNativeComponent.cpp \
     src/StaticClass/Global.cpp \

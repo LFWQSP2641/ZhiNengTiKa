@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.platform as Platform
 import SettingOperator
-import AutoUpdate
 
 Item {
     required property var builtInStyles
@@ -52,6 +51,11 @@ Item {
                 placeholderText: "密码"
             }
         }
+    }
+
+    UpdateWidget {
+        id: updateWidget
+        showQuestionDialog: true
     }
 
     ScrollView {
@@ -223,11 +227,11 @@ Item {
                         text: "检查更新"
                         Layout.fillWidth: true
                         onClicked: {
-                            AutoUpdate.checkUpdate(true)
+                            updateWidget.checkUpdate()
                             checkUpdate.enabled = false
                         }
                         Connections {
-                            target: AutoUpdate
+                            target: updateWidget
                             function onFinished() {
                                 checkUpdate.enabled = true
                             }

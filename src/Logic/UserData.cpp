@@ -29,7 +29,7 @@ UserData UserData::login(const QByteArray &username, const QByteArray &password)
     loginRequest.setRawHeader(QByteArrayLiteral("t"), tVal);
     loginRequest.setRawHeader(QByteArrayLiteral("encrypt"), encryptVal);
 
-    const auto returnData{Network::postData(loginRequest, loginData)};
+    const auto returnData{Network::getGlobalNetworkManager()->postData(loginRequest, loginData)};
     if(returnData.startsWith("{\"code\":200,"))
     {
         const auto rootObject{QJsonDocument::fromJson(returnData).object()};
@@ -57,10 +57,10 @@ void UserData::initPublicUserData()
 {
     auto getQByteArraybyNetwork{[](const QString & path, QByteArray * byteArray)
     {
-        auto reply{ Network::getInstance()->networkAccessManager.get(QNetworkRequest(QUrl(DATABASE_DOMAIN + path))) };
+        auto reply{ Network::getGlobalNetworkManager()->get(QNetworkRequest(QUrl(DATABASE_DOMAIN + path))) };
         QObject::connect(reply, &QNetworkReply::finished, [reply, byteArray]
         {
-            *byteArray = Network::replyReadAll(reply);
+            *byteArray = Network::getGlobalNetworkManager()->replyReadAll(reply);
         });
     }};
     getQByteArraybyNetwork(QStringLiteral("publicAccessToken"), &publicAccessToken);

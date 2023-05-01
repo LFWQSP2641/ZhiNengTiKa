@@ -87,7 +87,7 @@ ApplicationWindow {
             id: listView
 
             focus: true
-            currentIndex: -1
+            currentIndex: 0
             anchors.fill: parent
 
             delegate: ItemDelegate {
@@ -157,6 +157,11 @@ ApplicationWindow {
         visible: false
     }
 
+    UpdateWidget {
+        id: updateWidget
+        showQuestionDialog: false
+    }
+
     // stackView.push在第二个参数连接信号槽好像有点问题
     // TypeError: Cannot assign to read-only property "okButtonClicked"
     // 所以拿个Component包一下
@@ -166,6 +171,15 @@ ApplicationWindow {
             onOkButtonClicked: function(templateCode){
                 showTemplateDetailWidget(templateCode)
             }
+        }
+    }
+
+    Component.onCompleted: {
+        updateWidget.checkUpdate()
+        if(!updateWidget.checkMinimumVersion())
+        {
+            messageDialog.show("请更新版本或检查网络连接")
+            Qt.exit(1)
         }
     }
 

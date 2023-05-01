@@ -1,20 +1,14 @@
 #pragma once
 
+#include "../Logic/NetworkAccessManagerBlockable.h"
 
 class Network
 {
 public:
     static void initOnce();
-    static Network *getInstance();
-    QNetworkAccessManager networkAccessManager;
-    static QNetworkReply *requestAndWaitForFinished(const QNetworkRequest &requestInfo);
-    static QNetworkReply *postAndWaitForFinished(const QNetworkRequest &requestInfo, const QByteArray &data);
-    static QNetworkReply *waitForFinished(QNetworkReply *reply);
-    static QByteArray replyReadAll(QNetworkReply *reply);
-    static QByteArray getReplyData(QNetworkReply *reply);
-    static QByteArray getData(const QNetworkRequest &requestInfo);
-    static QByteArray postData(const QNetworkRequest &requestInfo, const QByteArray &data);
+    static void resetNetworkManager();
+    static NetworkAccessManagerBlockable *getGlobalNetworkManager();
 private:
     Network() = default;
-    static Network *instance;
+    static NetworkAccessManagerBlockable *globalManager;
 };

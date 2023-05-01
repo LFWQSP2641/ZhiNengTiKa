@@ -32,7 +32,7 @@ QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url)
 QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, const UserData &userData)
 {
     QByteArray responseByte;
-    responseByte = Network::getData(
+    responseByte = Network::getGlobalNetworkManager()->getData(
                        XinjiaoyuNetwork::setRequest(
                            QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_homework/"
                                           "homework/template/question/list?templateCode=%0&studentId=%1&isEncrypted=true").arg(templateCode, userData.getStudentId())));
@@ -120,7 +120,7 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
 
 QString XinjiaoyuNetwork::uploadFile(const QByteArray &fileData, const QString &fileName)
 {
-    return XinjiaoyuNetwork::getUploadFileReplyUrl(Network::waitForFinished(uploadFileReply(fileData, fileName)));
+    return XinjiaoyuNetwork::getUploadFileReplyUrl(Network::getGlobalNetworkManager()->replyWaitForFinished(uploadFileReply(fileData, fileName)));
 }
 
 QNetworkReply *XinjiaoyuNetwork::uploadFileReply(const QByteArray &fileData, const QString &fileName)
@@ -148,12 +148,12 @@ QNetworkReply *XinjiaoyuNetwork::uploadFileReply(const QByteArray &fileData, con
 
     request.setHeader(QNetworkRequest::ContentLengthHeader, data.size());
 
-    return Network::getInstance()->networkAccessManager.post(request, data);
+    return Network::getGlobalNetworkManager()->post(request, data);
 }
 
 QString XinjiaoyuNetwork::getUploadFileReplyUrl(QNetworkReply *reply)
 {
-    const auto returnData{ Network::replyReadAll(reply) };
+    const auto returnData{ Network::getGlobalNetworkManager()->replyReadAll(reply) };
 
     const auto stateCode{returnData.mid(8, 3)};
 

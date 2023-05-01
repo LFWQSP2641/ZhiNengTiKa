@@ -59,7 +59,8 @@ void TemplateListModel::addNewTemplate(const TemplateSummary &templateInfo)
 
 void TemplateListModel::clear()
 {
-    beginRemoveRows(QModelIndex(), 0, this->templateList.size());
+    // WARNING QML第二次搜索之后只显示三个结果
+    beginRemoveRows(QModelIndex(), 0, this->templateList.size() - 1);
     this->templateList.clear();
     endRemoveRows();
 }

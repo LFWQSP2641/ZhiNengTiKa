@@ -41,7 +41,7 @@ Item {
             TextField {
                 id: templateNameTextField
                 Layout.fillWidth: true
-                placeholderText: "题卡编号"
+                placeholderText: "题卡名称"
             }
             Button {
                 id: startSearchButton

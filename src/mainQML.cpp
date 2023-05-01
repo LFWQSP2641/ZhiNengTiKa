@@ -1,10 +1,9 @@
-#include "Singleton/AutoUpdate.h"
 #include "StaticClass/Global.h"
 #include "StaticClass/Setting.h"
-#include "StaticClass/CallAndroidNativeComponent.h"
 #include "Singleton/Network.h"
 #include "StaticClass/QRCodeScanner.h"
 #include "Logic/MultipleSubjectsTemplateListModelList.h"
+#include "Logic/UpdateChecker.h"
 #include "Logic/TemplateSearcher.h"
 #include "Logic/TemplateListModel.h"
 #include "QMLIntermediary/QRCodeScannerQML.h"
@@ -28,7 +27,6 @@ int main(int argc, char *argv[])
     a.setApplicationDisplayName(QStringLiteral("智能题卡"));
 
     Setting::loadFromFile();
-    AutoUpdate::initOnce(APP_VERSION);
     QRCodeScanner::initialize(Setting::jsonObjectApiQRCodeScanner);
     UserData::initPublicUserData();
 
@@ -62,7 +60,7 @@ int main(int argc, char *argv[])
 
 #ifdef Q_OS_ANDROID
     //删除新版本文件
-    QFile file(CallAndroidNativeComponent::getCacheDir() + QDir::separator() + QStringLiteral("newVersion.apk"));
+    QFile file(Global::tempPath() + QDir::separator() + QStringLiteral("newVersion.apk"));
     if(file.exists())
     {
         file.remove();
@@ -70,26 +68,16 @@ int main(int argc, char *argv[])
 #else
 #endif // Q_OS_ANDROID
 
-#ifdef Q_OS_ANDROID
-    auto autoUpdate(AutoUpdate::getInstance());
-    autoUpdate->checkUpdate(false);
-    if(!autoUpdate->checkMinimumVersion())
-    {
-        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("请更新版本或检查网络连接"));
-        QApplication::exit(1);
-        return 1;
-    }
-#endif
     MultipleSubjectsTemplateListModelList multipleSubjectsTemplateListModelListInstance;
     qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0, "MultipleSubjectsTemplateListModelList", &multipleSubjectsTemplateListModelListInstance);
     qmlRegisterSingletonInstance("QRCodeScannerQML", 1, 0, "QRCodeScanner", new QRCodeScannerQML);
-    qmlRegisterSingletonInstance("AutoUpdate", 1, 0, "AutoUpdate", AutoUpdate::getInstance());
     qmlRegisterType<TemplateSummaryQML>("TemplateSummaryQML", 1, 0, "TemplateSummaryQML");
     qmlRegisterType<TemplateRawDataQML>("TemplateRawDataQML", 1, 0, "TemplateRawDataQML");
     qmlRegisterType<TemplateAnalysisQML>("TemplateAnalysisQML", 1, 0, "TemplateAnalysisQML");
     qmlRegisterType<TemplateSearcher>("TemplateSearcher", 1, 0, "TemplateSearcher");
     qmlRegisterType<TemplateListModel>("TemplateListModel", 1, 0, "TemplateListModel");
     qmlRegisterType<SettingOperator>("SettingOperator", 1, 0, "SettingOperator");
+    qmlRegisterType<UpdateChecker>("UpdateChecker", 1, 0, "UpdateChecker");
     QQmlApplicationEngine engine;
 
     QStringList builtInStyles = { QLatin1String("Basic"), QLatin1String("Fusion"),

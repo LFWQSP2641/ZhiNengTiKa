@@ -7,5 +7,6 @@
         <file>qml/TemplateDetailWidget.qml</file>
         <file>qml/TemplateListView.qml</file>
         <file>qml/SearchWidget.qml</file>
+        <file>qml/UpdateWidget.qml</file>
     </qresource>
 </RCC>

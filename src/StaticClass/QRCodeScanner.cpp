@@ -50,7 +50,7 @@ QByteArray QRCodeScanner::analysisQRCode(const QImage &image, const char *format
         boundary.append(generateRandomString());
     }
 
-    QNetworkRequest request(QUrl(QStringLiteral("https://img.2weima.com/")));
+    QNetworkRequest request(QStringLiteral("https://img.2weima.com/"));
     request.setRawHeader(QByteArrayLiteral("sec-ch-ua"), QByteArrayLiteral(R"("Not?A_Brand";v="8", "Chromium";v="108", "Microsoft Edge";v="108")"));
     request.setRawHeader(QByteArrayLiteral("sec-ch-ua-platform"), QByteArrayLiteral("\"Windows\""));
     request.setRawHeader(QByteArrayLiteral("sec-ch-ua-mobile"), QByteArrayLiteral("?0"));
@@ -122,7 +122,7 @@ QByteArray QRCodeScanner::analysisQRCode(const QImage &image, const char *format
     imagePart.setBody(ba);
     multiPart.append(imagePart);
 
-    auto replyData{Network::replyReadAll(Network::waitForFinished(Network::getInstance()->networkAccessManager.post(request, &multiPart)))};
+    auto replyData{Network::getGlobalNetworkManager()->postData(request, &multiPart)};
     qDebug() << replyData;
     return QJsonDocument::fromJson(replyData).object().value(QStringLiteral("data")).toString().toUtf8();
 }
@@ -143,7 +143,7 @@ QByteArray QRCodeScanner::analysisQRCode(const QString &imagePath, const char *f
 
 void QRCodeScanner::apiInitialize()
 {
-    QNetworkRequest requestFir{QUrl(QStringLiteral("https://jie.2weima.com/"))};
+    QNetworkRequest requestFir{QStringLiteral("https://jie.2weima.com/")};
     requestFir.setRawHeader(QByteArrayLiteral("sec-ch-ua"), QByteArrayLiteral(R"("Not?A_Brand";v="8", "Chromium";v="108", "Microsoft Edge";v="108")"));
     requestFir.setRawHeader(QByteArrayLiteral("sec-ch-ua-mobile"), QByteArrayLiteral("?0"));
     requestFir.setRawHeader(QByteArrayLiteral("sec-ch-ua-platform"), QByteArrayLiteral("\"Windows\""));
@@ -156,7 +156,7 @@ void QRCodeScanner::apiInitialize()
     requestFir.setRawHeader(QByteArrayLiteral("Sec-Fetch-Dest"), QByteArrayLiteral("document"));
     requestFir.setRawHeader(QByteArrayLiteral("Accept-Encoding"), QByteArrayLiteral("deflate, br"));
     requestFir.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("zh-CN,zh;q=0.9"));
-    auto replyFir{Network::requestAndWaitForFinished(requestFir)};
+    auto replyFir{Network::getGlobalNetworkManager()->getAndWaitForFinished(requestFir)};
     QString cookie(replyFir->rawHeader("Set-Cookie"));
     cookie = cookie.mid(0, cookie.indexOf(";") + 2);
     cookie.append(QStringLiteral("Hm_lvt_69f82fc88fac96306852119d0e11795e="));
@@ -164,14 +164,14 @@ void QRCodeScanner::apiInitialize()
     cookie.append(currentSecsSinceEpoch);
     cookie.append(QStringLiteral("; Hm_lpvt_69f82fc88fac96306852119d0e11795e="));
     cookie.append(currentSecsSinceEpoch);
-    QString xCsrfToken(QString::fromUtf8(Network::replyReadAll(replyFir)).mid(340, 100));
+    QString xCsrfToken(QString::fromUtf8(Network::getGlobalNetworkManager()->replyReadAll(replyFir)).mid(340, 100));
     xCsrfToken = xCsrfToken.mid(xCsrfToken.indexOf("<meta name=\"csrf-token\" content=\"") + 33, 32);
     if(cookie.isEmpty() || xCsrfToken.isEmpty())
     {
         throw std::runtime_error("返回数据为空,可能无法连接网络");
     }
 
-    QNetworkRequest requestSec{QUrl(QStringLiteral("https://jie.2weima.com/Api/oss_sign.html?source=qrdecode"))};
+    QNetworkRequest requestSec{QStringLiteral("https://jie.2weima.com/Api/oss_sign.html?source=qrdecode")};
     requestSec.setRawHeader(QByteArrayLiteral("Content-Length"), QByteArrayLiteral("0"));
     requestSec.setRawHeader(QByteArrayLiteral("sec-ch-ua"), QByteArrayLiteral(R"("Not?A_Brand";v="8", "Chromium";v="108", "Microsoft Edge";v="108")"));
     requestSec.setRawHeader(QByteArrayLiteral("pragma-ssl"), QByteArrayLiteral("no-cache"));
@@ -190,7 +190,7 @@ void QRCodeScanner::apiInitialize()
     requestSec.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("zh-CN,zh;q=0.9"));
     requestSec.setRawHeader(QByteArrayLiteral("Cookie"), cookie.toUtf8());
 
-    const auto replyDataSec{Network::getData(requestSec)};
+    const auto replyDataSec{Network::getGlobalNetworkManager()->getData(requestSec)};
     apiArguments = QJsonDocument::fromJson(replyDataSec).object();
     if(apiArguments.isEmpty())
     {

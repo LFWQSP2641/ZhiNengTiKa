@@ -1,57 +1,19 @@
 #include "Network.h"
 
-Network *Network::instance;
+NetworkAccessManagerBlockable *Network::globalManager;
 
 void Network::initOnce()
 {
-    Network::instance = new Network;
+    Network::globalManager = new NetworkAccessManagerBlockable;
 }
 
-Network *Network::getInstance()
+void Network::resetNetworkManager()
 {
-    return Network::instance;
+    globalManager->deleteLater();
+    initOnce();
 }
 
-QNetworkReply *Network::requestAndWaitForFinished(const QNetworkRequest &requestInfo)
+NetworkAccessManagerBlockable *Network::getGlobalNetworkManager()
 {
-    return Network::waitForFinished(Network::getInstance()->networkAccessManager.get(requestInfo));
-}
-
-QNetworkReply *Network::postAndWaitForFinished(const QNetworkRequest &requestInfo, const QByteArray &data)
-{
-    return Network::waitForFinished(Network::getInstance()->networkAccessManager.post(requestInfo, data));
-}
-
-QNetworkReply *Network::waitForFinished(QNetworkReply *reply)
-{
-    QEventLoop eventLoop;
-    QObject::connect(reply, &QNetworkReply::finished, &eventLoop, &QEventLoop::quit);
-    if(reply->isRunning())
-    {
-        eventLoop.exec();
-    }
-    return reply;
-}
-
-QByteArray Network::replyReadAll(QNetworkReply *reply)
-{
-    auto data{reply->readAll()};
-    reply->deleteLater();
-    return data;
-}
-
-QByteArray Network::getReplyData(QNetworkReply *reply)
-{
-    waitForFinished(reply);
-    return replyReadAll(reply);
-}
-
-QByteArray Network::getData(const QNetworkRequest &requestInfo)
-{
-    return replyReadAll(requestAndWaitForFinished(requestInfo));
-}
-
-QByteArray Network::postData(const QNetworkRequest &requestInfo, const QByteArray &data)
-{
-    return replyReadAll(postAndWaitForFinished(requestInfo, data));
+    return globalManager;
 }
