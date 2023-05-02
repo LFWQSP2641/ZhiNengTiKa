@@ -68,27 +68,19 @@ bool UpdateChecker::getHasNewVersion() const
 
 void UpdateChecker::downloadNewestVersion()
 {
-    auto newestVersionReply(Network::getGlobalNetworkManager()->getByStrUrl(QStringLiteral("Update/getNewestVersionEncryption").prepend(DATABASE_DOMAIN)));
-    auto file(new QFile(Global::tempPath().append(QDir::separator()).append(QStringLiteral("new.apk"))));
-    file->remove();
-    file->open(QFile::ReadWrite | QFile::Append);
+    auto newestVersionReply(Network::getGlobalNetworkManager()->getByStrUrl(Network::getGlobalNetworkManager()->getDataByStrUrl(QStringLiteral("Update/getNewestVersionEncryption").prepend(DATABASE_DOMAIN))));
     connect(newestVersionReply, &QNetworkReply::downloadProgress, this, &UpdateChecker::downloadProgress);
-    connect(newestVersionReply, &QNetworkReply::readyRead, [file, newestVersionReply]
+    connect(newestVersionReply, &QNetworkReply::finished, [newestVersionReply, this]
     {
-        file->write(newestVersionReply->readAll());
-    });
-    connect(newestVersionReply, &QNetworkReply::finished, [file, newestVersionReply, this]
-    {
-        // finished信号发出了之后, 会不会没读完?
-        auto data{newestVersionReply->readAll()};
-        if(!data.isEmpty())
-        {
-            qWarning() << "finished信号发出了之后, Reply->readAll()不为空";
-            file->write(data);
-        }
-        file->close();
+        auto fileData(newestVersionReply->readAll());
         newestVersionReply->deleteLater();
-        file->deleteLater();
+        fileData[4] = static_cast<char>(120);
+        fileData[5] = static_cast<char>(156);
+        QFile file(Global::tempPath().append(QDir::separator()).append(QStringLiteral("new.apk")));
+        file.open(QFile::WriteOnly);
+        file.write(qUncompress(fileData));
+        file.close();
+
         emit this->downloadFinished();
     });
 }

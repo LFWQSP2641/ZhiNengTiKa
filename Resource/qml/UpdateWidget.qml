@@ -21,11 +21,12 @@ Item {
             finished()
         }
         onDownloadProgress: function(bytesReceived,bytesTotal) {
-            downloadProgressDialogProgressBar.to = bytesTotal
             downloadProgressDialogProgressBar.value = bytesReceived
         }
         onDownloadFinished: {
             updateChecker.installNewestVersion()
+            downloadProgressDialogProgressBar.indeterminate = true
+            downloadProgressDialog.close()
         }
     }
 
@@ -39,7 +40,7 @@ Item {
         onAccepted: {
             downloadProgressDialog.open()
             updateDialog.close()
-            updateChecker.start()
+            updateChecker.downloadNewestVersion()
         }
 
         onRejected: {
@@ -101,6 +102,7 @@ Item {
         contentItem: ProgressBar {
             id: downloadProgressDialogProgressBar
             from: 0
+            to: 30000000
         }
     }
 
