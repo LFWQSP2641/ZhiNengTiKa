@@ -198,6 +198,7 @@ Item {
                         checked: settingOperator.getListLatestTemplatePreferentially()
                         onCheckedChanged: {
                             settingOperator.setListLatestTemplatePreferentially(checked)
+                            settingOperator.save()
                         }
                     }
                 }
@@ -210,6 +211,7 @@ Item {
                     checked: settingOperator.getCompressQRCodeImage()
                     onCheckedChanged: {
                         settingOperator.setCompressQRCodeImage(checked)
+                        settingOperator.save()
                     }
                 }
             }
