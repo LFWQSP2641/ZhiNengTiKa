@@ -33,5 +33,5 @@ TemplateRawDataQML::TemplateRawDataQML(const TemplateRawData &other, QObject *pa
 
 void TemplateRawDataQML::setValue(const QString &templateCode)
 {
-    this->templateRawData = TemplateRawData(templateCode);
+    this->templateRawData = TemplateRawData(templateCode.trimmed());
 }
