@@ -146,6 +146,13 @@ ApplicationWindow {
         }
     }
 
+    MessageDialog {
+        id: applicationWindowQuitDialog
+        buttons: MessageDialog.Ok
+        text: "请更新版本或检查网络连接"
+        onOkClicked: Qt.exit(1)
+    }
+
     TemplateRawDataQML {
         id: templateRawDataQML
     }
@@ -178,8 +185,7 @@ ApplicationWindow {
         updateWidget.checkUpdate()
         if(!updateWidget.checkMinimumVersion())
         {
-            messageDialog.show("请更新版本或检查网络连接")
-            Qt.exit(1)
+            applicationWindowQuitDialog.open()
         }
     }
 
