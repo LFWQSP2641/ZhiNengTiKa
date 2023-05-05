@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import UpdateChecker
 
+// TODO Dialog无法显示在控件中心
 Item {
     property bool showQuestionDialog: false
     signal finished()
