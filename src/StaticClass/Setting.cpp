@@ -20,7 +20,7 @@ QString Setting::uuid;
 void Setting::loadFromFile()
 {
     QByteArray fileData;
-    QFile file{ Global::configPath() + QDir::separator() + QStringLiteral("setting.json") };
+    QFile file{ Global::configPath() + QStringLiteral("/") + QStringLiteral("setting.json") };
     if (file.exists())
     {
         file.open(QFile::ReadOnly);
@@ -99,7 +99,7 @@ void Setting::saveToFile()
     settingJsonObject.insert(QStringLiteral("apiQRCodeScanner"), jsonObjectApiQRCodeScanner);
     settingJsonObject.insert(QStringLiteral("uuid"), uuid);
 
-    QFile file{ Global::configPath() + QDir::separator() + QStringLiteral("setting.json") };
+    QFile file{ Global::configPath() + QStringLiteral("/") + QStringLiteral("setting.json") };
     file.open(QFile::WriteOnly);
     file.write(QJsonDocument(settingJsonObject).toJson(QJsonDocument::Compact));
     file.close();

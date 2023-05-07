@@ -76,7 +76,7 @@ void UpdateChecker::downloadNewestVersion()
         newestVersionReply->deleteLater();
         fileData[4] = static_cast<char>(120);
         fileData[5] = static_cast<char>(156);
-        QFile file(Global::tempPath().append(QDir::separator()).append(QStringLiteral("new.apk")));
+        QFile file(Global::tempPath().append(QStringLiteral("/")).append(QStringLiteral("new.apk")));
         file.open(QFile::WriteOnly);
         file.write(qUncompress(fileData));
         file.close();
@@ -88,7 +88,7 @@ void UpdateChecker::downloadNewestVersion()
 void UpdateChecker::installNewestVersion()
 {
 #ifdef Q_OS_ANDROID
-    CallAndroidNativeComponent::installApk(Global::tempPath().append(QDir::separator()).append(QStringLiteral("new.apk")));
+    CallAndroidNativeComponent::installApk(Global::tempPath().append(QStringLiteral("/")).append(QStringLiteral("new.apk")));
 #endif // Q_OS_ANDROID
 }
 
