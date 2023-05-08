@@ -25,7 +25,7 @@ QMAKE_TARGET_COPYRIGHT = "Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserve
 RC_LANG = 0x0004
 
 RESOURCES += \
-    Resource/template.qrc
+    Resource/Template.qrc
 
 }
 
