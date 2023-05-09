@@ -1,4 +1,4 @@
-VERSION = 2.0.5
+VERSION = 2.0.8
 
 QT       += core network
 
