@@ -12,7 +12,6 @@ bool Setting::compressQRCodeImage;
 
 //若这三为空,就在main那赋个默认值
 int Setting::fontPointSize;
-int Setting::smallFontPointSize;
 QString Setting::font;
 QString Setting::qmlStyle;
 
@@ -23,7 +22,7 @@ QString Setting::uuid;
 void Setting::loadFromFile()
 {
     QByteArray fileData;
-    QFile file{ Global::configPath() + QStringLiteral("/") + QStringLiteral("setting.json") };
+    QFile file{ Global::configPath().append(QStringLiteral("/")).append(QStringLiteral("setting.json")) };
     if (file.exists())
     {
         file.open(QFile::ReadOnly);
@@ -62,7 +61,6 @@ void Setting::loadFromFile()
     Setting::listLatestTemplatePreferentially = settingJsonObject.value(QStringLiteral("listLatestTemplatePreferentially")).toBool(true);
 
     Setting::fontPointSize = settingJsonObject.value(QStringLiteral("fontPointSize")).toInt();
-    Setting::smallFontPointSize = settingJsonObject.value(QStringLiteral("smallFontPointSize")).toInt();
     Setting::font = settingJsonObject.value(QStringLiteral("font")).toString();
     Setting::qmlStyle = settingJsonObject.value(QStringLiteral("qmlStyle")).toString();
 
@@ -121,14 +119,13 @@ void Setting::saveToFile()
     settingJsonObject.insert(QStringLiteral("listLatestTemplatePreferentially"), listLatestTemplatePreferentially);
 
     settingJsonObject.insert(QStringLiteral("fontPointSize"), fontPointSize);
-    settingJsonObject.insert(QStringLiteral("smallFontPointSize"), smallFontPointSize);
     settingJsonObject.insert(QStringLiteral("font"), font);
 
     settingJsonObject.insert(QStringLiteral("qmlStyle"), qmlStyle);
     settingJsonObject.insert(QStringLiteral("apiQRCodeScanner"), jsonObjectApiQRCodeScanner);
     settingJsonObject.insert(QStringLiteral("uuid"), uuid);
 
-    QFile file{ Global::configPath() + QStringLiteral("/") + QStringLiteral("setting.json") };
+    QFile file{ Global::configPath().append(QStringLiteral("/")).append(QStringLiteral("setting.json")) };
     file.open(QFile::WriteOnly);
     file.write(QJsonDocument(settingJsonObject).toJson(QJsonDocument::Compact));
     file.close();

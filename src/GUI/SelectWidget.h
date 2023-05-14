@@ -1,7 +1,7 @@
 #ifndef SEARCHDIALOG_H
 #define SEARCHDIALOG_H
 
-#include "../Logic/AnalysisWebRawData.h"
+#include "../Logic/TemplateAnalysis.h"
 class MultipleSubjectsTemplateListView;
 
 class SelectWidget : public QWidget
@@ -15,21 +15,16 @@ protected:
     MultipleSubjectsTemplateListView *multipleSubjectsTemplateListView;
     QPushButton *OKButton;
     QPushButton *searchButton;
-//    QPushButton *previousPageButton;
-//    QPushButton *nextPageButton;
     QLineEdit *templateCodeLineEdit;
     QPushButton *scanQRCodeButton;
 
-protected slots:
-//    void toPreviousPage();
-//    void toNextPageButton();
-    void searchButtonPushed();
-    void OKButtonPushed();
-    AnalysisWebRawData getTemplateCodeData(const QString &templateCode);
-    void scanQRCode();
+    TemplateAnalysis getTemplateAnalysis(const QString &templateCode);
 
-signals:
-    void searchFinished(const AnalysisWebRawData &analysisWebRawData);
+protected slots:
+    void searchButtonPush();
+    void OKButtonPush();
+    void showTemplateDetailWidget(const TemplateAnalysis &templateAnalysis);
+    void scanQRCode();
 };
 
 #endif // SEARCHDIALOG_H

@@ -12,17 +12,17 @@ void Global::initOnce()
     Global::appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     Global::appTempPath = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
 #else
-    Global::appConfigPath = QApplication::applicationDirPath() + QStringLiteral("/") + QStringLiteral("Config");
-    Global::appDataPath = QApplication::applicationDirPath() + QStringLiteral("/") + QStringLiteral("Data");
-    Global::appTempPath = QApplication::applicationDirPath() + QStringLiteral("/") + QStringLiteral("Temp");
+    Global::appConfigPath = QApplication::applicationDirPath().append(QStringLiteral("/")).append(QStringLiteral("Config"));
+    Global::appDataPath = QApplication::applicationDirPath().append(QStringLiteral("/")).append(QStringLiteral("Data"));
+    Global::appTempPath = QApplication::applicationDirPath().append(QStringLiteral("/")).append(QStringLiteral("Temp"));
 #endif // Q_OS_ANDROID
 
     QDir dir;
     dir.mkdir(Global::configPath());
     dir.mkdir(Global::dataPath());
     dir.mkdir(Global::tempPath());
-    dir.mkdir(Global::tempPath() + QStringLiteral("/") + QStringLiteral("Image"));
-    dir.mkdir(Global::tempPath() + QStringLiteral("/") + QStringLiteral("TemplateFile"));
+    dir.mkdir(Global::tempPath().append(QStringLiteral("/")).append(QStringLiteral("Image")));
+    dir.mkdir(Global::tempPath().append(QStringLiteral("/")).append(QStringLiteral("TemplateFile")));
 
 }
 
@@ -86,7 +86,7 @@ qint64 Global::getDirSize(const QString &filePath)
     /*获取文件夹  并且过滤掉.和..文件夹 统计各个文件夹的文件大小 */
     for(const auto &subDir : tmpDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
     {
-        size += getDirSize(filePath + QStringLiteral("/") + subDir); //递归进行  统计所有子目录
+        size += getDirSize(QString(filePath).append(QStringLiteral("/")).append(subDir)); //递归进行  统计所有子目录
     }
 #endif
     auto filesInfoList { tmpDir.entryInfoList(QDir::Files) };
@@ -97,7 +97,7 @@ qint64 Global::getDirSize(const QString &filePath)
     auto dirsList{ tmpDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot) };
     size = std::accumulate(dirsList.cbegin(), dirsList.cend(), size, [&filePath](qint64 value, const QString & subDir)
     {
-        return getDirSize(filePath + QStringLiteral("/") + subDir) + value;
+        return getDirSize(QString(filePath).append(QStringLiteral("/")).append(subDir)) + value;
     });
 
     return size;

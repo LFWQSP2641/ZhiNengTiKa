@@ -14,7 +14,6 @@ private:
     QFont testFont;
     QComboBox *fontComboBox;
     QSpinBox *fontPointSizeSpinBox;
-    QSpinBox *smallFontPointSizeSpinBox;
     QLabel *resultTestLabel;
     QComboBox *schoolNameComboBox;
     QComboBox *levelComboBox;

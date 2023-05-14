@@ -1,4 +1,5 @@
 #include "SearchWidget.h"
+#include "TemplateListView.h"
 
 SearchWidget::SearchWidget(QWidget *parent)
     : QWidget{parent},
@@ -7,19 +8,15 @@ SearchWidget::SearchWidget(QWidget *parent)
       stateShowLabel(new QLabel(this)),
       searchStartButton(new QPushButton(QStringLiteral("搜索"), this)),
       searchStopButton(new QPushButton(QStringLiteral("停止"), this)),
-      searchResultListWidget(new QListWidget(this)),
-      OKButton(new QPushButton(QStringLiteral("确定"), this))
+      OKButton(new QPushButton(QStringLiteral("确定"), this)),
+      searchResultTemplateListView(new TemplateListView(this))
 {
     searchLineEdit->setPlaceholderText(QStringLiteral("题卡名称"));
     this->setSearchingState(false);
     stateShowLabel->setFixedHeight(this->fontMetrics().height());
     stateShowLabel->setVisible(false);
     OKButton->setEnabled(false);
-
-    QScroller::grabGesture(searchResultListWidget->viewport(), QScroller::TouchGesture);
-    searchResultListWidget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-    searchResultListWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-    searchResultListWidget->setAutoScroll(false);
+    searchResultTemplateListView->setTemplateListModel(&this->searchResultTemplateListModel);
 
     auto tempHBoxLayout{new QHBoxLayout};
     tempHBoxLayout->addWidget(searchLineEdit);
@@ -27,22 +24,23 @@ SearchWidget::SearchWidget(QWidget *parent)
     tempHBoxLayout->addWidget(searchStopButton);
     this->mainLayout->addLayout(tempHBoxLayout);
     this->mainLayout->addWidget(stateShowLabel);
-    this->mainLayout->addWidget(searchResultListWidget);
+    this->mainLayout->addWidget(searchResultTemplateListView);
     this->mainLayout->addWidget(OKButton);
 
-    connect(this->searchStartButton, &QPushButton::clicked, this, &SearchWidget::searchStartButtonPushed);
-    connect(this->searchStopButton, &QPushButton::clicked, this, &SearchWidget::searchStopButtonPushed);
-    connect(this->OKButton, &QPushButton::clicked, this, &SearchWidget::OKButtonPushed);
-    connect(this->searchResultListWidget, &QListWidget::itemClicked, [this]
+    connect(this->searchStartButton, &QPushButton::clicked, this, &SearchWidget::searchStartButtonPush);
+    connect(this->searchStopButton, &QPushButton::clicked, this, &SearchWidget::searchStopButtonPush);
+    connect(this->OKButton, &QPushButton::clicked, this, &SearchWidget::OKButtonPush);
+    connect(this->searchResultTemplateListView, &TemplateListView::templateNameClicked, [this]
     {
         this->OKButton->setEnabled(true);
     });
     connect(&this->templateSearcher, &TemplateSearcher::searchResult, this, &SearchWidget::addToSearchResultListWidget);
-    connect(&this->templateSearcher, &TemplateSearcher::searchFinished, this, &SearchWidget::templateSearcherSearchFinished);
+    connect(&this->templateSearcher, &TemplateSearcher::searchFinished, this, &SearchWidget::templateSearcherSearchFinish);
 }
 
 void SearchWidget::setSearchingState(bool searching)
 {
+    this->OKButton->setEnabled(false);
     this->searchStartButton->setVisible(!searching);
     this->searchStopButton->setVisible(searching);
 }
@@ -58,10 +56,9 @@ void SearchWidget::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-void SearchWidget::searchStartButtonPushed()
+void SearchWidget::searchStartButtonPush()
 {
-    this->searchResultListWidget->clear();
-    this->templateCodeList.clear();
+    this->searchResultTemplateListView->clear();
     this->stateShowLabel->setText(QStringLiteral("搜索中..."));
     this->stateShowLabel->setVisible(true);
     this->setSearchingState(true);
@@ -69,21 +66,21 @@ void SearchWidget::searchStartButtonPushed()
     this->templateSearcher.start();
 }
 
-void SearchWidget::searchStopButtonPushed()
+void SearchWidget::searchStopButtonPush()
 {
     this->searchStopButton->setEnabled(false);
     this->stateShowLabel->setText(QStringLiteral("搜索停止中..."));
     this->templateSearcher.stop();
 }
 
-void SearchWidget::templateSearcherSearchStoped()
+void SearchWidget::templateSearcherSearchStop()
 {
     this->searchStopButton->setEnabled(true);
     this->stateShowLabel->setText(QStringLiteral("搜索已停止"));
     this->setSearchingState(false);
 }
 
-void SearchWidget::templateSearcherSearchFinished(bool success)
+void SearchWidget::templateSearcherSearchFinish(bool success)
 {
     if(success)
     {
@@ -92,25 +89,16 @@ void SearchWidget::templateSearcherSearchFinished(bool success)
     }
     else
     {
-        this->templateSearcherSearchStoped();
+        this->templateSearcherSearchStop();
     }
 }
 
-void SearchWidget::OKButtonPushed()
+void SearchWidget::OKButtonPush()
 {
-    const auto currentSearchResultListWidgetItem{this->searchResultListWidget->currentItem()};
-    if(currentSearchResultListWidgetItem != nullptr)
-    {
-        emit searchFinished(
-            this->templateCodeList.at(this->searchResultListWidget->row(
-                                          currentSearchResultListWidgetItem)));
-    }
+    emit searchFinished(this->searchResultTemplateListView->getCurrentTemplateSummary());
 }
 
-void SearchWidget::addToSearchResultListWidget(const QString &templateName, const QString &templateCode)
+void SearchWidget::addToSearchResultListWidget(const TemplateSummary &templateSummary)
 {
-//    auto item{new QListWidgetItem(templateName,this->searchResultListWidget)};
-//    hash.insert(item)
-    this->searchResultListWidget->addItem(templateName);
-    templateCodeList.append(templateCode);
+    this->searchResultTemplateListView->addNewTemplate(templateSummary);
 }

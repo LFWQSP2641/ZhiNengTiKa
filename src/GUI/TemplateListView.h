@@ -2,23 +2,29 @@
 #define TEMPLATELISTVIEW_H
 
 class TemplateListModel;
+class TemplateSummary;
 
 class TemplateListView : public QListView
 {
     Q_OBJECT
 public:
     explicit TemplateListView(QWidget *parent = nullptr);
-    void setTemplateListModel(TemplateListModel *model);
+    TemplateSummary getCurrentTemplateSummary();
 private:
     TemplateListModel *templateListModel = nullptr;
     void setModel(QAbstractItemModel *model) override
     {
         QListView::setModel(model);
     }
+    TemplateSummary getTemplateSummary(const QModelIndex &templateNameIndex) const;
+public slots:
+    void clear();
+    void addNewTemplate(const TemplateSummary &templateSummary);
+    void setTemplateListModel(TemplateListModel *model);
 protected slots:
-    QString findTemplateCode(const QModelIndex &templateNameIndex);
+    void emitTemplateSummary(const QModelIndex &templateNameIndex);
 signals:
-    void templateNameClicked(const QString &templateCode);
+    void templateNameClicked(const TemplateSummary &templateSummary);
 };
 
 #endif // TEMPLATELISTVIEW_H

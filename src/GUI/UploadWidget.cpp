@@ -1,12 +1,12 @@
 #include "UploadWidget.h"
 #include "UploadChildWidget.h"
-#include "../Logic/AnalysisWebRawData.h"
+#include "../Logic/TemplateAnalysis.h"
 #include "../StaticClass/Setting.h"
 #include "../Singleton/Network.h"
 #include "../StaticClass/XinjiaoyuNetwork.h"
 
-UploadWidget::UploadWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent)
-    : QWidget{parent}, analysisWebRawData(analysisWebRawData)
+UploadWidget::UploadWidget(QSharedPointer<TemplateAnalysis> templateAnalysis, QWidget *parent)
+    : QWidget{parent}, templateAnalysisPointer(templateAnalysis)
 {
     mainLayout = new QVBoxLayout(this);
     uploadChildWidgetLayout = new QVBoxLayout;
@@ -32,13 +32,7 @@ UploadWidget::UploadWidget(const AnalysisWebRawData &analysisWebRawData, QWidget
     connect(rightAnswerPrecedenceCheckBox, &QRadioButton::clicked, this, &UploadWidget::switchRightAnswerPrecedence);
     connect(uploadAnswerPrecedenceCheckBox, &QRadioButton::clicked, this, &UploadWidget::switchUploadAnswerPrecedence);
 
-    this->analysisWebRawDataStateChanged = true;
-}
-
-void UploadWidget::setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData)
-{
-    this->analysisWebRawDataStateChanged = true;
-    this->analysisWebRawData = analysisWebRawData;
+    this->templateAnalysisStateChanged = true;
 }
 
 bool UploadWidget::upload()
@@ -79,7 +73,7 @@ bool UploadWidget::uploadData(const QByteArray &data)
                                     QStringLiteral(""),
                                     QStringLiteral("将提交到 %0 的账号\n"
                                             "且此操作不可撤回\n"
-                                            "是否继续?").arg(Setting::currentUserData().getDetailDataJsonObject().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + Setting::currentUserData().getUsername())) };
+                                            "是否继续?").arg(Setting::currentUserData().getDetailDataJsonObject().value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(Setting::currentUserData().getUsername()))) };
     if(ret == QMessageBox::No)
     {
         return false;
@@ -88,7 +82,7 @@ bool UploadWidget::uploadData(const QByteArray &data)
     if(!request.url().isEmpty())
     {
         request.setHeader(QNetworkRequest::ContentLengthHeader, data.size());
-        const auto replyData{ Network::postData(request, data) };
+        const auto replyData{ Network::getGlobalNetworkManager()->postData(request, data) };
         if(replyData == QStringLiteral("{\"code\":200,\"data\":null,\"msg\":\"操作成功！\"}"))
         {
             QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("提交成功！"));
@@ -110,7 +104,7 @@ bool UploadWidget::uploadData(const QByteArray &data)
 
 void UploadWidget::getUserAnswer()
 {
-    auto templateCode{analysisWebRawData.getTemplateCode()};
+    auto templateCode{ templateAnalysisPointer->getTemplateCode() };
     if(templateCode.isEmpty())
     {
         return;
@@ -124,18 +118,14 @@ void UploadWidget::getUserAnswer()
         return outputObject;
     }};
 
-    QByteArray webRawData;
-    try
+    TemplateRawData templateRawData(templateCode);
+    if(!templateRawData.isValid())
     {
-        webRawData = XinjiaoyuNetwork::getTemplateCodeData(templateCode);
-    }
-    catch (const std::exception &e)
-    {
-        QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
+        QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), templateRawData.getErrorStr());
         return;
     }
 
-    QJsonArray array{ QJsonDocument::fromJson(webRawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
+    QJsonArray array{ QJsonDocument::fromJson(templateRawData.getRawData()).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
     for (const auto &j : array)
     {
         auto jObject{j.toObject()};
@@ -247,9 +237,9 @@ void UploadWidget::editRawData()
 
 void UploadWidget::showEvent(QShowEvent *event)
 {
-    if(analysisWebRawDataStateChanged)
+    if(templateAnalysisStateChanged)
     {
-        analysisWebRawDataStateChanged = false;
+        templateAnalysisStateChanged = false;
         analysis();
     }
     this->setEnabled(analysised && Setting::logined());
@@ -266,7 +256,7 @@ QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)
     QJsonObject rootObject;
     rootObject.insert(QStringLiteral("schoolId"), QString(userData.getSchoolId()));
     rootObject.insert(QStringLiteral("studentId"), QString(userData.getStudentId()));
-    rootObject.insert(QStringLiteral("templateCode"), analysisWebRawData.getTemplateCode());
+    rootObject.insert(QStringLiteral("templateCode"), templateAnalysisPointer->getTemplateCode());
     QJsonArray array;
     for(auto &i : uploadChildWidgetList)
     {
@@ -277,9 +267,15 @@ QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)
     return rootObject;
 }
 
+void UploadWidget::setTemplateAnalysis(QSharedPointer<TemplateAnalysis> templateAnalysis)
+{
+    this->templateAnalysisStateChanged = true;
+    this->templateAnalysisPointer = templateAnalysis;
+}
+
 void UploadWidget::analysis()
 {
-    if(this->analysisWebRawData.isEmpty())
+    if(!this->templateAnalysisPointer->isValid())
     {
         return;
     }
@@ -300,7 +296,7 @@ void UploadWidget::analysis()
     }
 
     uploadChildWidgetList.clear();
-    const auto questionList{analysisWebRawData.getCountAndAnswer()};
+    const auto questionList{templateAnalysisPointer->getCountAndAnswer()};
 
     for(const auto &i : questionList)
     {

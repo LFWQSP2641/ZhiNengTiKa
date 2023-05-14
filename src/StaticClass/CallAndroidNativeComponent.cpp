@@ -13,7 +13,7 @@ QImage CallAndroidNativeComponent::takePhoto()
         activity.object<jobject>());
     // 简单粗暴好吧(*/ω＼*)
     QMessageBox::information(Q_NULLPTR, QStringLiteral("information"), QStringLiteral("简单粗暴的线程堵塞,关掉就行"));
-    QFile file(CallAndroidNativeComponent::getCacheDir() + QStringLiteral("/") + QStringLiteral("callNativeCamera_result.jpg"));
+    QFile file(CallAndroidNativeComponent::getCacheDir().append(QStringLiteral("/")).append(QStringLiteral("callNativeCamera_result.jpg")));
     if(file.size() < 1)
     {
         qWarning() << "CallAndroidNativeComponent::takePhoto() : file.size() < 1";

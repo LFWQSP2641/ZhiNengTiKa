@@ -2,13 +2,12 @@
 #define ANSWERANDANALYSISWIDGET_H
 
 #include "WebViewWidget.h"
-class AnalysisWebRawData;
 
 class AnswerAndAnalysisWidget : public WebViewWidget
 {
     Q_OBJECT
 public:
-    explicit AnswerAndAnalysisWidget(const AnalysisWebRawData &analysisWebRawData = AnalysisWebRawData(), QWidget *parent = nullptr);
+    explicit AnswerAndAnalysisWidget(QSharedPointer<TemplateAnalysis> templateAnalysis = QSharedPointer<TemplateAnalysis>(new TemplateAnalysis), QWidget *parent = nullptr);
 
 private:
     QCheckBox *onlyAnswerCheckBox;

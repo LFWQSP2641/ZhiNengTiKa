@@ -1,9 +1,9 @@
-#pragma once
+#ifndef TEMPLATEDETAILWIDGET_H
+#define TEMPLATEDETAILWIDGET_H
 
 #include "NavigationBarTabWidget.h"
-#include "../Logic/AnalysisWebRawData.h"
+#include "../Logic/TemplateAnalysis.h"
 
-class AnalysisWebRawData;
 class AnswerAndAnalysisWidget;
 class QuestionWidget;
 class UploadWidget;
@@ -12,8 +12,7 @@ class TemplateDetailWidget : public NavigationBarTabWidget
 {
     Q_OBJECT
 public:
-    explicit TemplateDetailWidget(QWidget *parent = nullptr);
-    explicit TemplateDetailWidget(const AnalysisWebRawData &analysisWebRawData = AnalysisWebRawData(), QWidget *parent = nullptr);
+    explicit TemplateDetailWidget(QSharedPointer<TemplateAnalysis> templateAnalysis = QSharedPointer<TemplateAnalysis>(new TemplateAnalysis), QWidget *parent = nullptr);
 
     enum TabIndex
     {
@@ -23,7 +22,7 @@ public:
     };
 
 public slots:
-    void setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData);
+    void setTemplateAnalysis(QSharedPointer<TemplateAnalysis> templateAnalysis);
 
 protected:
 
@@ -34,3 +33,4 @@ protected:
     void showEvent(QShowEvent *event) override;
 };
 
+#endif // TEMPLATEDETAILWIDGET_H

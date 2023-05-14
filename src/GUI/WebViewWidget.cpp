@@ -1,43 +1,17 @@
 #include "WebViewWidget.h"
-#include "ShowFullScreenWidget.h"
-#include "../Logic/AnalysisWebRawData.h"
 #include "../StaticClass/Global.h"
-#include "../StaticClass/Setting.h"
 
-WebViewWidget::WebViewWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent)
-    : QWidget{parent}, analysisWebRawData(analysisWebRawData)
+WebViewWidget::WebViewWidget(QSharedPointer<TemplateAnalysis> newTemplateAnalysis, QWidget *parent)
+    : QWidget{parent}, templateAnalysisPointer(newTemplateAnalysis)
 {
     mainLayout = new QGridLayout(this);
     webView = new WebView(this);
     pagesSwitch = new QListWidget(this);
-#ifdef Q_OS_ANDROID
-    fullScreenButton = new QPushButton("全屏", this);
-    connect(fullScreenButton, &QPushButton::clicked, [this]
-    {
-        const auto tempWebView{new WebView};
-        tempWebView->setHtml(this->webView->getHtml());
-        const auto showFullScreenWidget{new ShowFullScreenWidget(tempWebView)};
-        showFullScreenWidget->showFullScreen();
-    });
-#else
     saveButton = new QPushButton("另存为", this);
     connect(saveButton, &QPushButton::clicked, [this]
     {
-        saveToFile(QFileDialog::getSaveFileName(this, QStringLiteral("Save File"), QStringLiteral(".") + QDir::separator() + this->analysisWebRawData.getTemplateName(), QStringLiteral("Hyper Text Markup Language (*.html *.htm)")));
+        saveToFile(QFileDialog::getSaveFileName(this, QStringLiteral("Save File"), QStringLiteral(".").append(QStringLiteral("/")).append(this->templateAnalysisPointer->getTemplateName()), QStringLiteral("Hyper Text Markup Language (*.html *.htm)")));
     });
-#endif // Q_OS_ANDROID
-
-    QFont smallFont;
-    const auto defaultFontPixelSize{this->font().pixelSize()};
-    if(Setting::smallFontPointSize != 0)
-    {
-        smallFont.setPointSize(Setting::smallFontPointSize);
-    }
-    else
-    {
-        smallFont.setPixelSize(defaultFontPixelSize / 2);
-    }
-    pagesSwitch->setFont(smallFont);
 
     pagesSwitch->setFixedHeight(pagesSwitch->fontMetrics().height() * 3 / 2);
     pagesSwitch->setFlow(QListView::LeftToRight);
@@ -47,33 +21,23 @@ WebViewWidget::WebViewWidget(const AnalysisWebRawData &analysisWebRawData, QWidg
     pagesSwitch->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     QScroller::grabGesture(pagesSwitch->viewport(), QScroller::TouchGesture);
 
-#ifdef Q_OS_ANDROID
-    mainLayout->addWidget(fullScreenButton, 0, 1, 1, 1);
-#else
 #ifndef LIMITED
     mainLayout->addWidget(saveButton, 0, 1, 1, 1);
 #endif // LIMITED
-#endif // Q_OS_ANDROID
     mainLayout->addWidget(pagesSwitch, 1, 0, 1, 2);
     mainLayout->addWidget(webView, 2, 0, 1, 2);
 
     connect(pagesSwitch, &QListWidget::itemPressed, this, &WebViewWidget::switchPage);
 
-    this->analysisWebRawDataStateChanged = true;
-}
-
-void WebViewWidget::setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData)
-{
-    this->analysisWebRawDataStateChanged = true;
-    this->analysisWebRawData = analysisWebRawData;
+    this->templateAnalysisStateChanged = true;
 }
 
 void WebViewWidget::showEvent(QShowEvent *event)
 {
-    if(analysisWebRawDataStateChanged)
+    if(templateAnalysisStateChanged)
     {
         analysis();
-        analysisWebRawDataStateChanged = false;
+        templateAnalysisStateChanged = false;
     }
     event->accept();
 }
@@ -82,7 +46,7 @@ void WebViewWidget::keyPressEvent(QKeyEvent *event)
 {
     if(event->matches(QKeySequence::Copy))
     {
-        const auto path{Global::tempPath() + QDir::separator() + analysisWebRawData.getTemplateName() + QStringLiteral(".html")};
+        const QString path{Global::tempPath().append(QStringLiteral("/")).append(templateAnalysisPointer->getTemplateName()).append(QStringLiteral(".html"))};
         saveToFile(path);
 
         QList<QUrl> copyfile;
@@ -97,9 +61,15 @@ void WebViewWidget::keyPressEvent(QKeyEvent *event)
     event->accept();
 }
 
+void WebViewWidget::setTemplateAnalysis(QSharedPointer<TemplateAnalysis> newTemplateAnalysis)
+{
+    this->templateAnalysisStateChanged = true;
+    this->templateAnalysisPointer = newTemplateAnalysis;
+}
+
 void WebViewWidget::analysis()
 {
-    if(this->analysisWebRawData.isEmpty())
+    if(!this->templateAnalysisPointer->isValid())
     {
         return;
     }
@@ -110,7 +80,7 @@ void WebViewWidget::analysis()
     pagesSwitch->verticalScrollBar()->setSliderPosition(0);
     const auto allItem{new QListWidgetItem(QStringLiteral("ALL"), pagesSwitch)};
     allItem->setSelected(true);
-    const auto pageStrList{analysisWebRawData.getQuestionsCountsStrList()};
+    const auto pageStrList{templateAnalysisPointer->getQuestionsCountsStrList()};
     pagesSwitch->addItems(pageStrList);
     pageHash.insert(QStringLiteral("ALL"), -1);
     for(auto i{0}; i < pageStrList.size(); ++i)
@@ -122,14 +92,15 @@ void WebViewWidget::analysis()
 
 void WebViewWidget::saveToFile(const QString &pathName)
 {
-    if(analysisWebRawData.isEmpty() || pathName.isEmpty())
+    if(!this->templateAnalysisPointer->isValid() || pathName.isEmpty())
     {
         return;
     }
-    const auto fileData{webView->getHtml().prepend(QStringLiteral("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title").append(analysisWebRawData.getTemplateName()).append("</title></head><body>")).append("</body></html>").toUtf8()};
+    const auto fileData{QStringLiteral("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>%0</title></head><body>%1</body></html>")
+                        .arg(templateAnalysisPointer->getTemplateName(), webView->getHtml())};
     QFile file(pathName);
     file.open(QFile::WriteOnly);
-    file.write(fileData);
+    file.write(fileData.toUtf8());
     file.close();
 }
 

@@ -1,8 +1,7 @@
 #include "AnswerAndAnalysisWidget.h"
-#include "../Logic/AnalysisWebRawData.h"
 
-AnswerAndAnalysisWidget::AnswerAndAnalysisWidget(const AnalysisWebRawData &analysisWebRawData, QWidget *parent)
-    : WebViewWidget(analysisWebRawData, parent)
+AnswerAndAnalysisWidget::AnswerAndAnalysisWidget(QSharedPointer<TemplateAnalysis> templateAnalysis, QWidget *parent)
+    : WebViewWidget(templateAnalysis, parent)
 {
     onlyAnswerCheckBox = new QCheckBox(QStringLiteral("Only Answer"), this);
     mainLayout->addWidget(onlyAnswerCheckBox, 0, 0, 1, 1);
@@ -12,13 +11,17 @@ AnswerAndAnalysisWidget::AnswerAndAnalysisWidget(const AnalysisWebRawData &analy
 
 QString AnswerAndAnalysisWidget::getAnalyzedHtml(const qsizetype index)
 {
+    if(!this->templateAnalysisPointer->isValid())
+    {
+        return QString();
+    }
     if(onlyAnswerCheckBox->isChecked())
     {
-        return analysisWebRawData.getAnswerHtml(index);
+        return this->templateAnalysisPointer->getAnswerHtml(index);
     }
     else
     {
-        return analysisWebRawData.getAnswerAndAnalysisHtml(index);
+        return this->templateAnalysisPointer->getAnswerAndAnalysisHtml(index);
     }
 }
 

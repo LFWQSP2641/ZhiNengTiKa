@@ -8,20 +8,21 @@ NavigationBarTabWidget::NavigationBarTabWidget(QWidget *parent)
 
 int NavigationBarTabWidget::addTabWithScrollArea(QWidget *page, const QString &label)
 {
-    QScrollArea *scrollArea = new QScrollArea(this);
-    scrollArea->setWidget(page);
-    scrollArea->setWidgetResizable(true);
-    QScroller::grabGesture(scrollArea->viewport(), QScroller::TouchGesture);
-    return QTabWidget::addTab(scrollArea, label);
+    return QTabWidget::addTab(embedIntoScrollArea(page), label);
 }
 
 int NavigationBarTabWidget::addTabWithScrollArea(QWidget *page, const QIcon &icon, const QString &label)
+{
+    return QTabWidget::addTab(embedIntoScrollArea(page), icon, label);
+}
+
+QScrollArea *NavigationBarTabWidget::embedIntoScrollArea(QWidget *page)
 {
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidget(page);
     scrollArea->setWidgetResizable(true);
     QScroller::grabGesture(scrollArea->viewport(), QScroller::TouchGesture);
-    return QTabWidget::addTab(scrollArea, icon, label);
+    return scrollArea;
 }
 
 void NavigationBarTabWidget::resizeEvent(QResizeEvent *event)

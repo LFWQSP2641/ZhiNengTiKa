@@ -7,10 +7,18 @@ TemplateListView::TemplateListView(QWidget *parent)
     QScroller::grabGesture(this->viewport(), QScroller::TouchGesture);
     this->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-#ifdef Q_OS_ANDROID
-    this->setAutoScroll(false);
-#endif
-    connect(this, &QListView::clicked, this, &TemplateListView::findTemplateCode);
+    connect(this, &QListView::clicked, this, &TemplateListView::emitTemplateSummary);
+}
+
+TemplateSummary TemplateListView::getCurrentTemplateSummary()
+{
+    return getTemplateSummary(this->currentIndex());
+}
+
+TemplateSummary TemplateListView::getTemplateSummary(const QModelIndex &templateNameIndex) const
+{
+    const auto templateSummary{this->templateListModel->getTemplateSummary(templateNameIndex)};
+    return templateSummary;
 }
 
 void TemplateListView::setTemplateListModel(TemplateListModel *model)
@@ -19,9 +27,24 @@ void TemplateListView::setTemplateListModel(TemplateListModel *model)
     this->setModel(model);
 }
 
-QString TemplateListView::findTemplateCode(const QModelIndex &templateNameIndex)
+
+void TemplateListView::clear()
 {
-    const auto templateCode{this->templateListModel->getTemplateCode(templateNameIndex)};
-    emit templateNameClicked(templateCode);
-    return templateCode;
+    if(this->templateListModel != nullptr)
+    {
+        this->templateListModel->clear();
+    }
+}
+
+void TemplateListView::addNewTemplate(const TemplateSummary &templateSummary)
+{
+    if(this->templateListModel != nullptr)
+    {
+        this->templateListModel->addNewTemplate(templateSummary);
+    }
+}
+
+void TemplateListView::emitTemplateSummary(const QModelIndex &templateNameIndex)
+{
+    emit templateNameClicked(getTemplateSummary(templateNameIndex));
 }

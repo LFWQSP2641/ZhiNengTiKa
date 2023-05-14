@@ -6,11 +6,11 @@ TemplateRawData::TemplateRawData(const TemplateSummary &templateSummary)
     : TemplateSummary(templateSummary)
 {
 #ifdef Q_OS_ANDROID
-    QFile file { QStringLiteral("assets:/templateData/") + templateCode };
+    QFile file(QStringLiteral(":/templateData/").append(templateCode));
 #else
-    QFile file { QStringLiteral(":/templateData/") + templateCode };
+    QFile file(QStringLiteral(":/templateData/").append(templateCode));
 #endif
-    QFile fileTemp { Global::tempPath() + QStringLiteral("/") + QStringLiteral("TemplateFile") + QStringLiteral("/") + templateCode };
+    QFile fileTemp { Global::tempPath().append(QStringLiteral("/")).append(QStringLiteral("TemplateFile")).append(QStringLiteral("/")).append(templateCode) };
     if (file.exists())
     {
         this->internal = true;

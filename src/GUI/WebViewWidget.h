@@ -1,6 +1,7 @@
-#pragma once
+#ifndef WEBVIEWWIDGET_H
+#define WEBVIEWWIDGET_H
 
-#include "../Logic/AnalysisWebRawData.h"
+#include "../Logic/TemplateAnalysis.h"
 
 class WebView: public QWebEngineView
 {
@@ -24,39 +25,36 @@ class WebViewWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit WebViewWidget(const AnalysisWebRawData &analysisWebRawData = AnalysisWebRawData(), QWidget *parent = nullptr);
-    void setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData);
+    explicit WebViewWidget(QSharedPointer<TemplateAnalysis> templateAnalysis = QSharedPointer<TemplateAnalysis>(new TemplateAnalysis), QWidget *parent = nullptr);
+    virtual QString getAnalyzedHtml(const qsizetype index = -1) = 0;
 
 protected:
     QGridLayout *mainLayout;
     WebView *webView;
     QListWidget *pagesSwitch;
 
-#ifdef Q_OS_ANDROID
-    QPushButton *fullScreenButton;
-#else
     QPushButton *saveButton;
-#endif // Q_OS_ANDROID
 
     qsizetype currentPageIndex = -1;
     QHash<QString, qsizetype> pageHash;
 
-    bool analysisWebRawDataStateChanged = false;
+    bool templateAnalysisStateChanged = false;
 
-    AnalysisWebRawData analysisWebRawData;
+    QSharedPointer<TemplateAnalysis> templateAnalysisPointer;
     void showEvent(QShowEvent *event) override;
 
     void keyPressEvent(QKeyEvent *event) override;
 
 public slots:
-    void analysis();
-    virtual QString getAnalyzedHtml(const qsizetype index = -1) = 0;
+    void setTemplateAnalysis(QSharedPointer<TemplateAnalysis> newTemplateAnalysis);
     void saveToFile(const QString &pathName);
 
 protected slots:
+    void analysis();
     void switchPage(QListWidgetItem *item);
 
 signals:
 
 };
 
+#endif // WEBVIEWWIDGET_H

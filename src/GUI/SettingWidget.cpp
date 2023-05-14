@@ -1,7 +1,6 @@
 #include "SettingWidget.h"
 #include "../StaticClass/Global.h"
 #include "../StaticClass/Setting.h"
-#include "../Singleton/AutoUpdate.h"
 
 SettingWidget::SettingWidget(QWidget *parent)
     : QWidget{ parent }
@@ -28,7 +27,6 @@ SettingWidget::SettingWidget(QWidget *parent)
     logoutButton = new QPushButton(QStringLiteral("登出"), this);
     fontComboBox = new QComboBox(this);
     fontPointSizeSpinBox = new QSpinBox(this);
-    smallFontPointSizeSpinBox = new QSpinBox(this);
     resultTestLabel = new QLabel(this);
     schoolNameComboBox = new QComboBox(this);
     levelComboBox = new QComboBox(this);
@@ -52,9 +50,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     resultTestLabel->setText(QStringLiteral("AbCd字体测试1234"));
     fontComboBox->addItems(QFontDatabase::families(QFontDatabase::SimplifiedChinese));
     fontComboBox->setCurrentText(Setting::font);
-    smallFontPointSizeSpinBox->setMinimum(1);
     fontPointSizeSpinBox->setMinimum(1);
-    smallFontPointSizeSpinBox->setValue(Setting::smallFontPointSize);
     fontPointSizeSpinBox->setValue(Setting::fontPointSize);
 
     schoolNameComboBox->addItem(QStringLiteral("金川高级中学"));
@@ -75,7 +71,6 @@ SettingWidget::SettingWidget(QWidget *parent)
     accountLayout->addLayout(addTwoWidgetToHBoxLayout(loginButton, logoutButton));
     appearanceLayout->addRow(QStringLiteral("字体:"), fontComboBox);
     appearanceLayout->addRow(QStringLiteral("字体大小:"), fontPointSizeSpinBox);
-    appearanceLayout->addRow(QStringLiteral("小字体部件:"), smallFontPointSizeSpinBox);
     appearanceLayout->addRow(QStringLiteral("效果:"), resultTestLabel);
     templateListLayout->addLayout(addTwoWidgetToHBoxLayout(schoolNameComboBox, levelComboBox));
     templateListLayout->addWidget(listLatestTemplatePreferentiallyCheckBox);
@@ -172,12 +167,9 @@ SettingWidget::SettingWidget(QWidget *parent)
                     }
                 }
                 Setting::userDataList.prepend(newUserData);
-#ifdef Q_OS_ANDROID
-                Setting::saveToFile();
-#endif // Q_OS_ANDROID
                 setUserList();
                 this->logoutButton->setEnabled(true);
-                QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(newUserData.getDetailDataJsonObject().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + newUserData.getUsername()));
+                QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(newUserData.getDetailDataJsonObject().value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(newUserData.getUsername())));
                 dialog.close();
             }
         });
@@ -189,9 +181,6 @@ SettingWidget::SettingWidget(QWidget *parent)
     connect(this->logoutButton, &QPushButton::clicked, [this]
     {
         Setting::userDataList.removeFirst();
-#ifdef Q_OS_ANDROID
-        Setting::saveToFile();
-#endif // Q_OS_ANDROID
         QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登出成功"));
         setUserList();
     });
@@ -218,14 +207,8 @@ SettingWidget::SettingWidget(QWidget *parent)
         QObject::connect(checkBox, &QCheckBox::stateChanged, [askRestart, &setting, askToRestart](int state)
         {
             setting = (state == Qt::CheckState::Checked);
-#ifdef Q_OS_ANDROID
-            Setting::saveToFile();
-#endif
             if(askToRestart)
             {
-#ifndef Q_OS_ANDROID
-                Setting::saveToFile();
-#endif
                 askRestart();
             }
         });
@@ -237,9 +220,6 @@ SettingWidget::SettingWidget(QWidget *parent)
         resultTestLabel->setFont(testFont);
         resultTestLabel->setFixedHeight(QFontMetrics(testFont).height());
         Setting::font = text;
-#ifdef Q_OS_ANDROID
-        Setting::saveToFile();
-#endif // Q_OS_ANDROID
     });
     connect(fontPointSizeSpinBox, &QSpinBox::valueChanged, [this](int i)
     {
@@ -247,21 +227,7 @@ SettingWidget::SettingWidget(QWidget *parent)
         resultTestLabel->setFont(testFont);
         resultTestLabel->setFixedHeight(QFontMetrics(testFont).height());
         Setting::fontPointSize = i;
-#ifdef Q_OS_ANDROID
-        Setting::saveToFile();
-#endif // Q_OS_ANDROID
     });
-    connect(smallFontPointSizeSpinBox, &QSpinBox::valueChanged, [this](int i)
-    {
-        testFont.setPointSize(i);
-        resultTestLabel->setFont(testFont);
-        resultTestLabel->setFixedHeight(QFontMetrics(testFont).height());
-        Setting::smallFontPointSize = i;
-#ifdef Q_OS_ANDROID
-        Setting::saveToFile();
-#endif // Q_OS_ANDROID
-    });
-
     connectCheckBoxWithBool(this->listLatestTemplatePreferentiallyCheckBox, Setting::listLatestTemplatePreferentially, true);
     connectCheckBoxWithBool(this->compressQRCodeImageCheckBox, Setting::compressQRCodeImage);
 
@@ -290,7 +256,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                                "<p>使用 Qt 框架的跨平台软件,支持 Windows, Android, Linux</p>"
                                "<p>作者:LFWQSP2641( <a href=\"%0\">%0</a> )</p>"
                                "<p>Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserved.</p>"
-                               "<p>项目地址: <a href=\"%1\">%1</a> <small><s>(欢迎来提交PR)</s></small></p>"
+                               "<p>项目地址: <a href=\"%1\">%1</a></p>"
                            ).arg(QStringLiteral("https://github.com/LFWQSP2641"),
                                  QStringLiteral("https://github.com/LFWQSP2641/ZhiNengTiKa")));
     });
@@ -329,21 +295,21 @@ SettingWidget::SettingWidget(QWidget *parent)
             QApplication::exit();
         }
     });
-    connect(checkNewVersionButton, &QPushButton::clicked, [this]
-    {
-        checkNewVersionButton->setText(QStringLiteral("正在检查..."));
-        checkNewVersionButton->setEnabled(false);
-        auto autoUpdate{AutoUpdate::getInstance()};
-        if(autoUpdate->isFinished())
-        {
-            autoUpdate->checkUpdate(true);
-        }
-    });
-    connect(AutoUpdate::getInstance(), &AutoUpdate::finished, [this]
-    {
-        checkNewVersionButton->setText(QStringLiteral("检查更新"));
-        checkNewVersionButton->setEnabled(true);
-    });
+//    connect(checkNewVersionButton, &QPushButton::clicked, [this]
+//    {
+//        checkNewVersionButton->setText(QStringLiteral("正在检查..."));
+//        checkNewVersionButton->setEnabled(false);
+//        auto autoUpdate{AutoUpdate::getInstance()};
+//        if(autoUpdate->isFinished())
+//        {
+//            autoUpdate->checkUpdate(true);
+//        }
+//    });
+//    connect(AutoUpdate::getInstance(), &AutoUpdate::finished, [this]
+//    {
+//        checkNewVersionButton->setText(QStringLiteral("检查更新"));
+//        checkNewVersionButton->setEnabled(true);
+//    });
 }
 
 void SettingWidget::setUserList()
@@ -353,7 +319,7 @@ void SettingWidget::setUserList()
     {
         for(const auto &i : Setting::userDataList)
         {
-            userListComboBox->addItem(i.getDetailDataJsonObject().value(QStringLiteral("realName")).toString() + QStringLiteral("  ") + i.getUsername());
+            userListComboBox->addItem(i.getDetailDataJsonObject().value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(i.getUsername()));
         }
     }
     else

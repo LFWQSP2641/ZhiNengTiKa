@@ -50,6 +50,19 @@ QVariant TemplateListModel::headerData(int section, Qt::Orientation orientation,
     }
 }
 
+TemplateSummary TemplateListModel::getTemplateSummary(const QModelIndex &index) const
+{
+    if(!index.isValid())
+    {
+        return TemplateSummary();
+    }
+    if(index.row() >= templateList.size())
+    {
+        return TemplateSummary();
+    }
+    return templateList.at(index.row());
+}
+
 void TemplateListModel::addNewTemplate(const TemplateSummary &templateInfo)
 {
     beginInsertRows(QModelIndex(), this->templateList.size(), 1);
@@ -67,19 +80,15 @@ void TemplateListModel::clear()
 
 QString TemplateListModel::getTemplateCode(const QModelIndex &index) const
 {
-    if(!index.isValid())
-    {
-        return QString();
-    }
-    if(index.row() >= templateList.size())
-    {
-        return QString();
-    }
-    return templateList.at(index.row()).getTemplateCode();
+    return getTemplateSummary(index).getTemplateCode();
 }
 
 QString TemplateListModel::getTemplateCode(int index) const
 {
+    if(index >= templateList.size())
+    {
+        return QString();
+    }
     return templateList.at(index).getTemplateCode();
 }
 

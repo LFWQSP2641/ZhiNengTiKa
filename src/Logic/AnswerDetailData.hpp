@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ANSWERDETAILDATA_H
+#define ANSWERDETAILDATA_H
 
 class AnswerDetailData
 {
@@ -47,3 +48,5 @@ protected:
     const QBitArray answer;
     bool multipleChoiceQuestion = false;
 };
+
+#endif // ANSWERDETAILDATA_H

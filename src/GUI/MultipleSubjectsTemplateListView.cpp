@@ -35,9 +35,9 @@ MultipleSubjectsTemplateListView::MultipleSubjectsTemplateListView(QWidget *pare
     connect(templateListView, &TemplateListView::templateNameClicked, this, &MultipleSubjectsTemplateListView::templateNameClicked);
 }
 
-void MultipleSubjectsTemplateListView::addNewTemplate(QPair<QString, QString> templateInfo)
+void MultipleSubjectsTemplateListView::addNewTemplate(const TemplateSummary &templateSummary)
 {
-    this->multipleSubjectsTemplateListModelList.addNewTemplate(templateInfo);
+    this->multipleSubjectsTemplateListModelList.addNewTemplate(templateSummary);
     this->multipleSubjectsTabBar->setCurrentIndex(MultipleSubjectsTemplateListModelList::Subjects::Undefined);
     this->templateListView->setCurrentIndex(
         this->multipleSubjectsTemplateListModelList
@@ -51,4 +51,9 @@ void MultipleSubjectsTemplateListView::addNewTemplate(QPair<QString, QString> te
 MultipleSubjectsTemplateListModelList &MultipleSubjectsTemplateListView::getMultipleSubjectsTemplateListModelList()
 {
     return multipleSubjectsTemplateListModelList;
+}
+
+TemplateSummary MultipleSubjectsTemplateListView::getCurrentTemplateSummary()
+{
+    return this->templateListView->getCurrentTemplateSummary();
 }

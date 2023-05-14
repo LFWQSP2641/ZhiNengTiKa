@@ -12,7 +12,6 @@ extern bool listLatestTemplatePreferentially;
 extern bool compressQRCodeImage;
 
 extern int fontPointSize;
-extern int smallFontPointSize;
 extern QString font;
 extern QString qmlStyle;
 

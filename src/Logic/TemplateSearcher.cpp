@@ -25,7 +25,7 @@ void TemplateSearcher::run()
     const QString dirPath { QStringLiteral(":/templateList/") };
 #endif
 
-    QDir allDir {dirPath + QStringLiteral("all")};
+    QDir allDir { QString(dirPath).append(QStringLiteral("all")) };
 
     allDir.setFilter(QDir::NoDotAndDotDot | QDir::AllEntries);
     allDir.setSorting(QDir::Time | QDir::DirsFirst);

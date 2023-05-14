@@ -67,13 +67,9 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
                                      QStringLiteral("templateList_chemistry"),
                                      QStringLiteral("templateList_biography")});
 
-#ifdef Q_OS_ANDROID
-    const QString dirPath { QStringLiteral("assets:/templateList/") };
-#else
     const QString dirPath { QStringLiteral(":/templateList/") };
-#endif
-    const QDir allDir {dirPath + QStringLiteral("all")};
-    const QDir latestDir{dirPath + QStringLiteral("latest")};
+    const QDir allDir { QString(dirPath).append(QStringLiteral("all")) };
+    const QDir latestDir{ QString(dirPath).append(QStringLiteral("latest")) };
 
     if(Setting::listLatestTemplatePreferentially && latestDir.exists())
     {
@@ -89,7 +85,7 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
             importTemplateList(QDir(allDir).filePath(fileName));
         }
     }
-    importTemplateList(Global::tempPath() + QStringLiteral("/") + QStringLiteral("templateList_undefined"), false);
+    importTemplateList(Global::tempPath().append(QStringLiteral("/")).append(QStringLiteral("templateList_undefined")), false);
 }
 
 MultipleSubjectsTemplateListModelList::~MultipleSubjectsTemplateListModelList()
@@ -125,8 +121,8 @@ void MultipleSubjectsTemplateListModelList::addTemplateList(const TemplateSummar
 
 void MultipleSubjectsTemplateListModelList::addTemplateList(const QString &templateName, const QString &templateCode)
 {
-    const QString data{templateName + QStringLiteral("\n") + templateCode + QStringLiteral("\n")};
-    QFile f(Global::tempPath() + QStringLiteral("/") + QStringLiteral("templateList_undefined"));
+    const QString data(QString(templateName).append(QStringLiteral("\n")).append(templateCode).append(QStringLiteral("\n")));
+    QFile f(Global::tempPath().append(QStringLiteral("/")).append(QStringLiteral("templateList_undefined")));
     f.open(QFile::ReadWrite | QFile::Append);
     f.write(data.toUtf8());
     f.close();

@@ -16,7 +16,6 @@ HEADERS += \
     src/GUI/SearchWidget.h \
     src/GUI/SelectWidget.h \
     src/GUI/SettingWidget.h \
-    src/GUI/ShowFullScreenWidget.h \
     src/GUI/TemplateDetailWidget.h \
     src/GUI/TemplateListView.h \
     src/GUI/UploadChildWidget.h \
@@ -34,7 +33,6 @@ SOURCES += \
     src/GUI/SearchWidget.cpp \
     src/GUI/SelectWidget.cpp \
     src/GUI/SettingWidget.cpp \
-    src/GUI/ShowFullScreenWidget.cpp \
     src/GUI/TemplateDetailWidget.cpp \
     src/GUI/TemplateListView.cpp \
     src/GUI/UploadChildWidget.cpp \

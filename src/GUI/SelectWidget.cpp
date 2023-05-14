@@ -7,7 +7,6 @@
 #include "../GUI/TemplateDetailWidget.h"
 #include "../GUI/SearchWidget.h"
 #include "../GUI/MultipleSubjectsTemplateListView.h"
-#include "../Logic/WebRawData.h"
 
 SelectWidget::SelectWidget(QWidget *parent)
     : QWidget{ parent }
@@ -16,28 +15,11 @@ SelectWidget::SelectWidget(QWidget *parent)
     multipleSubjectsTemplateListView = new MultipleSubjectsTemplateListView(this);
     OKButton = new QPushButton(QStringLiteral("确定"), this);
     searchButton = new QPushButton(QStringLiteral("搜索"), this);
-//    previousPageButton = new QPushButton(QStringLiteral("上一页"), this);
-//    nextPageButton = new QPushButton(QStringLiteral("下一页"), this);
     scanQRCodeButton = new QPushButton(QStringLiteral("扫码"), this);
     templateCodeLineEdit = new QLineEdit(this);
 
     templateCodeLineEdit->setPlaceholderText(QStringLiteral("题卡编号"));
     OKButton->setEnabled(false);
-
-    QFont smallFont;
-    const auto defaultFontPixelSize{QWidget::font().pixelSize()};
-    if(Setting::smallFontPointSize != 0)
-    {
-        smallFont.setPointSize(Setting::smallFontPointSize);
-    }
-    else
-    {
-        smallFont.setPixelSize(defaultFontPixelSize / 2);
-    }
-    multipleSubjectsTemplateListView->setFont(smallFont);
-
-//    previousPageButton->setVisible(false);
-//    nextPageButton->setVisible(false);
 
     auto addHBoxLayoutWithTwoWidget{[](QWidget * widget1, QWidget * widget2)
     {
@@ -48,117 +30,112 @@ SelectWidget::SelectWidget(QWidget *parent)
     }};
     mainLayout->addLayout(addHBoxLayoutWithTwoWidget(scanQRCodeButton, searchButton));
     mainLayout->addWidget(multipleSubjectsTemplateListView);
-//    mainLayout->addLayout(addHBoxLayoutWithTwoWidget(previousPageButton, nextPageButton));
     mainLayout->addWidget(templateCodeLineEdit);
     mainLayout->addWidget(OKButton);
 
 
-    connect(OKButton, &QPushButton::clicked, this, &SelectWidget::OKButtonPushed);
-    connect(searchButton, &QPushButton::clicked, this, &SelectWidget::searchButtonPushed);
-//    connect(previousPageButton, &QPushButton::clicked, this, &SelectWidget::toPreviousPage);
-//    connect(nextPageButton, &QPushButton::clicked, this, &SelectWidget::toNextPageButton);
+    connect(OKButton, &QPushButton::clicked, this, &SelectWidget::OKButtonPush);
+    connect(searchButton, &QPushButton::clicked, this, &SelectWidget::searchButtonPush);
     connect(scanQRCodeButton, &QPushButton::clicked, this, &SelectWidget::scanQRCode);
     connect(templateCodeLineEdit, &QLineEdit::textChanged, [this]
     {
         this->OKButton->setEnabled(true);
     });
-    connect(this->multipleSubjectsTemplateListView, &MultipleSubjectsTemplateListView::templateNameClicked, [this](const QString & templateCode)
+    connect(this->multipleSubjectsTemplateListView, &MultipleSubjectsTemplateListView::templateNameClicked, [this](const TemplateSummary & templateSummary)
     {
-        this->templateCodeLineEdit->setText(templateCode);
+        this->templateCodeLineEdit->setText(templateSummary.getTemplateCode());
     });
 }
 
-//void SelectWidget::toPreviousPage()
-//{
-//    static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
-//    ->verticalScrollBar()
-//    ->setSliderPosition(
-//        static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
-//        ->verticalScrollBar()
-//        ->sliderPosition() -
-//        listWidgetTabWidget->height());
-//}
-
-//void SelectWidget::toNextPageButton()
-//{
-//    static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
-//    ->verticalScrollBar()
-//    ->setSliderPosition(
-//        static_cast<QListWidget *>(listWidgetTabWidget->currentWidget())
-//        ->verticalScrollBar()
-//        ->sliderPosition() +
-//        listWidgetTabWidget->height());
-//}
-
-void SelectWidget::searchButtonPushed()
-{
-    auto searchWidget{new SearchWidget};
-    searchWidget->setAttribute(Qt::WA_DeleteOnClose);
-    searchWidget->setAttribute(Qt::WA_QuitOnClose, false);
-    connect(searchWidget, &SearchWidget::searchFinished, [this, searchWidget](const QString & templateCode)
-    {
-        this->templateCodeLineEdit->setText(templateCode);
-        this->OKButtonPushed();
-        searchWidget->close();
-    });
-    searchWidget->show();
-}
-
-void SelectWidget::OKButtonPushed()
-{
-    const auto analysisWebRawData{getTemplateCodeData(templateCodeLineEdit->text().trimmed())};
-    if(analysisWebRawData.isEmpty())
-    {
-        return;
-    }
-
-#ifdef Q_OS_ANDROID
-    emit searchFinished(analysisWebRawData);
-#else // Q_OS_ANDROID
-    auto templateDetailWidget {new TemplateDetailWidget(analysisWebRawData)};
-    templateDetailWidget->setAttribute(Qt::WA_DeleteOnClose);
-    templateDetailWidget->setAttribute(Qt::WA_QuitOnClose, false);
-    templateDetailWidget->show();
-#endif // Q_OS_ANDROID
-}
-
-AnalysisWebRawData SelectWidget::getTemplateCodeData(const QString &templateCode)
+TemplateAnalysis SelectWidget::getTemplateAnalysis(const QString &templateCode)
 {
     if(templateCode.isEmpty())
     {
         QMessageBox::warning(this, QStringLiteral(""), QStringLiteral("题卡编号不能为空"));
-        return AnalysisWebRawData();
+        return TemplateAnalysis();
     }
     auto appendTemplateList{[&templateCode, this](const QString & templateName)
     {
-        const QString data{templateName + QStringLiteral("\n") + templateCode + QStringLiteral("\n")};
-        QFile f(Global::tempPath() + QDir::separator() + QStringLiteral("templateList_undefined"));
+        const QString data{QString(templateName).append(QStringLiteral("\n")).append(templateCode).append(QStringLiteral("\n"))};
+        QFile f(Global::tempPath().append(QStringLiteral("/")).append(QStringLiteral("templateList_undefined")));
         f.open(QFile::ReadWrite | QFile::Append);
         f.write(data.toUtf8());
         f.close();
-        this->multipleSubjectsTemplateListView->addNewTemplate(QPair<QString, QString>(templateName, templateCode));
+        this->multipleSubjectsTemplateListView->addNewTemplate(TemplateSummary(templateName, templateCode));
     }};
-    WebRawData webRawData(templateCode);
-    if(!webRawData.getValid())
+    TemplateRawData templateRawData(templateCode);
+    if(!templateRawData.isValid())
     {
-        QMessageBox::warning(this, QStringLiteral(""), webRawData.getErrorStr());
-        return AnalysisWebRawData();
+        QMessageBox::warning(this, QStringLiteral(""), templateRawData.getErrorStr());
+        return TemplateAnalysis();
     }
-    else if(webRawData.getExternal())
+    else if(templateRawData.isExternal())
     {
         if (!this->multipleSubjectsTemplateListView
                 ->getMultipleSubjectsTemplateListModelList()
                 .at(MultipleSubjectsTemplateListModelList::Subjects::Undefined)
                 ->hasTemplateCode(templateCode))
         {
-            appendTemplateList(webRawData.getTemplateName());
+            appendTemplateList(templateRawData.getTemplateName());
         }
     }
-    else if(webRawData.getNetwork())
+    else if(templateRawData.isNetwork())
     {
-        appendTemplateList(webRawData.getTemplateName());
+        appendTemplateList(templateRawData.getTemplateName());
     }
-    return webRawData.toAnalysisWebRawData();
+    return TemplateAnalysis(templateRawData);
+}
+
+void SelectWidget::searchButtonPush()
+{
+    auto searchWidget{new SearchWidget};
+    searchWidget->setAttribute(Qt::WA_DeleteOnClose);
+    searchWidget->setAttribute(Qt::WA_QuitOnClose, false);
+    connect(searchWidget, &SearchWidget::searchFinished, [this, searchWidget](const TemplateSummary & templateSummary)
+    {
+        const TemplateRawData templateRawData(templateSummary);
+        searchWidget->close();
+        if(!templateRawData.isValid())
+        {
+            QMessageBox::warning(this, QStringLiteral(""), templateRawData.getErrorStr());
+            return;
+        }
+        showTemplateDetailWidget(TemplateAnalysis(templateRawData));
+    });
+    searchWidget->show();
+}
+
+void SelectWidget::OKButtonPush()
+{
+    const auto templateCode(templateCodeLineEdit->text().trimmed());
+    const auto templateSummary(this->multipleSubjectsTemplateListView->getCurrentTemplateSummary());
+    if(templateCode == templateSummary.getTemplateCode())
+    {
+        const TemplateRawData templateRawData(templateSummary);
+        if(!templateRawData.isValid())
+        {
+            QMessageBox::warning(this, QStringLiteral(""), templateRawData.getErrorStr());
+            return;
+        }
+        showTemplateDetailWidget(TemplateAnalysis(templateRawData));
+    }
+    else
+    {
+        showTemplateDetailWidget(getTemplateAnalysis(templateCode));
+    }
+}
+
+void SelectWidget::showTemplateDetailWidget(const TemplateAnalysis &templateAnalysis)
+{
+    if(!templateAnalysis.isValid())
+    {
+        return;
+    }
+    auto templateDetailWidget{ new TemplateDetailWidget(QSharedPointer<TemplateAnalysis>(new TemplateAnalysis(templateAnalysis))) };
+    templateDetailWidget->setAttribute(Qt::WA_DeleteOnClose);
+    templateDetailWidget->setAttribute(Qt::WA_QuitOnClose, false);
+    templateDetailWidget->resize(this->size());
+    templateDetailWidget->show();
 }
 
 void SelectWidget::scanQRCode()
@@ -197,6 +174,6 @@ void SelectWidget::scanQRCode()
     }
     qDebug() << decodeResult;
     this->templateCodeLineEdit->setText(decodeResult);
-    this->OKButtonPushed();
+    this->OKButtonPush();
     scanQRCodeButton->setEnabled(true);
 }

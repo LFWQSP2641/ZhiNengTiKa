@@ -2,13 +2,12 @@
 #define QUESTIONWIDGET_H
 
 #include "WebViewWidget.h"
-class AnalysisWebRawData;
 
 class QuestionWidget : public WebViewWidget
 {
     Q_OBJECT
 public:
-    explicit QuestionWidget(const AnalysisWebRawData &analysisWebRawData = AnalysisWebRawData(), QWidget *parent = nullptr);
+    explicit QuestionWidget(QSharedPointer<TemplateAnalysis> templateAnalysis = QSharedPointer<TemplateAnalysis>(new TemplateAnalysis), QWidget *parent = nullptr);
 
 private:
     QPushButton *showCurrentAnswerButton;

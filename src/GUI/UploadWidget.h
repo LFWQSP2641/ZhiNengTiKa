@@ -1,9 +1,8 @@
-#pragma once
+#ifndef UPLOADWIDGET_H
+#define UPLOADWIDGET_H
 
-#include "../Logic/AnalysisWebRawData.h"
-class AnalysisWebRawData;
+#include "../Logic/TemplateAnalysis.h"
 
-class AnalysisWebRawData;
 class UploadChildWidget;
 class UserData;
 
@@ -11,8 +10,7 @@ class UploadWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit UploadWidget(const AnalysisWebRawData &analysisWebRawData = AnalysisWebRawData(), QWidget *parent = nullptr);
-    void setAnalysisWebRawData(const AnalysisWebRawData &analysisWebRawData);
+    explicit UploadWidget(QSharedPointer<TemplateAnalysis> templateAnalysis = QSharedPointer<TemplateAnalysis>(new TemplateAnalysis), QWidget *parent = nullptr);
 
 protected:
     QVBoxLayout *mainLayout;
@@ -24,13 +22,13 @@ protected:
     QPushButton *uploadButton;
     QPushButton *editRawDataButton;
 
-    AnalysisWebRawData analysisWebRawData;
+    QSharedPointer<TemplateAnalysis> templateAnalysisPointer;
     QList<UploadChildWidget*> uploadChildWidgetList;
     QList<QBitArray> rightAnswer;
 
     QJsonArray userAnswerList;
 
-    bool analysisWebRawDataStateChanged = false;
+    bool templateAnalysisStateChanged = false;
     bool analysised = false;
 
     void showEvent(QShowEvent *event) override;
@@ -39,9 +37,10 @@ protected:
     QJsonObject getAnswerJsonObject(const UserData &userData);
 
 public slots:
-    void analysis();
+    void setTemplateAnalysis(QSharedPointer<TemplateAnalysis> templateAnalysis);
 
 protected slots:
+    void analysis();
     bool upload();
     bool uploadData(const QByteArray &data);
     void getUserAnswer();
@@ -50,3 +49,4 @@ protected slots:
     void editRawData();
 };
 
+#endif // UPLOADWIDGET_H

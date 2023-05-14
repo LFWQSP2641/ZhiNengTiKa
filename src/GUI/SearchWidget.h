@@ -2,6 +2,8 @@
 #define SEARCHWIDGET_H
 
 #include "../Logic/TemplateSearcher.h"
+#include "../Logic/TemplateListModel.h"
+class TemplateListView;
 
 class SearchWidget : public QWidget
 {
@@ -15,27 +17,26 @@ protected:
     QLabel *stateShowLabel;
     QPushButton *searchStartButton;
     QPushButton *searchStopButton;
-    QListWidget *searchResultListWidget;
     QPushButton *OKButton;
     TemplateSearcher templateSearcher;
 
-//    QHash<QListWidgetItem*, QString> hash;
-    QStringList templateCodeList;
+    TemplateListModel searchResultTemplateListModel;
+    TemplateListView *searchResultTemplateListView;
 
     void setSearchingState(bool searching);
 
     void closeEvent(QCloseEvent *event) override;
 
 protected slots:
-    void searchStartButtonPushed();
-    void searchStopButtonPushed();
-    void templateSearcherSearchStoped();
-    void templateSearcherSearchFinished(bool success);
-    void OKButtonPushed();
-    void addToSearchResultListWidget(const QString &templateName, const QString &templateCode);
+    void searchStartButtonPush();
+    void searchStopButtonPush();
+    void templateSearcherSearchStop();
+    void templateSearcherSearchFinish(bool success);
+    void OKButtonPush();
+    void addToSearchResultListWidget(const TemplateSummary &templateSummary);
 
 signals:
-    void searchFinished(const QString &templateCode);
+    void searchFinished(const TemplateSummary &templateSummary);
 };
 
 #endif // SEARCHWIDGET_H
