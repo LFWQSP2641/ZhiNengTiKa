@@ -10,8 +10,6 @@ void openUrl(const QString &url);
 void installApk(const QString &filePath);
 QString getCacheDir();
 QString getAndroidId();
-QString getSerial();
-QString getUniqueId();
 };
 
 #endif // Q_OS_ANDROID

@@ -82,22 +82,4 @@ QString CallAndroidNativeComponent::getAndroidId()
                activity.object<jobject>()).toString();
 }
 
-QString CallAndroidNativeComponent::getSerial()
-{
-    QJniObject activity = QtAndroidPrivate::activity();
-    return QJniObject::callStaticMethod<jstring>(
-               "com/LFWQSP2641/ZhiNengTiKa/Util",
-               "getSerial").toString();
-}
-
-QString CallAndroidNativeComponent::getUniqueId()
-{
-    QJniObject activity = QtAndroidPrivate::activity();
-    return QJniObject::callStaticMethod<jstring>(
-               "com/LFWQSP2641/ZhiNengTiKa/Util",
-               "getUniqueId",
-               "(Lorg/qtproject/qt/android/bindings/QtActivity;)Ljava/lang/String;",
-               activity.object<jobject>()).toString();
-}
-
 #endif // Q_OS_ANDROID

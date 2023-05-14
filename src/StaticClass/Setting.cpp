@@ -1,5 +1,8 @@
 #include "Setting.h"
 #include "Global.h"
+#ifdef Q_OS_ANDROID
+#include "CallAndroidNativeComponent.h"
+#endif // Q_OS_ANDROID
 
 UserDataList Setting::userDataList;
 
@@ -64,7 +67,33 @@ void Setting::loadFromFile()
     Setting::qmlStyle = settingJsonObject.value(QStringLiteral("qmlStyle")).toString();
 
     Setting::jsonObjectApiQRCodeScanner = settingJsonObject.value(QStringLiteral("apiQRCodeScanner")).toObject();
+
+#ifdef Q_OS_ANDROID
+    Setting::uuid =
+        settingJsonObject.value(QStringLiteral("uuid"))
+        .toString(QUuid::createUuidV5(
+                      QUuid(), CallAndroidNativeComponent::getAndroidId())
+                  .toString(QUuid::WithoutBraces));
+    if(Setting::uuid.isEmpty())
+    {
+        Setting::uuid = QUuid::createUuidV5(
+                            QUuid(), CallAndroidNativeComponent::getAndroidId())
+                        .toString(QUuid::WithoutBraces);
+    }
+    // AndroidId为空或者为9774d56d682e549c
+    if(Setting::uuid == QStringLiteral("e129f27c-5103-5c5c-844b-cdf0a15e160d") ||
+            Setting::uuid == QStringLiteral("32b9fec0-9c4c-52f9-b722-255c7827beb0"))
+    {
+        Setting::uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    }
+#else // Q_OS_ANDROID
     Setting::uuid = settingJsonObject.value(QStringLiteral("uuid")).toString(QUuid::createUuid().toString(QUuid::WithoutBraces));
+    if(Setting::uuid.isEmpty())
+    {
+        Setting::uuid = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    }
+#endif // Q_OS_ANDROID
+
 }
 
 void Setting::saveToFile()
