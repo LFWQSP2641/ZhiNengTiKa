@@ -6,7 +6,7 @@ TemplateRawData::TemplateRawData(const TemplateSummary &templateSummary)
     : TemplateSummary(templateSummary)
 {
 #ifdef Q_OS_ANDROID
-    QFile file(QStringLiteral(":/templateData/").append(templateCode));
+    QFile file(QStringLiteral("assets:/templateData/").append(templateCode));
 #else
     QFile file(QStringLiteral(":/templateData/").append(templateCode));
 #endif
