@@ -1,3 +1,5 @@
+[2.1.1.release]
+修复 Android平台已导入题卡不从本地读取
 [2.1.0.release]
 新增 Qt Widgets
 更新题卡列表
