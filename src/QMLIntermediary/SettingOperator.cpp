@@ -1,4 +1,6 @@
 #include "SettingOperator.h"
+#include "MultipleSubjectsTemplateListModelListSingleton.h"
+#include "../StaticClass/Global.h"
 #include "../StaticClass/Setting.h"
 
 SettingOperator::SettingOperator(QObject *parent)
@@ -86,6 +88,13 @@ bool SettingOperator::getCompressQRCodeImage()
 void SettingOperator::setCompressQRCodeImage(bool state)
 {
     Setting::compressQRCodeImage = state;
+}
+
+void SettingOperator::deleteTemplateFile()
+{
+    QFile::remove(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("templateList_undefined")));
+    Global::deleteDir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("TemplateFile")));
+    MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList()->at(MultipleSubjectsTemplateListModelList::Undefined)->clear();
 }
 
 QString SettingOperator::getVersion()

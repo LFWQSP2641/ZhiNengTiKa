@@ -2,10 +2,10 @@
 #include "StaticClass/Setting.h"
 #include "Singleton/Network.h"
 #include "StaticClass/QRCodeScanner.h"
-#include "Logic/MultipleSubjectsTemplateListModelList.h"
 #include "Logic/UpdateChecker.h"
 #include "Logic/TemplateSearcher.h"
 #include "Logic/TemplateListModel.h"
+#include "QMLIntermediary/MultipleSubjectsTemplateListModelListSingleton.h"
 #include "QMLIntermediary/QRCodeScannerQML.h"
 #include "QMLIntermediary/TemplateSummaryQML.h"
 #include "QMLIntermediary/TemplateRawDataQML.h"
@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     Setting::loadFromFile();
     QRCodeScanner::initialize(Setting::jsonObjectApiQRCodeScanner);
     UserData::initPublicUserData();
+    MultipleSubjectsTemplateListModelListSingleton::initOnce();
 
     QFont appFont;
     if(Setting::fontPointSize < 1 || Setting::font.isEmpty())
@@ -63,8 +64,7 @@ int main(int argc, char *argv[])
 #else
 #endif // Q_OS_ANDROID
 
-    MultipleSubjectsTemplateListModelList multipleSubjectsTemplateListModelListInstance;
-    qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0, "MultipleSubjectsTemplateListModelList", &multipleSubjectsTemplateListModelListInstance);
+    qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0, "MultipleSubjectsTemplateListModelList", MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList());
     qmlRegisterSingletonInstance("QRCodeScannerQML", 1, 0, "QRCodeScanner", new QRCodeScannerQML);
     qmlRegisterType<TemplateSummaryQML>("TemplateSummaryQML", 1, 0, "TemplateSummaryQML");
     qmlRegisterType<TemplateRawDataQML>("TemplateRawDataQML", 1, 0, "TemplateRawDataQML");

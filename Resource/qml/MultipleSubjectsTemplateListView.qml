@@ -19,7 +19,7 @@ Item {
 //            id: subjectsTabBar
 //            Layout.fillWidth: true
 //            Repeater {
-//                model: ["语文", "数学", "英语", "物理", "化学", "生物", "自定义"]
+//                model: ["语文", "数学", "英语", "物理", "化学", "生物", "用户"]
 
 //                TabButton {
 //                    text: modelData
@@ -41,7 +41,7 @@ Item {
         anchors.right: parent.right
         anchors.left: parent.left
         Repeater {
-            model: ["语文", "数学", "英语", "物理", "化学", "生物", "自定义"]
+            model: ["语文", "数学", "英语", "物理", "化学", "生物", "用户"]
 
             TabButton {
                 text: modelData

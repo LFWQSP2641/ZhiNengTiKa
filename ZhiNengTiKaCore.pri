@@ -51,7 +51,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 include(3rd/Qt-AES/QAESEncryption.pri)
 
 HEADERS += \
-    src/Logic/UpdateChecker.h \
     src/Logic/AnswerDetailData.hpp \
     src/Logic/MultipleSubjectsTemplateListModelList.h \
     src/Logic/NetworkAccessManagerBlockable.h \
@@ -60,6 +59,7 @@ HEADERS += \
     src/Logic/TemplateRawData.h \
     src/Logic/TemplateSearcher.h \
     src/Logic/TemplateSummary.h \
+    src/Logic/UpdateChecker.h \
     src/Logic/UserData.h \
     src/Logic/UserDataList.hpp \
     src/Singleton/Network.h \
@@ -71,7 +71,6 @@ HEADERS += \
     src/StaticClass/XinjiaoyuNetwork.h
 
 SOURCES += \
-    src/Logic/UpdateChecker.cpp \
     src/Logic/MultipleSubjectsTemplateListModelList.cpp \
     src/Logic/NetworkAccessManagerBlockable.cpp \
     src/Logic/TemplateAnalysis.cpp \
@@ -79,6 +78,7 @@ SOURCES += \
     src/Logic/TemplateRawData.cpp \
     src/Logic/TemplateSearcher.cpp \
     src/Logic/TemplateSummary.cpp \
+    src/Logic/UpdateChecker.cpp \
     src/Logic/UserData.cpp \
     src/Singleton/Network.cpp \
     src/StaticClass/CallAndroidNativeComponent.cpp \

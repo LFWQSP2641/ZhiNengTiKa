@@ -10,7 +10,7 @@ TemplateRawData::TemplateRawData(const TemplateSummary &templateSummary)
 #else
     QFile file(QStringLiteral(":/templateData/").append(templateCode));
 #endif
-    QFile fileTemp { Global::tempPath().append(QStringLiteral("/")).append(QStringLiteral("TemplateFile")).append(QStringLiteral("/")).append(templateCode) };
+    QFile fileTemp { Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("TemplateFile")).append(QStringLiteral("/")).append(templateCode) };
     if (file.exists())
     {
         this->internal = true;

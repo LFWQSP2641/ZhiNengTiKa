@@ -20,6 +20,7 @@ public:
     Q_INVOKABLE void setListLatestTemplatePreferentially(bool state);
     Q_INVOKABLE bool getCompressQRCodeImage();
     Q_INVOKABLE void setCompressQRCodeImage(bool state);
+    Q_INVOKABLE void deleteTemplateFile();
     Q_INVOKABLE QString getVersion();
 public slots:
     void save();

@@ -217,6 +217,22 @@ Item {
             }
             GroupBox {
                 Layout.fillWidth: true
+                title: "文件"
+                ColumnLayout {
+                    width: parent.width
+                    height: parent.height
+                    Button {
+                        Layout.fillWidth: true
+                        text: "删除用户已导入题卡"
+                        onClicked: {
+                            settingOperator.deleteTemplateFile()
+                            messageDialog.show("已删除用户已导入题卡")
+                        }
+                    }
+                }
+            }
+            GroupBox {
+                Layout.fillWidth: true
                 title: "版本"
                 RowLayout {
                     width: parent.width
