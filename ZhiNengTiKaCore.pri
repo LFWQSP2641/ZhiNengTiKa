@@ -7,7 +7,7 @@ QT       += core-private
 
 ANDROID_VERSION_NAME = $$VERSION
 
-include(3rd/android_openssl/openssl.pri)
+include($$PWD/3rd/android_openssl/openssl.pri)
 
 ANDROID_PACKAGE_SOURCE_DIR = \
     $$PWD/android
@@ -25,7 +25,7 @@ QMAKE_TARGET_COPYRIGHT = "Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserve
 RC_LANG = 0x0004
 
 RESOURCES += \
-    Resource/Template.qrc
+    $$PWD/Resource/Template.qrc
 
 }
 
@@ -48,66 +48,66 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-include(3rd/Qt-AES/QAESEncryption.pri)
+include($$PWD/3rd/Qt-AES/QAESEncryption.pri)
 
 HEADERS += \
+    $$PWD/src/Logic/AnswerDetailData.hpp \
+    $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.h \
+    $$PWD/src/Logic/NetworkAccessManagerBlockable.h \
     $$PWD/src/Logic/QRCodeScanner.h \
-    src/Logic/AnswerDetailData.hpp \
-    src/Logic/MultipleSubjectsTemplateListModelList.h \
-    src/Logic/NetworkAccessManagerBlockable.h \
-    src/Logic/TemplateAnalysis.h \
-    src/Logic/TemplateListModel.h \
-    src/Logic/TemplateRawData.h \
-    src/Logic/TemplateSearcher.h \
-    src/Logic/TemplateSummary.h \
-    src/Logic/UpdateChecker.h \
-    src/Logic/UserData.h \
-    src/Logic/UserDataList.hpp \
-    src/Singleton/Network.h \
-    src/StaticClass/CallAndroidNativeComponent.h \
-    src/StaticClass/Global.h \
-    src/StaticClass/Setting.h \
-    src/StaticClass/XinjiaoyuEncryptioner.h \
-    src/StaticClass/XinjiaoyuNetwork.h
+    $$PWD/src/Logic/TemplateAnalysis.h \
+    $$PWD/src/Logic/TemplateListModel.h \
+    $$PWD/src/Logic/TemplateRawData.h \
+    $$PWD/src/Logic/TemplateSearcher.h \
+    $$PWD/src/Logic/TemplateSummary.h \
+    $$PWD/src/Logic/UpdateChecker.h \
+    $$PWD/src/Logic/UserData.h \
+    $$PWD/src/Logic/UserDataList.hpp \
+    $$PWD/src/Singleton/Network.h \
+    $$PWD/src/StaticClass/CallAndroidNativeComponent.h \
+    $$PWD/src/StaticClass/Global.h \
+    $$PWD/src/StaticClass/Setting.h \
+    $$PWD/src/StaticClass/XinjiaoyuEncryptioner.h \
+    $$PWD/src/StaticClass/XinjiaoyuNetwork.h
 
 SOURCES += \
     $$PWD/src/Logic/QRCodeScanner.cpp \
-    src/Logic/MultipleSubjectsTemplateListModelList.cpp \
-    src/Logic/NetworkAccessManagerBlockable.cpp \
-    src/Logic/TemplateAnalysis.cpp \
-    src/Logic/TemplateListModel.cpp \
-    src/Logic/TemplateRawData.cpp \
-    src/Logic/TemplateSearcher.cpp \
-    src/Logic/TemplateSummary.cpp \
-    src/Logic/UpdateChecker.cpp \
-    src/Logic/UserData.cpp \
-    src/Singleton/Network.cpp \
-    src/StaticClass/CallAndroidNativeComponent.cpp \
-    src/StaticClass/Global.cpp \
-    src/StaticClass/Setting.cpp \
-    src/StaticClass/XinjiaoyuEncryptioner.cpp \
-    src/StaticClass/XinjiaoyuNetwork.cpp
+    $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.cpp \
+    $$PWD/src/Logic/NetworkAccessManagerBlockable.cpp \
+    $$PWD/src/Logic/TemplateAnalysis.cpp \
+    $$PWD/src/Logic/TemplateListModel.cpp \
+    $$PWD/src/Logic/TemplateRawData.cpp \
+    $$PWD/src/Logic/TemplateSearcher.cpp \
+    $$PWD/src/Logic/TemplateSummary.cpp \
+    $$PWD/src/Logic/UpdateChecker.cpp \
+    $$PWD/src/Logic/UserData.cpp \
+    $$PWD/src/Singleton/Network.cpp \
+    $$PWD/src/StaticClass/CallAndroidNativeComponent.cpp \
+    $$PWD/src/StaticClass/Global.cpp \
+    $$PWD/src/StaticClass/Setting.cpp \
+    $$PWD/src/StaticClass/XinjiaoyuEncryptioner.cpp \
+    $$PWD/src/StaticClass/XinjiaoyuNetwork.cpp
 
-RESOURCES += Resource/Resource.qrc
+RESOURCES += $$PWD/Resource/Resource.qrc
 
 android{
 DISTFILES += \
-    android/AndroidManifest.xml \
-    android/build.gradle \
-    android/gradle.properties \
-    android/gradle/wrapper/gradle-wrapper.jar \
-    android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew \
-    android/gradlew.bat \
-    android/res/drawable-hdpi/icon.png \
-    android/res/drawable-ldpi/icon.png \
-    android/res/drawable-mdpi/icon.png \
-    android/res/drawable-xhdpi/icon.png \
-    android/res/drawable-xxhdpi/icon.png \
-    android/res/drawable-xxxhdpi/icon.png \
-    android/res/values/libs.xml \
-    android/src/com/LFWQSP2641/zhinengtika/CallNativeComponent.java \
-    android/src/com/LFWQSP2641/zhinengtika/IntentActivity.java \
-    android/src/com/LFWQSP2641/zhinengtika/Util.java \
-    android/res/xml/provider_paths.xml
+    $$PWD/android/AndroidManifest.xml \
+    $$PWD/android/build.gradle \
+    $$PWD/android/gradle.properties \
+    $$PWD/android/gradle/wrapper/gradle-wrapper.jar \
+    $$PWD/android/gradle/wrapper/gradle-wrapper.properties \
+    $$PWD/android/gradlew \
+    $$PWD/android/gradlew.bat \
+    $$PWD/android/res/drawable-hdpi/icon.png \
+    $$PWD/android/res/drawable-ldpi/icon.png \
+    $$PWD/android/res/drawable-mdpi/icon.png \
+    $$PWD/android/res/drawable-xhdpi/icon.png \
+    $$PWD/android/res/drawable-xxhdpi/icon.png \
+    $$PWD/android/res/drawable-xxxhdpi/icon.png \
+    $$PWD/android/res/values/libs.xml \
+    $$PWD/android/src/com/LFWQSP2641/zhinengtika/CallNativeComponent.java \
+    $$PWD/android/src/com/LFWQSP2641/zhinengtika/IntentActivity.java \
+    $$PWD/android/src/com/LFWQSP2641/zhinengtika/Util.java \
+    $$PWD/android/res/xml/provider_paths.xml
 }
