@@ -257,6 +257,35 @@ Item {
                     }
                 }
             }
+
+            GroupBox {
+                Layout.fillWidth: true
+                title: "关于"
+                RowLayout {
+                    width: parent.width
+                    height: parent.height
+                    Button {
+                        Layout.fillWidth: true
+                        text: "关于本软件"
+                        onClicked: messageDialog.show("<p>使用 Qt 框架的跨平台软件,支持 Windows, Android, Linux</p>" +
+                                                      "<p>作者:LFWQSP2641( <a href=\"https://github.com/LFWQSP2641\">https://github.com/LFWQSP2641</a> )</p>" +
+                                                      "<p>Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserved.</p>" +
+                                                      "<p>项目地址: <a href=\"https://github.com/LFWQSP2641/ZhiNengTiKa\">https://github.com/LFWQSP2641/ZhiNengTiKa</a></p>")
+                    }
+                    Button {
+                        Layout.fillWidth: true
+                        text: "使用软件"
+                        onClicked: messageDialog.show("<p>Qt ( <a href=\"https://www.qt.io\">https://www.qt.io</a> )</p>" +
+                                                      "<p><small>GNU (Lesser) General Public License v3.0</small></p>" +
+                                                      "<br/>" +
+                                                      "<p>android_openssl ( <a href=\"https://github.com/KDAB/android_openssl\">https://github.com/KDAB/android_openssl</a> )</p>" +
+                                                      "<p><small>Apache License 2.0</small></p>" +
+                                                      "<br/>" +
+                                                      "<p>Qt-AES ( <a href=\"https://github.com/KDAB/android_openssl\">https://github.com/KDAB/android_openssl</a> )</p>" +
+                                                      "<p><small>The Unlicense</small></p>")
+                    }
+                }
+            }
         }
     }
 
