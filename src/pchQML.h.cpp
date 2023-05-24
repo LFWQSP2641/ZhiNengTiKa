@@ -1,4 +1,4 @@
-/*-------------------------------------------------------------------- 
+/*--------------------------------------------------------------------
 * Precompiled header source file used by Visual Studio.NET to generate
 * the .pch file.
 *
@@ -13,4 +13,4 @@
 *
 * WARNING: All changes made in this file will be lost.
 --------------------------------------------------------------------*/
-#include "pch.h"
+#include "pchQML.h"

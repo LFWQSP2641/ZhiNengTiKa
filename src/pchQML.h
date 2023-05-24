@@ -19,11 +19,9 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QHttpMultiPart>
-#ifdef Q_OS_ANDROID
 #include <QtCore/private/qandroidextras_p.h>
 #include <QJniEnvironment>
 #include <QJniObject>
-#endif // Q_OS_ANDROID
 #include <QQmlApplicationEngine>
 #include <QtWebView>
 #include <QSGRendererInterface>
@@ -31,6 +29,5 @@
 #include <QQuickStyle>
 
 #include "D:/Softwares/scr/Qt-AES/qaesencryption.h"
-#include "D:/Softwares/scr/WebView/WebView.h"
 
 #endif // PCHQML_H
