@@ -4,7 +4,9 @@ import QRCodeScannerQML
 
 Item {
     id: qrCodeScannerWidget
+    signal scanFinished(string templateCode)
     property int captureCount: 0
+    property string templateCode: ""
     Text {
         id: test
         anchors.centerIn: parent
@@ -74,18 +76,27 @@ Item {
             if(success)
             {
                 stateText.append("解析成功:" + result)
+                templateCode = result
+                waitTimer.start()
             }
             else
             {
                 stateText.append("解析失败(可能未检测到二维码)")
+                imageCapturer.capture()
             }
-
-            imageCapturer.capture()
         }
     }
 
     Timer {
-        id: timer
+        id: waitTimer
+        interval: 500
+        onTriggered: {
+            scanFinished(templateCode)
+        }
+    }
+
+    Timer {
+        id: startTimer
         interval: 1500
         running: true
         onTriggered: {

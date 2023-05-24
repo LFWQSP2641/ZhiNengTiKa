@@ -184,11 +184,15 @@ ApplicationWindow {
     Component {
         id: qrCodeScannerWidgetComponent
         QRCodeScannerWidget {
+            id: qrCodeScannerWidget
             Component.onCompleted: {
                 scanQRCodeButton.enabled = false
             }
             Component.onDestruction: {
                 scanQRCodeButton.enabled = true
+            }
+            onScanFinished: function(templateCode){
+                selectWidget.setTemplateCode(templateCode)
             }
         }
     }
