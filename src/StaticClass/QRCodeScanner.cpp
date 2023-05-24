@@ -51,10 +51,10 @@ QByteArray QRCodeScanner::analysisQRCode(const QImage &image, const char *format
     }
 
     QNetworkRequest request(QStringLiteral("https://img.2weima.com/"));
-    request.setRawHeader(QByteArrayLiteral("sec-ch-ua"), QByteArrayLiteral(R"("Not?A_Brand";v="8", "Chromium";v="108", "Microsoft Edge";v="108")"));
+    request.setRawHeader(QByteArrayLiteral("sec-ch-ua"), QByteArrayLiteral(R"("Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114")"));
     request.setRawHeader(QByteArrayLiteral("sec-ch-ua-platform"), QByteArrayLiteral("\"Windows\""));
     request.setRawHeader(QByteArrayLiteral("sec-ch-ua-mobile"), QByteArrayLiteral("?0"));
-    request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.76"));
+    request.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"));
     request.setRawHeader(QByteArrayLiteral("Content-Type"), QByteArrayLiteral("multipart/form-data; boundary=").append(boundary.toUtf8()));
     request.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("*/*"));
     request.setRawHeader(QByteArrayLiteral("Origin"), QByteArrayLiteral("https://jie.2weima.com"));
@@ -144,12 +144,12 @@ QByteArray QRCodeScanner::analysisQRCode(const QString &imagePath, const char *f
 void QRCodeScanner::apiInitialize()
 {
     QNetworkRequest requestFir{QStringLiteral("https://jie.2weima.com/")};
-    requestFir.setRawHeader(QByteArrayLiteral("sec-ch-ua"), QByteArrayLiteral(R"("Not?A_Brand";v="8", "Chromium";v="108", "Microsoft Edge";v="108")"));
+    requestFir.setRawHeader(QByteArrayLiteral("sec-ch-ua"), QByteArrayLiteral(R"("Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114")"));
     requestFir.setRawHeader(QByteArrayLiteral("sec-ch-ua-mobile"), QByteArrayLiteral("?0"));
     requestFir.setRawHeader(QByteArrayLiteral("sec-ch-ua-platform"), QByteArrayLiteral("\"Windows\""));
     requestFir.setRawHeader(QByteArrayLiteral("Upgrade-Insecure-Requests"), QByteArrayLiteral("1"));
-    requestFir.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.76"));
-    requestFir.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"));
+    requestFir.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"));
+    requestFir.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"));
     requestFir.setRawHeader(QByteArrayLiteral("Sec-Fetch-Site"), QByteArrayLiteral("same-origin"));
     requestFir.setRawHeader(QByteArrayLiteral("Sec-Fetch-Mode"), QByteArrayLiteral("navigate"));
     requestFir.setRawHeader(QByteArrayLiteral("Sec-Fetch-User"), QByteArrayLiteral("?1"));
@@ -173,11 +173,11 @@ void QRCodeScanner::apiInitialize()
 
     QNetworkRequest requestSec{QStringLiteral("https://jie.2weima.com/Api/oss_sign.html?source=qrdecode")};
     requestSec.setRawHeader(QByteArrayLiteral("Content-Length"), QByteArrayLiteral("0"));
-    requestSec.setRawHeader(QByteArrayLiteral("sec-ch-ua"), QByteArrayLiteral(R"("Not?A_Brand";v="8", "Chromium";v="108", "Microsoft Edge";v="108")"));
+    requestSec.setRawHeader(QByteArrayLiteral("sec-ch-ua"), QByteArrayLiteral(R"("Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114")"));
     requestSec.setRawHeader(QByteArrayLiteral("pragma-ssl"), QByteArrayLiteral("no-cache"));
     requestSec.setRawHeader(QByteArrayLiteral("X-CSRF-TOKEN"), xCsrfToken.toUtf8());
     requestSec.setRawHeader(QByteArrayLiteral("sec-ch-ua-mobile"), QByteArrayLiteral("?0"));
-    requestSec.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36 Edg/108.0.1462.76"));
+    requestSec.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"));
     requestSec.setRawHeader(QByteArrayLiteral("Accept"), QByteArrayLiteral("*/*"));
     requestSec.setRawHeader(QByteArrayLiteral("X-Requested-With"), QByteArrayLiteral("XMLHttpRequest"));
     requestSec.setRawHeader(QByteArrayLiteral("sec-ch-ua-platform"), QByteArrayLiteral("\"Windows\""));
