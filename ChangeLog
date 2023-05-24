@@ -1,27 +1,29 @@
-[2.1.2.release]
+[2.2.0-beta]
+新增 软件内扫码
+[2.1.2-release]
 优化 用户获取题卡的相关行为
 修复 Android新版本安装包不自动删除
 夹带私货
-[2.1.1.release]
+[2.1.1-release]
 修复 Android平台已导入题卡不从本地读取
-[2.1.0.release]
+[2.1.0-release]
 新增 Qt Widgets
 更新题卡列表
-[2.0.8.beta]
+[2.0.8-beta]
 导入新题卡
-[2.0.5.beta]
+[2.0.5-beta]
 修复 获取新题卡异常
 导入新题卡
-[2.0.4.beta]
+[2.0.4-beta]
 修复 自动更新失败
-[2.0.3.beta]
+[2.0.3-beta]
 优化 Quick框架界面
 重构 网络相关
-[2.0.2.nightly]
+[2.0.2-nightly]
 优化 Quick框架界面
-[2.0.1.nightly]
+[2.0.1-nightly]
 优化 Quick框架界面
-[2.0.0.nightly]
+[2.0.0-nightly]
 新增 Quick框架
 [1.8.0]
 更新Qt框架至6.4.3
