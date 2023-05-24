@@ -1,27 +1,25 @@
 #include "QRCodeScanner.h"
+#include "../StaticClass/Setting.h"
 #include "../Singleton/Network.h"
-#include "Setting.h"
-#include "../StaticClass/CallAndroidNativeComponent.h"
 
-QJsonObject QRCodeScanner::apiArguments;
-
-void QRCodeScanner::initialize()
+QRCodeScanner::QRCodeScanner(QObject *parent)
+    : QObject{parent}
 {
+
 }
 
-void QRCodeScanner::initialize(const QJsonObject &apiJsonObject)
+void QRCodeScanner::scanQRCode(const QImage &image)
 {
-    if(apiJsonObject.contains(QStringLiteral("SecurityToken")))
+    // 检查api参数是否过期
+    if(Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("expire")).toInt(0) < QDateTime::currentSecsSinceEpoch())
     {
-        apiArguments = apiJsonObject;
-    }
-}
-
-QByteArray QRCodeScanner::analysisQRCode(const QImage &image, const char *format, int quality)
-{
-    if(QRCodeScanner::apiArguments.value(QStringLiteral("expire")).toInt(0) < QDateTime::currentSecsSinceEpoch())
-    {
-        QRCodeScanner::apiInitialize();
+        // 重新获取api参数
+        if(!QRCodeScanner::initializeApi())
+        {
+            // 获取api参数失败
+            emit this->analysisFinished(QString());
+            return;
+        }
     }
 
     auto generateRandomString{[]
@@ -66,19 +64,17 @@ QByteArray QRCodeScanner::analysisQRCode(const QImage &image, const char *format
     request.setRawHeader(QByteArrayLiteral("Accept-Language"), QByteArrayLiteral("zh-CN,zh;q=0.9"));
     request.setRawHeader(QByteArrayLiteral("Cookie"), QString(QChar(1)).toUtf8());
     request.setRawHeader(QByteArrayLiteral("MIME-Version"), QString(QChar(1)).toUtf8());
-    QHttpMultiPart multiPart(QHttpMultiPart::FormDataType);
+    auto multiPart(new QHttpMultiPart(QHttpMultiPart::FormDataType));
 
-    multiPart.setBoundary(boundary.toUtf8());
+    multiPart->setBoundary(boundary.toUtf8());
 
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
     if(Setting::compressQRCodeImage)
     {
-        qDebug() << "压缩图片";
         if(image.size().width() > 1600 || image.size().height() > 900)
         {
-            qDebug() << "压缩图片分辨率";
             image.convertToFormat(QImage::Format_Grayscale8).scaled(QSize(1600, 900), Qt::KeepAspectRatio).save(&buffer, "JPG", 70);
         }
         else
@@ -88,7 +84,7 @@ QByteArray QRCodeScanner::analysisQRCode(const QImage &image, const char *format
     }
     else
     {
-        image.save(&buffer, format, quality);
+        image.save(&buffer);
     }
 
     auto initializeHttpPart{[](const QByteArray & name, const QByteArray & body)
@@ -98,51 +94,43 @@ QByteArray QRCodeScanner::analysisQRCode(const QImage &image, const char *format
         textPart.setBody(body);
         return textPart;
     }};
-    const QByteArray baFormat{format};
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("id"), QByteArrayLiteral("WU_FILE_0")));
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("name"), QByteArrayLiteral("image.").append(baFormat)));
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("type"), QByteArrayLiteral("image/").append(baFormat)));
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("lastModifiedDate"), QDateTime::currentDateTimeUtc().toString().append(QStringLiteral(" GMT+0800 (中国标准时间)")).toUtf8()));
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("size"), QString::number(buffer.size()).toUtf8()));
+    const QByteArray baFormat{QImageReader(ba).format()};
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("id"), QByteArrayLiteral("WU_FILE_0")));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("name"), QByteArrayLiteral("image.").append(baFormat)));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("type"), QByteArrayLiteral("image/").append(baFormat)));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("lastModifiedDate"), QDateTime::currentDateTimeUtc().toString().append(QStringLiteral(" GMT+0800 (中国标准时间)")).toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("size"), QString::number(buffer.size()).toUtf8()));
     QString fileUploadName;
     for(auto i{0}; i < 15; ++i)
     {
         fileUploadName.append(generateRandomString());
     }
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("key"), QRCodeScanner::apiArguments.value(QStringLiteral("dir")).toString().append(fileUploadName).append(QStringLiteral(".")).append(format).toUtf8()));
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("policy"), QRCodeScanner::apiArguments.value(QStringLiteral("policy")).toString().toUtf8()));
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("OSSAccessKeyId"), QRCodeScanner::apiArguments.value(QStringLiteral("accessid")).toString().toUtf8()));
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("success_action_status"), QByteArrayLiteral("200")));
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("callback"), QRCodeScanner::apiArguments.value(QStringLiteral("callback")).toString().toUtf8()));
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("signature"), QRCodeScanner::apiArguments.value(QStringLiteral("signature")).toString().toUtf8()));
-    multiPart.append(initializeHttpPart(QByteArrayLiteral("x-oss-security-token"), QRCodeScanner::apiArguments.value(QStringLiteral("SecurityToken")).toString().toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("key"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("dir")).toString().append(fileUploadName).append(QStringLiteral(".")).append(baFormat).toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("policy"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("policy")).toString().toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("OSSAccessKeyId"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("accessid")).toString().toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("success_action_status"), QByteArrayLiteral("200")));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("callback"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("callback")).toString().toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("signature"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("signature")).toString().toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("x-oss-security-token"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("SecurityToken")).toString().toUtf8()));
     QHttpPart imagePart;
     imagePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant(QByteArrayLiteral("form-data; name=\"file\"; filename=\"image.").append(baFormat).append("\"")));
     imagePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant(QByteArrayLiteral("image/").append(baFormat)));
     imagePart.setBody(ba);
-    multiPart.append(imagePart);
+    multiPart->append(imagePart);
 
-    auto replyData{Network::getGlobalNetworkManager()->postData(request, &multiPart)};
-    qDebug() << replyData;
-    return QJsonDocument::fromJson(replyData).object().value(QStringLiteral("data")).toString().toUtf8();
+    auto reply(Network::getGlobalNetworkManager()->post(request, multiPart));
+    connect(reply, &QNetworkReply::finished, [reply, this]
+    {
+        const auto data(Network::getGlobalNetworkManager()->replyReadAll(reply));
+        const auto result(QJsonDocument::fromJson(data).object().value(QStringLiteral("data")).toString().toUtf8());
+        qDebug() << "scanQRCodeResultData:" << data;
+        emit this->analysisFinished(result);
+    });
 }
 
-QByteArray QRCodeScanner::analysisQRCode(const QString &imagePath, const char *format, int quality)
+bool QRCodeScanner::initializeApi()
 {
-    QFileInfo fileInfo(imagePath);
-    if(!fileInfo.exists())
-    {
-        throw std::runtime_error("文件不存在");
-    }
-    if(format == nullptr)
-    {
-        return analysisQRCode(QImage(imagePath), fileInfo.suffix().toStdString().c_str(), quality);
-    }
-    return analysisQRCode(QImage(imagePath), format, quality);
-}
-
-void QRCodeScanner::apiInitialize()
-{
+    emit this->apiInitializing();
     QNetworkRequest requestFir{QStringLiteral("https://jie.2weima.com/")};
     requestFir.setRawHeader(QByteArrayLiteral("sec-ch-ua"), QByteArrayLiteral(R"("Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114")"));
     requestFir.setRawHeader(QByteArrayLiteral("sec-ch-ua-mobile"), QByteArrayLiteral("?0"));
@@ -168,7 +156,8 @@ void QRCodeScanner::apiInitialize()
     xCsrfToken = xCsrfToken.mid(xCsrfToken.indexOf("<meta name=\"csrf-token\" content=\"") + 33, 32);
     if(cookie.isEmpty() || xCsrfToken.isEmpty())
     {
-        throw std::runtime_error("返回数据为空,可能无法连接网络");
+        emit this->initializeApiFinished(false);
+        return false;
     }
 
     QNetworkRequest requestSec{QStringLiteral("https://jie.2weima.com/Api/oss_sign.html?source=qrdecode")};
@@ -191,77 +180,21 @@ void QRCodeScanner::apiInitialize()
     requestSec.setRawHeader(QByteArrayLiteral("Cookie"), cookie.toUtf8());
 
     const auto replyDataSec{Network::getGlobalNetworkManager()->getData(requestSec)};
-    apiArguments = QJsonDocument::fromJson(replyDataSec).object();
+    auto apiArguments = QJsonDocument::fromJson(replyDataSec).object();
     if(apiArguments.isEmpty())
     {
         qWarning() << "QRCodeScanner::apiInitialize() : apiArguments.isEmpty()";
         qWarning() << replyDataSec;
+        emit this->initializeApiFinished(false);
+        return false;
     }
     else
     {
-        Setting::jsonObjectApiQRCodeScanner = QRCodeScanner::apiArguments;
+        Setting::jsonObjectApiQRCodeScanner = apiArguments;
 #ifdef Q_OS_ANDROID
         Setting::saveToFile();
 #endif // Q_OS_ANDROID
+        emit this->initializeApiFinished(true);
+        return true;
     }
-}
-
-QByteArray QRCodeScanner::scanQRCodeByTakePhoto()
-{
-    QByteArray decodeResult;
-#ifdef Q_OS_ANDROID
-    auto image {CallAndroidNativeComponent::takePhoto()};
-    if(image.isNull())
-    {
-        return QByteArray();
-    }
-    QMessageBox msgBox2;
-    msgBox2.setText(QStringLiteral("解析中..."));
-    msgBox2.show();
-    try
-    {
-        decodeResult = QRCodeScanner::analysisQRCode(image, "JPEG");
-    }
-    catch (const std::exception &e)
-    {
-        QMessageBox::warning(Q_NULLPTR, QStringLiteral("critical"), e.what());
-        return QByteArray();
-    }
-    msgBox2.close();
-    if(decodeResult.isEmpty())
-    {
-        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("扫描失败\n"
-                             "请确保二维码清晰可见"));
-    }
-#endif // Q_OS_ANDROID
-    return decodeResult;
-}
-
-QByteArray QRCodeScanner::scanQRCodeFromPictureFile()
-{
-    QByteArray decodeResult;
-    const auto imagePath{QFileDialog::getOpenFileName(Q_NULLPTR, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)"))};
-    if(imagePath.isEmpty())
-    {
-        return QByteArray();
-    }
-    QMessageBox msgBox2;
-    msgBox2.setText(QStringLiteral("解析中..."));
-    msgBox2.show();
-    try
-    {
-        decodeResult = QRCodeScanner::analysisQRCode(imagePath);
-    }
-    catch (const std::exception &e)
-    {
-        QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), e.what());
-        return QByteArray();
-    }
-    msgBox2.close();
-    if(decodeResult.isEmpty())
-    {
-        QMessageBox::warning(nullptr, QStringLiteral("warning"), QStringLiteral("扫描失败\n"
-                             "请确保二维码清晰可见"));
-    }
-    return decodeResult;
 }

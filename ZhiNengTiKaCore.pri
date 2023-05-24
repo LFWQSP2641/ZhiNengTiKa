@@ -51,6 +51,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 include(3rd/Qt-AES/QAESEncryption.pri)
 
 HEADERS += \
+    $$PWD/src/Logic/QRCodeScanner.h \
     src/Logic/AnswerDetailData.hpp \
     src/Logic/MultipleSubjectsTemplateListModelList.h \
     src/Logic/NetworkAccessManagerBlockable.h \
@@ -65,12 +66,12 @@ HEADERS += \
     src/Singleton/Network.h \
     src/StaticClass/CallAndroidNativeComponent.h \
     src/StaticClass/Global.h \
-    src/StaticClass/QRCodeScanner.h \
     src/StaticClass/Setting.h \
     src/StaticClass/XinjiaoyuEncryptioner.h \
     src/StaticClass/XinjiaoyuNetwork.h
 
 SOURCES += \
+    $$PWD/src/Logic/QRCodeScanner.cpp \
     src/Logic/MultipleSubjectsTemplateListModelList.cpp \
     src/Logic/NetworkAccessManagerBlockable.cpp \
     src/Logic/TemplateAnalysis.cpp \
@@ -83,7 +84,6 @@ SOURCES += \
     src/Singleton/Network.cpp \
     src/StaticClass/CallAndroidNativeComponent.cpp \
     src/StaticClass/Global.cpp \
-    src/StaticClass/QRCodeScanner.cpp \
     src/StaticClass/Setting.cpp \
     src/StaticClass/XinjiaoyuEncryptioner.cpp \
     src/StaticClass/XinjiaoyuNetwork.cpp

@@ -1,7 +1,6 @@
 #include "StaticClass/Global.h"
 #include "StaticClass/Setting.h"
 #include "Singleton/Network.h"
-#include "StaticClass/QRCodeScanner.h"
 #include "Logic/UpdateChecker.h"
 #include "Logic/TemplateSearcher.h"
 #include "Logic/TemplateListModel.h"
@@ -27,7 +26,6 @@ int main(int argc, char *argv[])
     a.setApplicationDisplayName(QStringLiteral("智能题卡"));
 
     Setting::loadFromFile();
-    QRCodeScanner::initialize(Setting::jsonObjectApiQRCodeScanner);
     UserData::initPublicUserData();
     MultipleSubjectsTemplateListModelListSingleton::initOnce();
 
@@ -64,8 +62,9 @@ int main(int argc, char *argv[])
 #else
 #endif // Q_OS_ANDROID
 
-    qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0, "MultipleSubjectsTemplateListModelList", MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList());
-    qmlRegisterSingletonInstance("QRCodeScannerQML", 1, 0, "QRCodeScanner", new QRCodeScannerQML);
+    qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0,
+                                 "MultipleSubjectsTemplateListModelList",
+                                 MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList());
     qmlRegisterType<TemplateSummaryQML>("TemplateSummaryQML", 1, 0, "TemplateSummaryQML");
     qmlRegisterType<TemplateRawDataQML>("TemplateRawDataQML", 1, 0, "TemplateRawDataQML");
     qmlRegisterType<TemplateAnalysisQML>("TemplateAnalysisQML", 1, 0, "TemplateAnalysisQML");
@@ -73,6 +72,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<TemplateListModel>("TemplateListModel", 1, 0, "TemplateListModel");
     qmlRegisterType<SettingOperator>("SettingOperator", 1, 0, "SettingOperator");
     qmlRegisterType<UpdateChecker>("UpdateChecker", 1, 0, "UpdateChecker");
+    qmlRegisterType<QRCodeScannerQML>("QRCodeScannerQML", 1, 0, "QRCodeScannerQML");
     QQmlApplicationEngine engine;
 
     QStringList builtInStyles = { QLatin1String("Basic"), QLatin1String("Fusion"),

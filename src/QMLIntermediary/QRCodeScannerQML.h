@@ -1,17 +1,21 @@
 #ifndef QRCODESCANNERQML_H
 #define QRCODESCANNERQML_H
 
+class QRCodeScanner;
+
 class QRCodeScannerQML: public QObject
 {
     Q_OBJECT
 public:
-    using QObject::QObject;
-
-    Q_INVOKABLE QByteArray analysisQRCode(const QImage &image, const char *format, int quality = -1);
-    Q_INVOKABLE QByteArray analysisQRCode(const QString &imagePath, const char *format = nullptr, int quality = -1);
-
-    Q_INVOKABLE QByteArray scanQRCodeByTakePhoto();
-    Q_INVOKABLE QByteArray scanQRCodeFromPictureFile();
+    explicit QRCodeScannerQML(QObject *parent = nullptr);
+public slots:
+    void readImage(const QVariant &imageVariant);
+protected:
+    QRCodeScanner *qrCodeScanner;
+signals:
+    void apiInitializing();
+    void initializeApiFinished(bool success);
+    void analysisFinished(const QString &decodeResult, bool success);
 };
 
 #endif // QRCODESCANNERQML_H

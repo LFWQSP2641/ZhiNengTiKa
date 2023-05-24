@@ -3,7 +3,6 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.platform
 import TemplateRawDataQML
-import QRCodeScannerQML
 
 ApplicationWindow {
     id: applicationWindow
@@ -63,6 +62,7 @@ ApplicationWindow {
                 Layout.fillHeight: true
             }
             ToolButton {
+                id: scanQRCodeButton
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 text: "扫码"
@@ -71,7 +71,7 @@ ApplicationWindow {
                     {
                         stackView.pop()
                     }
-                    selectWidget.setTemplateCode(QRCodeScanner.scanQRCodeByTakePhoto())
+                    stackView.push(qrCodeScannerWidgetComponent)
                 }
             }
         }
@@ -177,6 +177,18 @@ ApplicationWindow {
         SearchWidget {
             onOkButtonClicked: function(templateCode){
                 showTemplateDetailWidget(templateCode)
+            }
+        }
+    }
+
+    Component {
+        id: qrCodeScannerWidgetComponent
+        QRCodeScannerWidget {
+            Component.onCompleted: {
+                scanQRCodeButton.enabled = false
+            }
+            Component.onDestruction: {
+                scanQRCodeButton.enabled = true
             }
         }
     }

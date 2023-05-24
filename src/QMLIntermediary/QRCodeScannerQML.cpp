@@ -1,22 +1,19 @@
 #include "QRCodeScannerQML.h"
-#include "../StaticClass/QRCodeScanner.h"
+#include "../Logic/QRCodeScanner.h"
 
-QByteArray QRCodeScannerQML::analysisQRCode(const QImage &image, const char *format, int quality)
+QRCodeScannerQML::QRCodeScannerQML(QObject *parent)
+    : QObject{parent}
 {
-    return QRCodeScanner::analysisQRCode(image, format, quality);
+    this->qrCodeScanner = new QRCodeScanner(this);
+    connect(qrCodeScanner, &QRCodeScanner::analysisFinished, [this](const QString & decodeResult)
+    {
+        emit this->analysisFinished(decodeResult, !decodeResult.isEmpty());
+    });
+    connect(qrCodeScanner, &QRCodeScanner::initializeApiFinished, this, &QRCodeScannerQML::initializeApiFinished);
+    connect(qrCodeScanner, &QRCodeScanner::apiInitializing, this, &QRCodeScannerQML::apiInitializing);
 }
 
-QByteArray QRCodeScannerQML::analysisQRCode(const QString &imagePath, const char *format, int quality)
+void QRCodeScannerQML::readImage(const QVariant &imageVariant)
 {
-    return QRCodeScanner::analysisQRCode(imagePath, format, quality);
-}
-
-QByteArray QRCodeScannerQML::scanQRCodeByTakePhoto()
-{
-    return QRCodeScanner::scanQRCodeByTakePhoto();
-}
-
-QByteArray QRCodeScannerQML::scanQRCodeFromPictureFile()
-{
-    return QRCodeScanner::scanQRCodeByTakePhoto();
+    this->qrCodeScanner->scanQRCode(imageVariant.value<QImage>());
 }
