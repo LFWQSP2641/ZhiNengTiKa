@@ -29,12 +29,6 @@ Item {
     }
     function setTemplateCode(templateCode) {
         templateCodeTextField.text = templateCode
-        if(templateCodeTextField.text.length === 0)
-        {
-            console.log("templateCode is empty, return")
-            return
-        }
-        okButtonClicked(templateCode)
     }
     function addNewTemplate(templateRawDataQML) {
         multipleSubjectsTemplateListView.addNewTemplate(templateRawDataQML)

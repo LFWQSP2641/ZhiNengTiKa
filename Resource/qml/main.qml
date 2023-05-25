@@ -53,7 +53,11 @@ ApplicationWindow {
             }
             Label {
                 id: titleLabel
-                text: listView.currentItem ? listView.currentItem.text : "智能题卡"
+                Binding {
+                    target: titleLabel
+                    property: "text"
+                    value: listView.currentItem.text
+                }
                 font.pixelSize: 20
                 elide: Label.ElideRight
                 horizontalAlignment: Qt.AlignHCenter
@@ -157,13 +161,6 @@ ApplicationWindow {
         id: templateRawDataQML
     }
 
-    TemplateDetailWidget {
-        id: templateDetailWidget
-        width: applicationWindow.width
-        height: applicationWindow.height
-        visible: false
-    }
-
     UpdateWidget {
         id: updateWidget
         showQuestionDialog: false
@@ -182,17 +179,30 @@ ApplicationWindow {
     }
 
     Component {
+        id: templateDetailWidgetComponent
+        TemplateDetailWidget {
+            templateRawDataQMLPointer: templateRawDataQML
+            Component.onDestruction: {
+                titleLabel.text = listView.currentItem.text
+            }
+        }
+    }
+
+    Component {
         id: qrCodeScannerWidgetComponent
         QRCodeScannerWidget {
             id: qrCodeScannerWidget
             Component.onCompleted: {
                 scanQRCodeButton.enabled = false
+                titleLabel.text = "扫码界面"
             }
             Component.onDestruction: {
                 scanQRCodeButton.enabled = true
+                titleLabel.text = listView.currentItem.text
             }
             onScanFinished: function(templateCode){
                 selectWidget.setTemplateCode(templateCode)
+                showTemplateDetailWidgetAndPop(templateCode)
             }
         }
     }
@@ -217,6 +227,23 @@ ApplicationWindow {
             selectWidget.addNewTemplate(templateRawDataQML)
         }
 
-        stackView.push("qrc:/qml/TemplateDetailWidget.qml", {templateRawDataQMLPointer: templateRawDataQML})
+        stackView.push(templateDetailWidgetComponent)
+        titleLabel.text = templateRawDataQML.getTemplateName()
+    }
+    function showTemplateDetailWidgetAndPop(templateCode) {
+        templateRawDataQML.setValue(templateCode)
+        if(!templateRawDataQML.isValid())
+        {
+            messageDialog.show(templateRawDataQML.getErrorStr())
+            return
+        }
+        if(templateRawDataQML.isNetwork())
+        {
+            selectWidget.addNewTemplate(templateRawDataQML)
+        }
+
+        stackView.pop()
+        stackView.push(templateDetailWidgetComponent)
+        titleLabel.text = templateRawDataQML.getTemplateName()
     }
 }
