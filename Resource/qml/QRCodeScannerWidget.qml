@@ -72,7 +72,7 @@ Item {
                 stateText.append("初始化api参数失败")
             }
         }
-        onAnalysisFinished: function(result,success){
+        onAnalysisFinishedQML: function(result,success){
             if(success)
             {
                 stateText.append("解析成功:" + result)
