@@ -19,8 +19,7 @@ Item {
         anchors.top: videoOutput.top
         anchors.left: videoOutput.left
         z: 1
-        text: "于1.5秒后开始第一次解析\n" +
-              "点击屏幕可强制解析\n"
+        text: "点击屏幕可强制解析\n"
         function append(str){
             stateText.text += str + "\n"
             if(stateText.height > qrCodeScannerWidget.height)
@@ -97,12 +96,14 @@ Item {
 
     Timer {
         id: startTimer
-        interval: 1500
+        interval: 50
+        repeat: true
         running: true
         onTriggered: {
             if(imageCapturer.readyForCapture)
             {
                 imageCapturer.capture()
+                startTimer.stop()
             }
         }
     }
