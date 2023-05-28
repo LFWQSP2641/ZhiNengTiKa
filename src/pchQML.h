@@ -19,14 +19,16 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QHttpMultiPart>
-#include <QtCore/private/qandroidextras_p.h>
-#include <QJniEnvironment>
-#include <QJniObject>
 #include <QQmlApplicationEngine>
 #include <QtWebView>
 #include <QSGRendererInterface>
 #include <QQuickWindow>
 #include <QQuickStyle>
+#ifdef Q_OS_ANDROID
+#include <QtCore/private/qandroidextras_p.h>
+#include <QJniEnvironment>
+#include <QJniObject>
+#endif // Q_OS_ANDROID
 
 #include "D:/Softwares/scr/Qt-AES/qaesencryption.h"
 
