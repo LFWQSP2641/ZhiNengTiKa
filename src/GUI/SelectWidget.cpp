@@ -1,9 +1,7 @@
 #include "SelectWidget.h"
+#include "../Logic/QRCodeScanner.h"
 #include "../StaticClass/Global.h"
-#include "../StaticClass/XinjiaoyuNetwork.h"
-#include "../StaticClass/Setting.h"
 #include "../StaticClass/CallAndroidNativeComponent.h"
-#include "../StaticClass/QRCodeScanner.h"
 #include "../GUI/TemplateDetailWidget.h"
 #include "../GUI/SearchWidget.h"
 #include "../GUI/MultipleSubjectsTemplateListView.h"
@@ -11,6 +9,7 @@
 SelectWidget::SelectWidget(QWidget *parent)
     : QWidget{ parent }
 {
+    qrCodeScanner = new QRCodeScanner(this);
     mainLayout = new QVBoxLayout(this);
     multipleSubjectsTemplateListView = new MultipleSubjectsTemplateListView(this);
     OKButton = new QPushButton(QStringLiteral("确定"), this);
@@ -34,6 +33,45 @@ SelectWidget::SelectWidget(QWidget *parent)
     mainLayout->addWidget(OKButton);
 
 
+    connect(qrCodeScanner, &QRCodeScanner::analysisFinished, [this](const QString & decodeResult)
+    {
+        if(qrCodeScannerStateMessageBox != nullptr)
+        {
+            qrCodeScannerStateMessageBox->close();
+        }
+        if(decodeResult.isEmpty())
+        {
+            QMessageBox::warning(this, QStringLiteral("解析二维码"), QStringLiteral("扫描失败\n"
+                                 "请确保二维码清晰可见"));
+            scanQRCodeButton->setEnabled(true);
+            return;
+        }
+        qDebug() << decodeResult;
+        this->templateCodeLineEdit->setText(decodeResult);
+        this->OKButtonPush();
+        scanQRCodeButton->setEnabled(true);
+    });
+    connect(qrCodeScanner, &QRCodeScanner::apiInitializing, [this]
+    {
+        if(qrCodeScannerStateMessageBox != nullptr)
+        {
+            qrCodeScannerStateMessageBox->setText(QStringLiteral("初始化API参数"));
+        }
+    });
+    connect(qrCodeScanner, &QRCodeScanner::initializeApiFinished, [this](bool success)
+    {
+        if(qrCodeScannerStateMessageBox != nullptr)
+        {
+            if(success)
+            {
+                qrCodeScannerStateMessageBox->setText(QStringLiteral("解析中..."));
+            }
+            else
+            {
+                qrCodeScannerStateMessageBox->setText(QStringLiteral("初始化API参数失败"));
+            }
+        }
+    });
     connect(OKButton, &QPushButton::clicked, this, &SelectWidget::OKButtonPush);
     connect(searchButton, &QPushButton::clicked, this, &SelectWidget::searchButtonPush);
     connect(scanQRCodeButton, &QPushButton::clicked, this, &SelectWidget::scanQRCode);
@@ -144,36 +182,33 @@ void SelectWidget::scanQRCode()
 
     QMessageBox msgBox1;
     msgBox1.setText(QStringLiteral("请选择扫码方式:"));
-    const auto takePhotoBtn{ msgBox1.addButton(QStringLiteral("拍照"), QMessageBox::AcceptRole) };
+//    const auto takePhotoBtn{ msgBox1.addButton(QStringLiteral("拍照"), QMessageBox::AcceptRole) };
     const auto selectFileBtn{ msgBox1.addButton(QStringLiteral("选择文件"), QMessageBox::AcceptRole) };
     msgBox1.addButton(QStringLiteral("取消"), QMessageBox::RejectRole)->setVisible(false);
     msgBox1.exec();
 
-    QByteArray decodeResult;
+    if(msgBox1.clickedButton() == selectFileBtn)
+    {
+        const auto imagePath(QFileDialog::getOpenFileName(this, QStringLiteral("选择文件"), QString(), QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)")));
+        const QImage image{imagePath};
+        if(!image.isNull())
+        {
+            qrCodeScanner->scanQRCode(image);
+        }
+    }
+//    else if(msgBox1.clickedButton() == takePhotoBtn)
+//    {
+//        decodeResult = QRCodeScanner::scanQRCodeByTakePhoto();
+//    }
 
-    if(msgBox1.clickedButton() == takePhotoBtn)
+    qrCodeScannerStateMessageBox = new QMessageBox(this);
+//    connect(qrCodeScannerStateMessageBox, &QMessageBox::finished, qrCodeScannerStateMessageBox, &QMessageBox::deleteLater);
+    connect(qrCodeScannerStateMessageBox, &QMessageBox::finished, []
     {
-        decodeResult = QRCodeScanner::scanQRCodeByTakePhoto();
-    }
-    else if(msgBox1.clickedButton() == selectFileBtn)
-    {
-        decodeResult = QRCodeScanner::scanQRCodeFromPictureFile();
-    }
-    else
-    {
-        scanQRCodeButton->setEnabled(true);
-        return;
-    }
-
-    if(decodeResult.isEmpty())
-    {
-        QMessageBox::warning(this, QStringLiteral("warning"), QStringLiteral("扫描失败\n"
-                             "请确保二维码清晰可见"));
-        scanQRCodeButton->setEnabled(true);
-        return;
-    }
-    qDebug() << decodeResult;
-    this->templateCodeLineEdit->setText(decodeResult);
-    this->OKButtonPush();
-    scanQRCodeButton->setEnabled(true);
+        qDebug() << "qrCodeScannerStateMessageBox finished";
+    });
+    qrCodeScannerStateMessageBox->setWindowTitle(QStringLiteral("扫码二维码"));
+    qrCodeScannerStateMessageBox->setText(QStringLiteral("解析中..."));
+    qrCodeScannerStateMessageBox->setStandardButtons(QMessageBox::Button::Ok);
+    qrCodeScannerStateMessageBox->show();
 }

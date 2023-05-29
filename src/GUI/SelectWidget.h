@@ -3,6 +3,7 @@
 
 #include "../Logic/TemplateAnalysis.h"
 class MultipleSubjectsTemplateListView;
+class QRCodeScanner;
 
 class SelectWidget : public QWidget
 {
@@ -17,6 +18,9 @@ protected:
     QPushButton *searchButton;
     QLineEdit *templateCodeLineEdit;
     QPushButton *scanQRCodeButton;
+
+    QRCodeScanner *qrCodeScanner;
+    QMessageBox *qrCodeScannerStateMessageBox = nullptr;
 
     TemplateAnalysis getTemplateAnalysis(const QString &templateCode);
 

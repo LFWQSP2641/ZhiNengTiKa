@@ -2,7 +2,6 @@
 #include "StaticClass/Global.h"
 #include "StaticClass/Setting.h"
 #include "Singleton/Network.h"
-#include "StaticClass/QRCodeScanner.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,7 +15,6 @@ int main(int argc, char *argv[])
     a.setApplicationDisplayName(QStringLiteral("智能题卡"));
 
     Setting::loadFromFile();
-    QRCodeScanner::initialize(Setting::jsonObjectApiQRCodeScanner);
     UserData::initPublicUserData();
 
     QFont appFont;
