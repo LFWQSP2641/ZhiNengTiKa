@@ -159,6 +159,15 @@ Item {
                             property int fontIndex: -1
                             property bool saving: false
                             model: Qt.fontFamilies()
+                            delegate: ItemDelegate {
+                                text: modelData
+                                font: modelData
+                                width: fontComboBox.width
+                                onClicked: {
+                                    fontComboBox.popup.close()
+                                }
+                            }
+
                             onActivated: {
                                 if(saving)
                                 {
