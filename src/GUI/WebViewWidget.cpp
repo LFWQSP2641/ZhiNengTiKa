@@ -10,7 +10,12 @@ WebViewWidget::WebViewWidget(QSharedPointer<TemplateAnalysis> newTemplateAnalysi
     saveButton = new QPushButton("另存为", this);
     connect(saveButton, &QPushButton::clicked, [this]
     {
-        saveToFile(QFileDialog::getSaveFileName(this, QStringLiteral("Save File"), QStringLiteral(".").append(QStringLiteral("/")).append(this->templateAnalysisPointer->getTemplateName()), QStringLiteral("Hyper Text Markup Language (*.html *.htm)")));
+        saveToFile(QFileDialog::getSaveFileName(
+                       this, QStringLiteral("Save File"),
+                       QStringLiteral(".")
+                       .append(QStringLiteral("/"))
+                       .append(this->templateAnalysisPointer->getTemplateName()),
+                       QStringLiteral("Hyper Text Markup Language (*.html *.htm)")));
     });
 
     pagesSwitch->setFixedHeight(pagesSwitch->fontMetrics().height() * 3 / 2);
@@ -96,8 +101,19 @@ void WebViewWidget::saveToFile(const QString &pathName)
     {
         return;
     }
-    const auto fileData{QStringLiteral("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>%0</title></head><body>%1</body></html>")
-                        .arg(templateAnalysisPointer->getTemplateName(), webView->getHtml())};
+    const auto fileData
+    {
+        QStringLiteral(
+            "<!DOCTYPE html><html><head><meta charset=\"utf-8\">"
+            "<title>%0</title>"
+            "</head><body>%1"
+            "<footer>"
+            "<p>本文件由 ZhiNengTiKa 自动生成</p>"
+            "<p>软件仓库: <a href=\"%2\">%2</a>.</p>"
+            "</footer></body></html>")
+        .arg(templateAnalysisPointer->getTemplateName(),
+             webView->getHtml(),
+             QStringLiteral("https://github.com/LFWQSP2641/ZhiNengTiKa"))};
     QFile file(pathName);
     file.open(QFile::WriteOnly);
     file.write(fileData.toUtf8());
