@@ -8,6 +8,7 @@ namespace CallAndroidNativeComponent
 QImage takePhoto();
 void openUrl(const QString &url);
 void installApk(const QString &filePath);
+void toSelfSetting();
 QString getCacheDir();
 QString getAndroidId();
 };

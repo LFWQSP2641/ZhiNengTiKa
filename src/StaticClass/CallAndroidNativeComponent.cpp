@@ -62,6 +62,18 @@ void CallAndroidNativeComponent::installApk(const QString &filePath)
     );
 }
 
+void CallAndroidNativeComponent::toSelfSetting()
+{
+    QJniObject activity = QtAndroidPrivate::activity();
+
+    QJniObject::callStaticMethod<void>(
+        "com/LFWQSP2641/ZhiNengTiKa/IntentActivity",
+        "toSelfSetting",
+        "(Lorg/qtproject/qt/android/bindings/QtActivity;)V",
+        activity.object<jobject>()
+    );
+}
+
 QString CallAndroidNativeComponent::getCacheDir()
 {
     QJniObject activity = QtAndroidPrivate::activity();
