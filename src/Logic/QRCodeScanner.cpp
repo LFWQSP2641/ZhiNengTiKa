@@ -3,21 +3,24 @@
 #include "../Singleton/Network.h"
 
 QRCodeScanner::QRCodeScanner(QObject *parent)
-    : QObject{parent}
+    : QObject{parent},
+      intervalTimer(new QTimer(this))
 {
-
+    intervalTimer->setInterval(this->interval);
 }
 
 void QRCodeScanner::scanQRCode(const QImage &image)
 {
+    setFinish(false);
     // 检查api参数是否过期
     if(Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("expire")).toInt(0) < QDateTime::currentSecsSinceEpoch())
     {
         // 重新获取api参数
-        if(!QRCodeScanner::initializeApi())
+        if(!this->initializeApi())
         {
             // 获取api参数失败
             emit this->analysisFinished(QString());
+            setFinish(true);
             return;
         }
     }
@@ -126,6 +129,62 @@ void QRCodeScanner::scanQRCode(const QImage &image)
         qDebug() << "scanQRCodeResultData:" << data;
         emit this->analysisFinished(result);
     });
+    setFinish(true);
+}
+
+int QRCodeScanner::getInterval() const
+{
+    return interval;
+}
+
+void QRCodeScanner::setInterval(int newInterval)
+{
+    if (interval == newInterval)
+        return;
+    interval = newInterval;
+    intervalTimer->setInterval(newInterval);
+    emit intervalChanged();
+}
+
+bool QRCodeScanner::getFinish() const
+{
+    return finish;
+}
+
+void QRCodeScanner::setFinish(bool newFinish)
+{
+    if (finish == newFinish)
+        return;
+    finish = newFinish;
+    emit finishChanged();
+}
+
+QVideoSink *QRCodeScanner::getVideoSink() const
+{
+    return videoSink;
+}
+
+void QRCodeScanner::setVideoSink(QVideoSink *newVideoSink)
+{
+    if (videoSink == newVideoSink)
+    {
+        return;
+    }
+    if(this->videoSink != nullptr)
+    {
+        disconnect(this->videoSink, &QVideoSink::videoFrameChanged, this, &QRCodeScanner::readVideoFrame);
+        disconnect(this->intervalTimer, &QTimer::timeout, nullptr, nullptr);
+    }
+    this->videoSink = newVideoSink;
+    // 频率太快了, 如果是本地解析还好
+    // 但是这用的是别人的服务器, 限制一下
+    // connect(newVideoSink, &QVideoSink::videoFrameChanged, this, &QRCodeScanner::readVideoFrame);
+    connect(this->intervalTimer, &QTimer::timeout, [this]
+    {
+        this->readVideoFrame(videoSink->videoFrame());
+    });
+    this->intervalTimer->start();
+    emit videoSinkChanged();
 }
 
 bool QRCodeScanner::initializeApi()
@@ -197,4 +256,13 @@ bool QRCodeScanner::initializeApi()
         emit this->initializeApiFinished(true);
         return true;
     }
+}
+
+void QRCodeScanner::readVideoFrame(const QVideoFrame &frame)
+{
+    if(!this->finish)
+    {
+        return;
+    }
+    this->scanQRCode(frame.toImage());
 }

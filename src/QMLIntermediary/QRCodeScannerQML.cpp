@@ -9,8 +9,3 @@ QRCodeScannerQML::QRCodeScannerQML(QObject *parent)
         emit this->analysisFinishedQML(decodeResult, !decodeResult.isEmpty());
     });
 }
-
-void QRCodeScannerQML::readImage(const QVariant &imageVariant)
-{
-    this->scanQRCode(imageVariant.value<QImage>());
-}

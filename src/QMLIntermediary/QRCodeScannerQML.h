@@ -9,7 +9,7 @@ class QRCodeScannerQML: public QRCodeScanner
 public:
     explicit QRCodeScannerQML(QObject *parent = nullptr);
 public slots:
-    void readImage(const QVariant &imageVariant);
+protected:
 signals:
     void analysisFinishedQML(const QString &decodeResult, bool success);
 };

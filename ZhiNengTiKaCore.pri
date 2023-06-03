@@ -1,6 +1,6 @@
 VERSION = 2.2.1
 
-QT       += core network
+QT       += core network multimedia
 
 android{
 QT       += core-private

@@ -41,23 +41,12 @@ Item {
     }
     CaptureSession {
         camera: camera
-        imageCapture: imageCapturer
         videoOutput: videoOutput
-    }
-    ImageCapture {
-        id: imageCapturer
-        onImageCaptured: function(requestId, previewImage){
-            qrCodeScannerQML.readImage(previewImage)
-            captureCount += 1
-            stateText.append("已解析" + captureCount + "次")
-        }
-        onErrorOccurred: function(requestId, error, message){
-            stateText.append("发生错误:" + message)
-        }
     }
 
     QRCodeScannerQML {
         id: qrCodeScannerQML
+        videoSink: videoOutput.videoSink
         onApiInitializing: {
             stateText.append("初始化api参数")
         }
@@ -71,7 +60,7 @@ Item {
                 stateText.append("初始化api参数失败")
             }
         }
-        onAnalysisFinishedQML: function(result,success){
+        onAnalysisFinishedQML: function(result, success){
             if(success)
             {
                 stateText.append("解析成功:" + result)
@@ -81,7 +70,6 @@ Item {
             else
             {
                 stateText.append("解析失败(可能未检测到二维码)")
-                imageCapturer.capture()
             }
         }
     }
@@ -90,29 +78,8 @@ Item {
         id: waitTimer
         interval: 500
         onTriggered: {
+            camera.stop()
             scanFinished(templateCode)
-        }
-    }
-
-    Timer {
-        id: startTimer
-        interval: 50
-        repeat: true
-        running: true
-        onTriggered: {
-            if(imageCapturer.readyForCapture)
-            {
-                imageCapturer.capture()
-                startTimer.stop()
-            }
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            stateText.append("尝试强制解析")
-            imageCapturer.capture()
         }
     }
 
