@@ -172,6 +172,7 @@ void QRCodeScanner::setVideoSink(QVideoSink *newVideoSink)
     }
     if(this->videoSink != nullptr)
     {
+        this->intervalTimer->stop();
         disconnect(this->videoSink, &QVideoSink::videoFrameChanged, this, &QRCodeScanner::readVideoFrame);
         disconnect(this->intervalTimer, &QTimer::timeout, nullptr, nullptr);
     }

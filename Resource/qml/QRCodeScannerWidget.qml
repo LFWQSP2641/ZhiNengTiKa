@@ -5,7 +5,6 @@ import QRCodeScannerQML
 Item {
     id: qrCodeScannerWidget
     signal scanFinished(string templateCode)
-    property int captureCount: 0
     property string templateCode: ""
     Text {
         id: test
@@ -19,7 +18,6 @@ Item {
         anchors.top: videoOutput.top
         anchors.left: videoOutput.left
         z: 1
-        text: "点击屏幕可强制解析\n"
         function append(str){
             stateText.text += str + "\n"
             if(stateText.height > qrCodeScannerWidget.height)
