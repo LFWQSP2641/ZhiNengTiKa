@@ -12,11 +12,12 @@ public:
     QVideoSink *getVideoSink() const;
     void setVideoSink(QVideoSink *newVideoSink);
 
-    bool getFinish() const;
-    void setFinish(bool newFinish);
-
     int getInterval() const;
     void setInterval(int newInterval);
+
+    bool getContinueScan() const;
+
+    bool getFinish() const;
 
 public slots:
     void scanQRCode(const QImage &image);
@@ -26,6 +27,7 @@ protected:
     bool finish = true;
     int interval = 1000;
     QTimer *intervalTimer;
+    bool continueScan = false;
 
     bool initializeApi();
 
@@ -37,14 +39,14 @@ signals:
     void initializeApiFinished(bool success);
     void analysisFinished(const QString &decodeResult);
     void videoSinkChanged();
-    void finishChanged();
 
     void intervalChanged();
 
 private:
     Q_PROPERTY(QVideoSink *videoSink READ getVideoSink WRITE setVideoSink NOTIFY videoSinkChanged)
-    Q_PROPERTY(bool finish READ getFinish WRITE setFinish NOTIFY finishChanged)
     Q_PROPERTY(int interval READ getInterval WRITE setInterval NOTIFY intervalChanged)
+    Q_PROPERTY(bool continueScan READ getContinueScan CONSTANT)
+    Q_PROPERTY(bool finish READ getFinish CONSTANT)
 };
 
 #endif // QRCODESCANNER_H
