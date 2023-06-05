@@ -21,111 +21,11 @@ ApplicationWindow {
 
     Action {
         id: navigateBackAction
-        text: stackView.depth > 1 ? "返回" : "菜单"
+        text: "<"
         onTriggered: {
             if (stackView.depth > 1) {
                 stackView.pop()
-                listView.currentIndex = 0
-            } else {
-                drawer.open()
             }
-        }
-    }
-
-    Shortcut {
-        sequence: "Menu"
-        onActivated: optionsMenuAction.trigger()
-    }
-
-    Action {
-        id: optionsMenuAction
-        icon.name: "menu"
-        onTriggered: optionsMenu.open()
-    }
-
-    header: ToolBar {
-        RowLayout {
-            anchors.fill: parent
-            ToolButton {
-                action: navigateBackAction
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
-            Label {
-                id: titleLabel
-                Binding {
-                    target: titleLabel
-                    property: "text"
-                    value: listView.currentItem.text
-                }
-                font.pixelSize: 20
-                elide: Label.ElideRight
-                horizontalAlignment: Qt.AlignHCenter
-                verticalAlignment: Qt.AlignVCenter
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
-            ToolButton {
-                id: scanQRCodeButton
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                text: "扫码"
-                onClicked: {
-                    while(stackView.depth > 1)
-                    {
-                        stackView.pop()
-                    }
-                    stackView.push(qrCodeScannerWidgetComponent)
-                }
-            }
-        }
-    }
-
-    Drawer {
-        id: drawer
-        width: Math.min(applicationWindow.width, applicationWindow.height) / 3 * 2
-        height: applicationWindow.height
-        interactive: stackView.depth === 1
-
-        ListView {
-            id: listView
-
-            focus: true
-            currentIndex: 0
-            anchors.fill: parent
-
-            delegate: ItemDelegate {
-                width: listView.width
-                text: model.title
-                highlighted: ListView.isCurrentItem
-                onClicked: {
-                    listView.currentIndex = index
-                    switch (index)
-                    {
-                    case 0:
-                        while(stackView.depth > 1)
-                        {
-                            stackView.pop()
-                        }
-                        break
-                    case 1:
-                        stackView.push(searchWidgetComponent)
-                        break
-                    case 2:
-                        stackView.push("qrc:/qml/SettingWidget.qml", {builtInStyles: applicationWindow.builtInStyles})
-                        break
-                    }
-                    drawer.close()
-                }
-            }
-
-            model: ListModel {
-                ListElement { title: "题卡列表" }
-                ListElement { title: "搜索" }
-                ListElement { title: "设置" }
-            }
-
-            ScrollIndicator.vertical: ScrollIndicator { }
         }
     }
 
@@ -133,10 +33,48 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
 
-        initialItem: SelectWidget {
-            id: selectWidget
-            onOkButtonClicked: function(templateCode){
-                showTemplateDetailWidget(templateCode)
+        initialItem: Item {
+            ColumnLayout {
+                height: parent.height
+                width: parent.width
+                spacing: 0
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.verticalStretchFactor: 3
+                    spacing: 0
+                    Button {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        text: "扫码"
+                        onClicked: stackView.push(qrCodeScannerWidgetComponent)
+                    }
+                    Button {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        text: "列表"
+                        onClicked: stackView.push(selectWidgetComponent)
+                    }
+                }
+                RowLayout{
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.verticalStretchFactor: 1
+                    spacing: 0
+                    Button {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        text: "搜索"
+                        onClicked: stackView.push(searchWidgetComponent)
+                    }
+                    Button {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        text: "设置"
+                        onClicked: stackView.push("qrc:/qml/SettingWidget.qml",
+                                                  {builtInStyles: applicationWindow.builtInStyles})
+                    }
+                }
             }
         }
     }
@@ -151,7 +89,7 @@ ApplicationWindow {
     }
 
     MessageDialog {
-        id: applicationWindowQuitDialog
+        id: versionRetiredQuitDialog
         buttons: MessageDialog.Ok
         text: "请更新版本或检查网络连接"
         onOkClicked: Qt.exit(1)
@@ -169,6 +107,17 @@ ApplicationWindow {
     // stackView.push在第二个参数连接信号槽好像有点问题
     // TypeError: Cannot assign to read-only property "okButtonClicked"
     // 所以拿个Component包一下
+
+    Component {
+        id: selectWidgetComponent
+        SelectWidget {
+            id: selectWidget
+            onOkButtonClicked: function(templateCode){
+                showTemplateDetailWidget(templateCode)
+            }
+        }
+    }
+
     Component {
         id: searchWidgetComponent
         SearchWidget {
@@ -182,9 +131,6 @@ ApplicationWindow {
         id: templateDetailWidgetComponent
         TemplateDetailWidget {
             templateRawDataQMLPointer: templateRawDataQML
-            Component.onDestruction: {
-                titleLabel.text = listView.currentItem.text
-            }
         }
     }
 
@@ -192,14 +138,6 @@ ApplicationWindow {
         id: qrCodeScannerWidgetComponent
         QRCodeScannerWidget {
             id: qrCodeScannerWidget
-            Component.onCompleted: {
-                scanQRCodeButton.enabled = false
-                titleLabel.text = "扫码界面"
-            }
-            Component.onDestruction: {
-                scanQRCodeButton.enabled = true
-                titleLabel.text = listView.currentItem.text
-            }
             onScanFinished: function(templateCode){
                 selectWidget.setTemplateCode(templateCode)
                 showTemplateDetailWidgetAndPop(templateCode)
@@ -211,7 +149,7 @@ ApplicationWindow {
         updateWidget.checkUpdate()
         if(!updateWidget.checkMinimumVersion())
         {
-            applicationWindowQuitDialog.open()
+            versionRetiredQuitDialog.open()
         }
     }
 
@@ -228,7 +166,6 @@ ApplicationWindow {
         }
 
         stackView.push(templateDetailWidgetComponent)
-        titleLabel.text = templateRawDataQML.getTemplateName()
     }
     function showTemplateDetailWidgetAndPop(templateCode) {
         templateRawDataQML.setValue(templateCode)
@@ -244,6 +181,5 @@ ApplicationWindow {
 
         stackView.pop()
         stackView.push(templateDetailWidgetComponent)
-        titleLabel.text = templateRawDataQML.getTemplateName()
     }
 }
