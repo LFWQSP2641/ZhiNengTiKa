@@ -21,12 +21,19 @@ ApplicationWindow {
 
     Action {
         id: navigateBackAction
-        text: "<"
+        text: "返回上一页"
         onTriggered: {
             if (stackView.depth > 1) {
                 stackView.pop()
             }
         }
+    }
+
+    header: TabButton{
+        action: navigateBackAction
+        visible: stackView.depth > 1 &&
+                 Qt.platform.os !== "android" &&
+                 Qt.platform.os !== "ios"
     }
 
     StackView {
