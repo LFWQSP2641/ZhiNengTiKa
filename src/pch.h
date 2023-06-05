@@ -20,6 +20,8 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QHttpMultiPart>
 #include <QWebEngineView>
+#include <QVideoSink>
+#include <QVideoFrame>
 
 #include "D:/Softwares/scr/Qt-AES/qaesencryption.h"
 

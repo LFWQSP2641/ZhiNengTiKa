@@ -200,6 +200,11 @@ void SelectWidget::scanQRCode()
 //    {
 //        decodeResult = QRCodeScanner::scanQRCodeByTakePhoto();
 //    }
+    else
+    {
+        scanQRCodeButton->setEnabled(true);
+        return;
+    }
 
     qrCodeScannerStateMessageBox = new QMessageBox(this);
 //    connect(qrCodeScannerStateMessageBox, &QMessageBox::finished, qrCodeScannerStateMessageBox, &QMessageBox::deleteLater);
