@@ -65,14 +65,17 @@ TemplateSummary TemplateListModel::getTemplateSummary(const QModelIndex &index) 
 
 void TemplateListModel::addNewTemplate(const TemplateSummary &templateInfo)
 {
-    beginInsertRows(QModelIndex(), this->templateList.size(), 1);
+    beginInsertRows(QModelIndex(), this->templateList.size(), this->templateList.size());
     this->templateList.append(templateInfo);
     endInsertRows();
 }
 
 void TemplateListModel::clear()
 {
-    // WARNING QML第二次搜索之后只显示三个结果
+    if(this->templateList.size() < 1)
+    {
+        return;
+    }
     beginRemoveRows(QModelIndex(), 0, this->templateList.size() - 1);
     this->templateList.clear();
     endRemoveRows();
