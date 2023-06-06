@@ -9,5 +9,17 @@
         <file>qml/SearchWidget.qml</file>
         <file>qml/UpdateWidget.qml</file>
         <file>qml/QRCodeScannerWidget.qml</file>
+        <file>qml/IconButton.qml</file>
+    </qresource>
+    <qresource prefix="/svg">
+        <file>icon/barcode-scan.svg</file>
+        <file>icon/camera.svg</file>
+        <file>icon/list.svg</file>
+        <file>icon/qrcode.svg</file>
+        <file>icon/search.svg</file>
+        <file>icon/settings.svg</file>
+        <file>icon/angle-left.svg</file>
+        <file>icon/menu-burger.svg</file>
+        <file>icon/menu-dots-vertical.svg</file>
     </qresource>
 </RCC>
