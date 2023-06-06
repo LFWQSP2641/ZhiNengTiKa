@@ -87,7 +87,7 @@ void QRCodeScanner::scanQRCode(const QImage &image)
     }
     else
     {
-        image.save(&buffer);
+        image.save(&buffer, "PNG");
     }
 
     auto initializeHttpPart{[](const QByteArray & name, const QByteArray & body)
@@ -262,4 +262,5 @@ void QRCodeScanner::readVideoFrame(const QVideoFrame &frame)
     {
         this->scanQRCode(frame.toImage());
     }
+    this->continueScan = false;
 }
