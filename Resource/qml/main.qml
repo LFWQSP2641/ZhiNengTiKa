@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.platform
 import TemplateRawDataQML
+import MultipleSubjectsTemplateListModelList
 
 ApplicationWindow {
     id: applicationWindow
@@ -118,7 +119,6 @@ ApplicationWindow {
     Component {
         id: selectWidgetComponent
         SelectWidget {
-            id: selectWidget
             onOkButtonClicked: function(templateCode){
                 showTemplateDetailWidget(templateCode)
             }
@@ -144,9 +144,7 @@ ApplicationWindow {
     Component {
         id: qrCodeScannerWidgetComponent
         QRCodeScannerWidget {
-            id: qrCodeScannerWidget
             onScanFinished: function(templateCode){
-                selectWidget.setTemplateCode(templateCode)
                 showTemplateDetailWidgetAndPop(templateCode)
             }
         }
@@ -169,7 +167,7 @@ ApplicationWindow {
         }
         if(templateRawDataQML.isNetwork())
         {
-            selectWidget.addNewTemplate(templateRawDataQML)
+            MultipleSubjectsTemplateListModelList.addNewTemplate(templateRawDataQML)
         }
 
         stackView.push(templateDetailWidgetComponent)
@@ -183,7 +181,7 @@ ApplicationWindow {
         }
         if(templateRawDataQML.isNetwork())
         {
-            selectWidget.addNewTemplate(templateRawDataQML)
+            MultipleSubjectsTemplateListModelList.addNewTemplate(templateRawDataQML)
         }
 
         stackView.pop()
