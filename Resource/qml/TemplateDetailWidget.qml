@@ -43,7 +43,7 @@ Item {
         }
         ListView {
             id: questionsCountsListView
-            height: fm.ascent
+            height: Math.max(fm.ascent, 20)
             Layout.fillWidth: true
             orientation: Qt.Horizontal
             delegate: ItemDelegate {
