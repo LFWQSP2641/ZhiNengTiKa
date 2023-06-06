@@ -298,11 +298,22 @@ Item {
         }
     }
 
-    Platform.MessageDialog {
+    Dialog {
         id: messageDialog
+        anchors.centerIn: parent
+        modal: true
+        focus: true
+
+        contentItem:
+            Text {
+                id: messageDialogText
+                wrapMode: Text.WordWrap
+                onLinkActivated: function(link){ Qt.openUrlExternally(link) }
+            }
+
 
         function show(caption) {
-            messageDialog.text = caption;
+            messageDialogText.text = caption;
             messageDialog.open();
         }
     }

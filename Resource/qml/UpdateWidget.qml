@@ -52,6 +52,8 @@ Item {
         contentItem: ScrollView {
             Text {
                 id: updateDialogText
+                wrapMode: Text.WordWrap
+                onLinkActivated: function(link){ Qt.openUrlExternally(link) }
             }
         }
 
@@ -81,7 +83,7 @@ Item {
 
         contentItem: Text {
             id: questionDialogText
-
+            onLinkActivated: function(link){ Qt.openUrlExternally(link) }
         }
 
         onOpened: {
