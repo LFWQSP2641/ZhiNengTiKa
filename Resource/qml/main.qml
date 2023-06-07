@@ -44,38 +44,40 @@ ApplicationWindow {
     }
 
     header: ToolBar {
-        RowLayout {
-            anchors.fill: parent
-            ToolButton {
-                action: navigateBackAction
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+        ToolButton {
+            id: navigateBackButton
+            action: navigateBackAction
+            anchors.left: parent.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+        }
+        Label {
+            id: titleLabel
+            Binding {
+                target: titleLabel
+                property: "text"
+                value: listView.currentItem.text
             }
-            Label {
-                id: titleLabel
-                Binding {
-                    target: titleLabel
-                    property: "text"
-                    value: listView.currentItem.text
+            elide: Label.ElideRight
+            horizontalAlignment: Qt.AlignHCenter
+            verticalAlignment: Qt.AlignVCenter
+            anchors.left: navigateBackButton.right
+            anchors.right: scanQRCodeButton.left
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+        }
+        ToolButton {
+            id: scanQRCodeButton
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            icon.source: "qrc:/svg/icon/qrcode.svg"
+            onClicked: {
+                while(stackView.depth > 1)
+                {
+                    stackView.pop()
                 }
-                elide: Label.ElideRight
-                horizontalAlignment: Qt.AlignHCenter
-                verticalAlignment: Qt.AlignVCenter
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-            }
-            ToolButton {
-                id: scanQRCodeButton
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                icon.source: "qrc:/svg/icon/qrcode.svg"
-                onClicked: {
-                    while(stackView.depth > 1)
-                    {
-                        stackView.pop()
-                    }
-                    stackView.push(qrCodeScannerWidgetComponent)
-                }
+                stackView.push(qrCodeScannerWidgetComponent)
             }
         }
     }
