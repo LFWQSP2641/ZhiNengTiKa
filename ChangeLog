@@ -1,3 +1,10 @@
+[2.3.0-release]
+优化 扫码使用C++基层类, 而不是QML的ImageCapture
+优化 Quick使用图标
+优化 Quick可打开文本中的超链接
+优化 Quick使ToolBar两侧的两个按钮贴边
+修复 Model相关的恶性BUG
+修复 部分系统返回的字体高度可能为0所引发的BUG
 [2.2.1-release]
 优化 Quick框架逻辑
 [2.2.0-beta]
