@@ -73,10 +73,7 @@ ApplicationWindow {
             anchors.bottom: parent.bottom
             icon.source: "qrc:/svg/icon/qrcode.svg"
             onClicked: {
-                while(stackView.depth > 1)
-                {
-                    stackView.pop()
-                }
+                stackViewPopAll()
                 stackView.push(qrCodeScannerWidgetComponent)
             }
         }
@@ -104,15 +101,16 @@ ApplicationWindow {
                     switch (index)
                     {
                     case 0:
-                        while(stackView.depth > 1)
-                        {
-                            stackView.pop()
-                        }
+                        stackViewPopAll()
                         break
                     case 1:
-                        stackView.push(searchWidgetComponent)
+                        stackViewPopAll()
+                        stackView.push(qrCodeScannerWidgetComponent)
                         break
                     case 2:
+                        stackView.push(searchWidgetComponent)
+                        break
+                    case 3:
                         stackView.push("qrc:/qml/SettingWidget.qml", {builtInStyles: applicationWindow.builtInStyles})
                         break
                     }
@@ -122,6 +120,7 @@ ApplicationWindow {
 
             model: ListModel {
                 ListElement { title: "题卡列表" }
+                ListElement { title: "扫码" }
                 ListElement { title: "搜索" }
                 ListElement { title: "设置" }
             }
@@ -246,5 +245,11 @@ ApplicationWindow {
         stackView.pop()
         stackView.push(templateDetailWidgetComponent)
         titleLabel.text = templateRawDataQML.getTemplateName()
+    }
+    function stackViewPopAll() {
+        while(stackView.depth > 1)
+        {
+            stackView.pop()
+        }
     }
 }
