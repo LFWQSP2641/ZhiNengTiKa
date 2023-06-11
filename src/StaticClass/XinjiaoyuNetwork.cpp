@@ -100,16 +100,6 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, co
 
         responseByte = QJsonDocument(tempObject).toJson(QJsonDocument::Compact);
     }
-    else if (responseByte.isEmpty())
-    {
-        throw std::runtime_error("请求题卡后,返回值为空\n"
-                                 "请检查登录状态和网络");
-    }
-    else
-    {
-        throw std::runtime_error(QStringLiteral("服务器报错\n"
-                                                "返回结果:%1").arg(responseByte).toStdString());
-    }
     return responseByte;
 }
 
@@ -159,8 +149,8 @@ QString XinjiaoyuNetwork::getUploadFileReplyUrl(QNetworkReply *reply)
 
     if(stateCode != QByteArrayLiteral("200"))
     {
-        throw std::runtime_error(QStringLiteral("上传失败\n"
-                                                "返回数据:%1").arg(returnData).toStdString());
+        return QStringLiteral("上传失败\n"
+                              "返回数据:%1").arg(returnData);
     }
 
     const auto dataJsonObject{QJsonDocument::fromJson(returnData).object().value(QStringLiteral("data")).toObject()};

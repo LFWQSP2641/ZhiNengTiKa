@@ -47,10 +47,11 @@ UserData UserData::login(const QByteArray &username, const QByteArray &password)
     }
     else
     {
-        throw std::runtime_error(QStringLiteral("登录失败\n"
-                                                "服务器返回信息:").append(returnData).toStdString());
+        UserData userData;
+        userData.errorStr = QStringLiteral("登录失败\n"
+                                           "服务器返回信息:").append(returnData);
+        return userData;
     }
-    return UserData();
 }
 
 void UserData::initPublicUserData()
@@ -75,4 +76,9 @@ UserData UserData::getPublicUserData()
                     UserData::publicAuthorization,
                     UserData::publicClientSession,
                     UserData::publicStudentId);
+}
+
+QString UserData::getErrorStr() const
+{
+    return errorStr;
 }

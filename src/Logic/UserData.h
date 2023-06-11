@@ -47,6 +47,7 @@ public:
     {
         return username;
     }
+    QString getErrorStr() const;
 
     bool isEmpty() const
     {
@@ -54,10 +55,15 @@ public:
                authorization.isEmpty() ||
                clientSession.isEmpty();
     }
+    bool isValid() const
+    {
+        return !isEmpty();
+    }
 
     static UserData login(const QByteArray &username, const QByteArray &password);
     static void initPublicUserData();
     static UserData getPublicUserData();
+
 
 private:
     QByteArray accessToken;
@@ -68,6 +74,8 @@ private:
     QByteArray schoolId;
     QByteArray studentId;
     QByteArray username;
+
+    QString errorStr;
 
     static QByteArray publicAccessToken;
     static QByteArray publicAuthorization;

@@ -69,13 +69,10 @@ void PixmapLabel::uploadPixmap(const QPixmap &pixmap)
     connect(reply, &QNetworkReply::finished, [this, reply, pixmap]
     {
         QString infoStr;
-        try
+        infoStr = XinjiaoyuNetwork::getUploadFileReplyUrl(reply);
+        if(infoStr.first(4) == QStringLiteral("上传失败"))
         {
-            infoStr = XinjiaoyuNetwork::getUploadFileReplyUrl(reply) ;
-        }
-        catch(const std::exception &e)
-        {
-            QMessageBox::warning(this, QStringLiteral("warning"), e.what());
+            QMessageBox::warning(this, QStringLiteral("warning"), infoStr);
             remove();
             return;
         }

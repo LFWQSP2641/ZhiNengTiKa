@@ -142,16 +142,13 @@ SettingWidget::SettingWidget(QWidget *parent)
             else
             {
                 UserData newUserData;
-                try
+                newUserData = UserData::login(username.toUtf8(), password.toUtf8());
+                if(!newUserData.isValid())
                 {
-                    newUserData = UserData::login(username.toUtf8(), password.toUtf8());
-                }
-                catch(const std::exception &e)
-                {
-                    const QString whatStr{e.what()};
+                    const QString whatStr{newUserData.getErrorStr()};
                     if(whatStr.contains(QStringLiteral("锁定")))
                     {
-                        QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("不用管那个锁定,大概率误报"));
+                        QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("不用管那个锁定, 大概率误报"));
                     }
                     QMessageBox::warning(this, QStringLiteral("warning"), whatStr);
                     OKButton.setEnabled(true);
