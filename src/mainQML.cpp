@@ -13,9 +13,6 @@
 
 int main(int argc, char *argv[])
 {
-    QtWebView::initialize();
-    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGLRhi);
     QApplication a(argc, argv);
 
     Network::initOnce();

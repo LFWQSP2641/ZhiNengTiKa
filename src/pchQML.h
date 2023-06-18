@@ -20,7 +20,6 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QHttpMultiPart>
 #include <QQmlApplicationEngine>
-#include <QtWebView>
 #include <QSGRendererInterface>
 #include <QQuickWindow>
 #include <QQuickStyle>

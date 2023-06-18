@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtWebView
 import TemplateAnalysisQML
 
 Item {
@@ -22,21 +21,21 @@ Item {
             TabButton {
                 text: "答案和解析"
                 onClicked: {
-                    webView.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml())
+                    templateDetailText.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml())
                     width: Math.max(50, mainColumnLayout.width / 3)
                 }
             }
             TabButton {
                 text: "答案"
                 onClicked: {
-                    webView.loadHtml(templateAnalysisQML.getAnswerHtml())
+                    templateDetailText.loadHtml(templateAnalysisQML.getAnswerHtml())
                     width: Math.max(50, mainColumnLayout.width / 3)
                 }
             }
             TabButton {
                 text: "原题"
                 onClicked: {
-                    webView.loadHtml(templateAnalysisQML.getQuestionHtml())
+                    templateDetailText.loadHtml(templateAnalysisQML.getQuestionHtml())
                     width: Math.max(50, mainColumnLayout.width / 3)
                 }
             }
@@ -61,23 +60,40 @@ Item {
             onCurrentItemChanged: {
                 if(tabBar.currentIndex===0)
                 {
-                    webView.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
+                    templateDetailText.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
                 }
                 else if(tabBar.currentIndex===1)
                 {
-                    webView.loadHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
+                    templateDetailText.loadHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
                 }
                 else if(tabBar.currentIndex===2)
                 {
-                    webView.loadHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
+                    templateDetailText.loadHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
                 }
             }
         }
 
-        WebView {
-            id: webView
+        Flickable {
+            id: flick
             Layout.fillHeight: true
             Layout.fillWidth: true
+            contentHeight: templateDetailText.height
+            clip: true
+            Text {
+                id: templateDetailText
+                width: parent.width
+                wrapMode: Text.Wrap
+
+                function loadHtml(html) {
+                    templateDetailText.text = html
+                    flick.contentY = 0
+                }
+                // https://stackoverflow.com/questions/5395106/qml-text-scroll
+                // transform不知道是干嘛的
+                // 注释了
+                // transform: Scale { yScale: -1; origin.y: templateDetailText.height/2 }
+            }
+            // transform: Scale { yScale: -1; origin.y: flick.height/2 }
         }
     }
 
@@ -93,15 +109,15 @@ Item {
         questionsCountsListView.model = templateAnalysisQML.getQuestionsCountsStrListModel()
         if(tabBar.currentIndex===0)
         {
-            webView.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml())
+            templateDetailText.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml())
         }
         else if(tabBar.currentIndex===1)
         {
-            webView.loadHtml(templateAnalysisQML.getAnswerHtml())
+            templateDetailText.loadHtml(templateAnalysisQML.getAnswerHtml())
         }
         else if(tabBar.currentIndex===2)
         {
-            webView.loadHtml(templateAnalysisQML.getQuestionHtml())
+            templateDetailText.loadHtml(templateAnalysisQML.getQuestionHtml())
         }
     }
 }
