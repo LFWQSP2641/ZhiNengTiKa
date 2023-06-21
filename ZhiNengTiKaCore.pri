@@ -14,7 +14,6 @@ ANDROID_PACKAGE_SOURCE_DIR = \
 
 }
 win32{
-QT       += webenginewidgets
 
 RC_ICONS = Resource/img/xinjiaoyuico.ico
 
@@ -52,6 +51,7 @@ include($$PWD/3rd/Qt-AES/QAESEncryption.pri)
 
 HEADERS += \
     $$PWD/src/Logic/AnswerDetailData.hpp \
+    $$PWD/src/Logic/ImageProvider.h \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.h \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.h \
     $$PWD/src/Logic/QRCodeScanner.h \
@@ -71,6 +71,7 @@ HEADERS += \
     $$PWD/src/StaticClass/XinjiaoyuNetwork.h
 
 SOURCES += \
+    $$PWD/src/Logic/ImageProvider.cpp \
     $$PWD/src/Logic/QRCodeScanner.cpp \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.cpp \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.cpp \

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import ImageProvider
 import TemplateAnalysisQML
 
 Item {
@@ -8,6 +9,10 @@ Item {
 
     TemplateAnalysisQML {
         id: templateAnalysisQML
+    }
+    ImageProvider {
+        id: imageProvider
+        cacheMode: true
     }
 
     ColumnLayout {
@@ -21,54 +26,65 @@ Item {
             TabButton {
                 text: "答案和解析"
                 onClicked: {
-                    templateDetailText.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml())
+                    templateDetailText.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
                     width: Math.max(50, mainColumnLayout.width / 3)
                 }
             }
             TabButton {
                 text: "答案"
                 onClicked: {
-                    templateDetailText.loadHtml(templateAnalysisQML.getAnswerHtml())
+                    templateDetailText.loadHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
                     width: Math.max(50, mainColumnLayout.width / 3)
                 }
             }
             TabButton {
                 text: "原题"
                 onClicked: {
-                    templateDetailText.loadHtml(templateAnalysisQML.getQuestionHtml())
+                    templateDetailText.loadHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
                     width: Math.max(50, mainColumnLayout.width / 3)
                 }
             }
         }
-        ListView {
-            id: questionsCountsListView
-            height: Math.max(fm.ascent, 20)
+        RowLayout {
             Layout.fillWidth: true
-            orientation: Qt.Horizontal
-            delegate: ItemDelegate {
-                height: questionsCountsListView.height
-                text: model.display
-                highlighted: ListView.isCurrentItem
-                onClicked: {
-                    questionsCountsListView.currentIndex = index
-                }
+            Button {
+                id: switchAllButton
+                visible: questionsCountsListView.currentIndex != -1
+                text: "All"
+                onClicked: questionsCountsListView.currentIndex = -1
             }
-            FontMetrics {
-                id: fm
-                font: Qt.application.font
-            }
-            onCurrentItemChanged: {
-                if(tabBar.currentIndex===0)
-                {
-                    templateDetailText.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
+
+            ListView {
+                id: questionsCountsListView
+                height: Math.max(fm.ascent, 20)
+                Layout.fillWidth: true
+                orientation: Qt.Horizontal
+                clip: true
+                delegate: ItemDelegate {
+                    height: questionsCountsListView.height
+                    text: model.display
+                    highlighted: ListView.isCurrentItem
+                    onClicked: {
+                        questionsCountsListView.currentIndex = index
+                    }
                 }
-                else if(tabBar.currentIndex===1)
-                {
-                    templateDetailText.loadHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
+                FontMetrics {
+                    id: fm
+                    font: Qt.application.font
                 }
-                else if(tabBar.currentIndex===2)
-                {
-                    templateDetailText.loadHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
+                onCurrentItemChanged: {
+                    if(tabBar.currentIndex===0)
+                    {
+                        templateDetailText.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
+                    }
+                    else if(tabBar.currentIndex===1)
+                    {
+                        templateDetailText.loadHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
+                    }
+                    else if(tabBar.currentIndex===2)
+                    {
+                        templateDetailText.loadHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
+                    }
                 }
             }
         }
@@ -85,7 +101,7 @@ Item {
                 wrapMode: Text.Wrap
 
                 function loadHtml(html) {
-                    templateDetailText.text = html
+                    templateDetailText.text = imageProvider.loadHtml(html)
                     flick.contentY = 0
                 }
                 // https://stackoverflow.com/questions/5395106/qml-text-scroll
@@ -107,17 +123,18 @@ Item {
     function setTemplateRawDataQML(newTemplateAnalysisQML){
         templateAnalysisQML.setValue(newTemplateAnalysisQML)
         questionsCountsListView.model = templateAnalysisQML.getQuestionsCountsStrListModel()
+        questionsCountsListView.currentIndex = -1
         if(tabBar.currentIndex===0)
         {
-            templateDetailText.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml())
+            templateDetailText.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
         }
         else if(tabBar.currentIndex===1)
         {
-            templateDetailText.loadHtml(templateAnalysisQML.getAnswerHtml())
+            templateDetailText.loadHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
         }
         else if(tabBar.currentIndex===2)
         {
-            templateDetailText.loadHtml(templateAnalysisQML.getQuestionHtml())
+            templateDetailText.loadHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
         }
     }
 }

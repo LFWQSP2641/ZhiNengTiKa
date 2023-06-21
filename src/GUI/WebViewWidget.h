@@ -2,16 +2,17 @@
 #define WEBVIEWWIDGET_H
 
 #include "../Logic/TemplateAnalysis.h"
+#include "../Logic/ImageProvider.h"
 
-class WebView: public QWebEngineView
+class WebView: public QTextBrowser
 {
     Q_OBJECT
 public:
-    using QWebEngineView::QWebEngineView;
-    void setHtml(const QString &html, const QUrl &baseUrl = QUrl())
+    using QTextBrowser::QTextBrowser;
+    void setHtml(const QString &html)
     {
-        this->html = html;
-        this->QWebEngineView::setHtml(html, baseUrl);
+        this->html = imageProvider.loadHtml(html);
+        this->QTextBrowser::setHtml(this->html);
     }
     QString getHtml() const
     {
@@ -19,6 +20,7 @@ public:
     }
 protected:
     QString html;
+    ImageProvider imageProvider;
 };
 
 class WebViewWidget : public QWidget

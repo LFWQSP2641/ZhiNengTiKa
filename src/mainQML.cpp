@@ -1,6 +1,7 @@
 #include "StaticClass/Global.h"
 #include "StaticClass/Setting.h"
 #include "Singleton/Network.h"
+#include "Logic/ImageProvider.h"
 #include "Logic/UpdateChecker.h"
 #include "Logic/TemplateSearcher.h"
 #include "Logic/TemplateListModel.h"
@@ -70,6 +71,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<SettingOperator>("SettingOperator", 1, 0, "SettingOperator");
     qmlRegisterType<UpdateChecker>("UpdateChecker", 1, 0, "UpdateChecker");
     qmlRegisterType<QRCodeScannerQML>("QRCodeScannerQML", 1, 0, "QRCodeScannerQML");
+    qmlRegisterType<ImageProvider>("ImageProvider", 1, 0, "ImageProvider");
     QQmlApplicationEngine engine;
 
     QStringList builtInStyles = { QLatin1String("Basic"), QLatin1String("Fusion"),

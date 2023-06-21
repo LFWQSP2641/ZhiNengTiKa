@@ -19,7 +19,6 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QHttpMultiPart>
-#include <QWebEngineView>
 #include <QVideoSink>
 #include <QVideoFrame>
 
