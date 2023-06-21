@@ -94,7 +94,14 @@ void SettingOperator::deleteTemplateFile()
 {
     QFile::remove(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("templateList_undefined")));
     Global::deleteDir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("TemplateFile")));
+    QDir().mkdir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("TemplateFile")));
     MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList()->at(MultipleSubjectsTemplateListModelList::Undefined)->clear();
+}
+
+void SettingOperator::deleteCacheImage()
+{
+    Global::deleteDir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("Image")));
+    QDir().mkdir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("Image")));
 }
 
 QString SettingOperator::getVersion()

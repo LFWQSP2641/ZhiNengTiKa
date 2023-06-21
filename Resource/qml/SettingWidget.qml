@@ -202,7 +202,7 @@ Item {
                         }
                     }
                     Switch {
-                        text: "优先显示最新题卡"
+                        text: "优先显示最新题卡(重启生效)"
                         checked: settingOperator.getListLatestTemplatePreferentially()
                         onCheckedChanged: {
                             settingOperator.setListLatestTemplatePreferentially(checked)
@@ -235,6 +235,14 @@ Item {
                         onClicked: {
                             settingOperator.deleteTemplateFile()
                             messageDialog.show("已删除用户已导入题卡")
+                        }
+                    }
+                    Button {
+                        Layout.fillWidth: true
+                        text: "删除缓存图片"
+                        onClicked: {
+                            settingOperator.deleteCacheImage()
+                            messageDialog.show("已删除缓存图片")
                         }
                     }
                 }
