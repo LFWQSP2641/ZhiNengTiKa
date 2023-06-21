@@ -1,4 +1,5 @@
 #include "GUI/MainWidget.h"
+#include "Logic/UpdateChecker.h"
 #include "StaticClass/Global.h"
 #include "StaticClass/Setting.h"
 #include "Singleton/Network.h"
@@ -32,7 +33,18 @@ int main(int argc, char *argv[])
     }
 
     MainWidget w;
+    w.setEnabled(false);
     w.show();
+    if(UpdateChecker().checkMinimumVersion())
+    {
+        w.setEnabled(true);
+    }
+    else
+    {
+        QMessageBox::critical(&w, QStringLiteral("版本过低"), QStringLiteral("请更新版本或检查网络连接"));
+        a.exit(1);
+        return 1;
+    }
 
     return a.exec();
 }
