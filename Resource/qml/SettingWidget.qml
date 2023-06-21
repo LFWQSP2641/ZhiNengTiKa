@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Qt.labs.platform as Platform
 import SettingOperator
 
 Item {
@@ -254,8 +253,15 @@ Item {
                         text: "检查更新"
                         Layout.fillWidth: true
                         onClicked: {
-                            updateWidget.checkUpdate()
-                            checkUpdate.enabled = false
+                            if(Qt.platform.os === "android")
+                            {
+                                checkUpdate.enabled = false
+                                updateWidget.checkUpdate()
+                            }
+                            else
+                            {
+                                messageDialog.show("不支持当前系统自动更新")
+                            }
                         }
                         Connections {
                             target: updateWidget
@@ -304,12 +310,11 @@ Item {
         modal: true
         focus: true
 
-        contentItem:
-            Text {
-                id: messageDialogText
-                wrapMode: Text.WordWrap
-                onLinkActivated: function(link){ Qt.openUrlExternally(link) }
-            }
+        contentItem: Text {
+            id: messageDialogText
+            wrapMode: Text.WordWrap
+            onLinkActivated: function(link){ Qt.openUrlExternally(link) }
+        }
 
 
         function show(caption) {
