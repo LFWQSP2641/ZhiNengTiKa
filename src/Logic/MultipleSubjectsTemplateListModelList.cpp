@@ -88,7 +88,7 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
             importTemplateList(QDir(allDir).filePath(fileName));
         }
     }
-    importTemplateList(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("templateList_undefined")), false);
+    importTemplateList(Global::dataPath().append(QStringLiteral("/templateList_undefined")), false);
 }
 
 MultipleSubjectsTemplateListModelList::~MultipleSubjectsTemplateListModelList()
@@ -125,7 +125,7 @@ void MultipleSubjectsTemplateListModelList::addTemplateList(const TemplateSummar
 void MultipleSubjectsTemplateListModelList::addTemplateList(const QString &templateName, const QString &templateCode)
 {
     const QString data(QString(templateName).append(QStringLiteral("\n")).append(templateCode).append(QStringLiteral("\n")));
-    QFile file(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("templateList_undefined")));
+    QFile file(Global::dataPath().append(QStringLiteral("/templateList_undefined")));
     file.open(QFile::ReadWrite | QFile::Append);
     file.write(data.toUtf8());
     file.close();

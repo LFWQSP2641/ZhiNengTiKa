@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
 #ifdef Q_OS_ANDROID
     //删除新版本文件
-    QFile file(Global::tempPath() + QStringLiteral("/") + QStringLiteral("newVersion.apk"));
+    QFile file(Global::tempPath().append(QStringLiteral("/newVersion.apk")));
     if(file.exists())
     {
         file.remove();

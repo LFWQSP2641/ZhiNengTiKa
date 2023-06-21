@@ -92,16 +92,16 @@ void SettingOperator::setCompressQRCodeImage(bool state)
 
 void SettingOperator::deleteTemplateFile()
 {
-    QFile::remove(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("templateList_undefined")));
-    Global::deleteDir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("TemplateFile")));
-    QDir().mkdir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("TemplateFile")));
+    QFile::remove(Global::dataPath().append(QStringLiteral("/templateList_undefined")));
+    Global::deleteDir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
+    QDir().mkdir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
     MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList()->at(MultipleSubjectsTemplateListModelList::Undefined)->clear();
 }
 
 void SettingOperator::deleteCacheImage()
 {
-    Global::deleteDir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("Image")));
-    QDir().mkdir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("Image")));
+    Global::deleteDir(Global::dataPath().append(QStringLiteral("/Image")));
+    QDir().mkdir(Global::dataPath().append(QStringLiteral("/Image")));
 }
 
 QString SettingOperator::getVersion()

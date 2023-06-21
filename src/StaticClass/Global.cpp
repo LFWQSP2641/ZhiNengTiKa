@@ -8,9 +8,9 @@ void Global::initOnce()
 {
 
 #ifdef Q_OS_WINDOWS
-    Global::appConfigPath = QApplication::applicationDirPath().append(QStringLiteral("/")).append(QStringLiteral("Config"));
-    Global::appDataPath = QApplication::applicationDirPath().append(QStringLiteral("/")).append(QStringLiteral("Data"));
-    Global::appTempPath = QApplication::applicationDirPath().append(QStringLiteral("/")).append(QStringLiteral("Temp"));
+    Global::appConfigPath = QApplication::applicationDirPath().append(QStringLiteral("/Config"));
+    Global::appDataPath = QApplication::applicationDirPath().append(QStringLiteral("/Data"));
+    Global::appTempPath = QApplication::applicationDirPath().append(QStringLiteral("/Temp"));
 #else
     Global::appConfigPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     Global::appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
@@ -20,8 +20,8 @@ void Global::initOnce()
     QDir dir;
     dir.mkdir(Global::configPath());
     dir.mkdir(Global::dataPath());
-    dir.mkdir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("Image")));
-    dir.mkdir(Global::dataPath().append(QStringLiteral("/")).append(QStringLiteral("TemplateFile")));
+    dir.mkdir(Global::dataPath().append(QStringLiteral("/Image")));
+    dir.mkdir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
     dir.mkdir(Global::tempPath());
 
 }
