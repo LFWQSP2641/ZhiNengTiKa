@@ -56,18 +56,20 @@ UserData UserData::login(const QByteArray &username, const QByteArray &password)
 
 void UserData::initPublicUserData()
 {
-    auto getQByteArraybyNetwork{[](const QString & path, QByteArray * byteArray)
+    auto reply { Network::getGlobalNetworkManager()->get(QNetworkRequest(QUrl(QStringLiteral("PublicUserData/").prepend(DATABASE_DOMAIN).append(QStringLiteral("publicUserData"))))) };
+    QObject::connect(reply, &QNetworkReply::finished, [reply]
     {
-        auto reply{ Network::getGlobalNetworkManager()->get(QNetworkRequest(QUrl(QStringLiteral("PublicUserData/").prepend(DATABASE_DOMAIN).append(path)))) };
-        QObject::connect(reply, &QNetworkReply::finished, [reply, byteArray]
+        if(reply->error() != QNetworkReply::NoError)
         {
-            *byteArray = Network::getGlobalNetworkManager()->replyReadAll(reply);
-        });
-    }};
-    getQByteArraybyNetwork(QStringLiteral("publicAccessToken"), &publicAccessToken);
-    getQByteArraybyNetwork(QStringLiteral("publicAuthorization"), &publicAuthorization);
-    getQByteArraybyNetwork(QStringLiteral("publicClientSession"), &publicClientSession);
-    getQByteArraybyNetwork(QStringLiteral("publicStudentId"), &publicStudentId);
+            reply->deleteLater();
+            return;
+        }
+        const auto publicUserDataJson(QJsonDocument::fromJson(Network::getGlobalNetworkManager()->replyReadAll(reply)).object());
+        publicAccessToken = publicUserDataJson.value(QStringLiteral("accessToken")).toString().toUtf8();
+        publicAuthorization = publicUserDataJson.value(QStringLiteral("authorization")).toString().toUtf8();
+        publicClientSession = publicUserDataJson.value(QStringLiteral("clientSession")).toString().toUtf8();
+        publicStudentId = publicUserDataJson.value(QStringLiteral("studentId")).toString().toUtf8();
+    });
 }
 
 UserData UserData::getPublicUserData()
