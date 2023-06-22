@@ -49,7 +49,7 @@ Item {
             Layout.fillWidth: true
             Button {
                 id: switchAllButton
-                visible: questionsCountsListView.currentIndex != -1
+                visible: questionsCountsListView.currentIndex !== -1
                 text: "All"
                 onClicked: questionsCountsListView.currentIndex = -1
             }

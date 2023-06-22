@@ -27,18 +27,20 @@ TemplateRawData::TemplateRawData(const TemplateSummary &templateSummary)
     }
     else
     {
+        this->network = true;
         rawData = XinjiaoyuNetwork::getTemplateCodeData(templateCode);
         if (rawData.isEmpty())
         {
             errorStr = QStringLiteral("请求题卡后,返回值为空\n"
                                       "请检查登录状态和网络");
+            return;
         }
-        else
+        else if(!rawData.startsWith("{\"code\":200,"))
         {
             errorStr = QStringLiteral("服务器报错\n"
                                       "返回结果:%1").arg(rawData);
+            return;
         }
-        this->network = true;
         fileTemp.open(QFile::WriteOnly);
         fileTemp.write(rawData);
         fileTemp.close();
