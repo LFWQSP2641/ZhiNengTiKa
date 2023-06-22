@@ -53,10 +53,6 @@ QString ImageProvider::loadHtml(QString html)
             html.replace(i, endIndex - i + 1, QStringLiteral("file:///").append(*imagePath));
         }
     }
-    if(runningCount == 0)
-    {
-        emit finished();
-    }
     return html;
 }
 

@@ -55,18 +55,18 @@ Item {
     UpdateWidget {
         id: updateWidget
         showQuestionDialog: true
+        onFinished: {
+            checkUpdate.enabled = true
+        }
     }
 
-    ScrollView {
-        width: parent.width
+    Flickable {
         height: parent.height
+        width: parent.width
+        contentHeight: settingItemsLayout.height
         ColumnLayout {
-            // ScrollView与其子空间间有两层parent
-            // parent: QQuickFlickable
-            // parent.parent: QQuickScrollView
-            width: parent.parent.width
-            height: parent.parent.height
-
+            id: settingItemsLayout
+            width: parent.width
             GroupBox {
                 Layout.fillWidth: true
                 title: "账号"
@@ -269,12 +269,6 @@ Item {
                             else
                             {
                                 messageDialog.show("不支持当前系统自动更新")
-                            }
-                        }
-                        Connections {
-                            target: updateWidget
-                            function onFinished() {
-                                checkUpdate.enabled = true
                             }
                         }
                     }

@@ -15,11 +15,11 @@ Dialog {
     UpdateChecker {
         id: updateChecker
         onCheckFinished: function(hasNewVersion) {
+            updateDialog.finished()
             if(hasNewVersion||showQuestionDialog)
             {
                 updateDialog.open()
             }
-            finished()
         }
         onDownloadProgress: function(bytesReceived,bytesTotal) {
             downloadProgressDialogProgressBar.value = bytesReceived
@@ -31,6 +31,10 @@ Dialog {
     }
 
     contentItem: ColumnLayout {
+        Text {
+            id: versionInfoText
+            Layout.fillWidth: true
+        }
         ScrollView {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -71,16 +75,18 @@ Dialog {
                 text: "下次一定!"
                 Layout.fillWidth: true
                 Layout.horizontalStretchFactor: 1
-                onClicked: updateDialog.close()
+                onClicked: {
+                    updateDialog.close()
+                }
             }
         }
     }
 
     onOpened: {
-        updateDialogText.text =
+        versionInfoText.text =
                 "当前版本: " + updateChecker.getCurrentVersion() + "\n"
-                + "最新版本: " + updateChecker.getNewestVersion() + "\n\n"
-                + updateChecker.getChangeLog()
+                + "最新版本: " + updateChecker.getNewestVersion()
+        updateDialogText.text = updateChecker.getChangeLog()
     }
 
     function checkUpdate() {
