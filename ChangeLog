@@ -1,3 +1,6 @@
+[2.4.0-release]
+优化 Quick框架界面
+不再使用WebView, 以降低内存占用
 [2.3.0-release]
 优化 扫码使用C++基层类, 而不是QML的ImageCapture
 优化 Quick使用图标
