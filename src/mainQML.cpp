@@ -1,6 +1,6 @@
 #include "StaticClass/Global.h"
-#include "StaticClass/Setting.h"
 #include "Singleton/Network.h"
+#include "Singleton/Settings.h"
 #include "Logic/ImageProvider.h"
 #include "Logic/UpdateChecker.h"
 #include "Logic/TemplateSearcher.h"
@@ -23,32 +23,33 @@ int main(int argc, char *argv[])
     a.setWindowIcon(QIcon(QStringLiteral(":/ico/xinjiaoyuico.png")));
     a.setApplicationDisplayName(QStringLiteral("智能题卡"));
 
-    Setting::loadFromFile();
+    Settings::initOnce();
+    auto settings(Settings::getSingletonSettings());
     UserData::initPublicUserData();
     MultipleSubjectsTemplateListModelListSingleton::initOnce();
 
     QFont appFont;
-    if(Setting::fontPointSize < 1 || Setting::font.isEmpty())
+    if(settings->getFontPointSize() < 1 || settings->getFont().isEmpty())
     {
-        Setting::fontPointSize = a.font().pointSize();
-        Setting::font = a.font().family();
-        Setting::saveToFile();
+        settings->setFontPointSize(a.font().pointSize());
+        settings->setFont(a.font().family());
+        settings->saveToFile();
     }
     else
     {
-        appFont.setFamily(Setting::font);
-        appFont.setPointSize(Setting::fontPointSize);
+        appFont.setFamily(settings->getFont());
+        appFont.setPointSize(settings->getFontPointSize());
         a.setFont(appFont);
     }
 
     if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE"))
-        QQuickStyle::setStyle(Setting::qmlStyle);
+        QQuickStyle::setStyle(settings->getQmlStyle());
 
     // If this is the first time we're running the application,
     // we need to set a style in the settings so that the QML
     // can find it in the list of built-in styles.
-    if (Setting::qmlStyle.isEmpty())
-        Setting::qmlStyle = QQuickStyle::name();
+    if (settings->getQmlStyle().isEmpty())
+        settings->setQmlStyle(QQuickStyle::name());
 
 #ifdef Q_OS_ANDROID
     //删除新版本文件
@@ -63,6 +64,7 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0,
                                  "MultipleSubjectsTemplateListModelList",
                                  MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList());
+    qmlRegisterSingletonInstance("Settings", 1, 0, "Settings", settings);
     qmlRegisterType<TemplateSummaryQML>("TemplateSummaryQML", 1, 0, "TemplateSummaryQML");
     qmlRegisterType<TemplateRawDataQML>("TemplateRawDataQML", 1, 0, "TemplateRawDataQML");
     qmlRegisterType<TemplateAnalysisQML>("TemplateAnalysisQML", 1, 0, "TemplateAnalysisQML");

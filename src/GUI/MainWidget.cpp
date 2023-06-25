@@ -1,4 +1,4 @@
-#include "../StaticClass/Setting.h"
+#include "../Singleton/Settings.h"
 #include "MainWidget.h"
 #include "SettingWidget.h"
 #include "SelectWidget.h"
@@ -14,6 +14,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     connect(this, &QTabWidget::currentChanged, [this](int index)
     {
+        Settings::getSingletonSettings()->saveToFile();
         switch (index)
         {
         case TabIndex::SettingWidgetIndex:
@@ -27,7 +28,7 @@ MainWidget::MainWidget(QWidget *parent)
 
 void MainWidget::closeEvent(QCloseEvent *event)
 {
-    Setting::saveToFile();
+    Settings::getSingletonSettings()->saveToFile();
     NavigationBarTabWidget::closeEvent(event);
     event->accept();
 }

@@ -1,5 +1,5 @@
 #include "MultipleSubjectsTemplateListModelList.h"
-#include "../StaticClass/Setting.h"
+#include "../Singleton/Settings.h"
 #include "../StaticClass/Global.h"
 #include "../QMLIntermediary/TemplateRawDataQML.h"
 
@@ -74,7 +74,7 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
     const QDir allDir { QString(dirPath).append(QStringLiteral("all")) };
     const QDir latestDir{ QString(dirPath).append(QStringLiteral("latest")) };
 
-    if(Setting::listLatestTemplatePreferentially && latestDir.exists())
+    if(Settings::getSingletonSettings()->getListLatestTemplatePreferentially() && latestDir.exists())
     {
         for(const auto &fileName : fileListNames)
         {

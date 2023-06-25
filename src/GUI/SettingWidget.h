@@ -1,6 +1,8 @@
 #ifndef SETTINGWIDGET_H
 #define SETTINGWIDGET_H
 
+class Settings;
+
 class SettingWidget : public QWidget
 {
     Q_OBJECT
@@ -8,6 +10,8 @@ public:
     explicit SettingWidget(QWidget *parent = nullptr);
 
 private:
+    Settings *settings;
+
     QComboBox *userListComboBox;
     QPushButton *loginButton;
     QPushButton *logoutButton;
@@ -35,6 +39,7 @@ private:
 
 public slots:
     void refreshTempSize();
+    void askRestart();
 
 signals:
 };

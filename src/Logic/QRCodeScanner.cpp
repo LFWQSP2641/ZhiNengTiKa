@@ -1,5 +1,5 @@
 #include "QRCodeScanner.h"
-#include "../StaticClass/Setting.h"
+#include "../Singleton/Settings.h"
 #include "../Singleton/Network.h"
 
 QRCodeScanner::QRCodeScanner(QObject *parent)
@@ -12,8 +12,9 @@ QRCodeScanner::QRCodeScanner(QObject *parent)
 void QRCodeScanner::scanQRCode(const QImage &image)
 {
     this->finish = false;
+    auto settings(Settings::getSingletonSettings());
     // 检查api参数是否过期
-    if(Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("expire")).toInt(0) < QDateTime::currentSecsSinceEpoch())
+    if(settings->getJsonObjectApiQRCodeScanner().value(QStringLiteral("expire")).toInt(0) < QDateTime::currentSecsSinceEpoch())
     {
         // 重新获取api参数
         if(!this->initializeApi())
@@ -74,7 +75,7 @@ void QRCodeScanner::scanQRCode(const QImage &image)
     QByteArray ba;
     QBuffer buffer(&ba);
     buffer.open(QIODevice::WriteOnly);
-    if(Setting::compressQRCodeImage)
+    if(settings->getCompressQRCodeImage())
     {
         if(image.size().width() > 1600 || image.size().height() > 900)
         {
@@ -108,13 +109,14 @@ void QRCodeScanner::scanQRCode(const QImage &image)
     {
         fileUploadName.append(generateRandomString());
     }
-    multiPart->append(initializeHttpPart(QByteArrayLiteral("key"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("dir")).toString().append(fileUploadName).append(QStringLiteral(".")).append(baFormat).toUtf8()));
-    multiPart->append(initializeHttpPart(QByteArrayLiteral("policy"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("policy")).toString().toUtf8()));
-    multiPart->append(initializeHttpPart(QByteArrayLiteral("OSSAccessKeyId"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("accessid")).toString().toUtf8()));
+    const auto apiJsonObject(settings->getJsonObjectApiQRCodeScanner());
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("key"), apiJsonObject.value(QStringLiteral("dir")).toString().append(fileUploadName).append(QStringLiteral(".")).append(baFormat).toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("policy"), apiJsonObject.value(QStringLiteral("policy")).toString().toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("OSSAccessKeyId"), apiJsonObject.value(QStringLiteral("accessid")).toString().toUtf8()));
     multiPart->append(initializeHttpPart(QByteArrayLiteral("success_action_status"), QByteArrayLiteral("200")));
-    multiPart->append(initializeHttpPart(QByteArrayLiteral("callback"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("callback")).toString().toUtf8()));
-    multiPart->append(initializeHttpPart(QByteArrayLiteral("signature"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("signature")).toString().toUtf8()));
-    multiPart->append(initializeHttpPart(QByteArrayLiteral("x-oss-security-token"), Setting::jsonObjectApiQRCodeScanner.value(QStringLiteral("SecurityToken")).toString().toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("callback"), apiJsonObject.value(QStringLiteral("callback")).toString().toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("signature"), apiJsonObject.value(QStringLiteral("signature")).toString().toUtf8()));
+    multiPart->append(initializeHttpPart(QByteArrayLiteral("x-oss-security-token"), apiJsonObject.value(QStringLiteral("SecurityToken")).toString().toUtf8()));
     QHttpPart imagePart;
     imagePart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant(QByteArrayLiteral("form-data; name=\"file\"; filename=\"image.").append(baFormat).append("\"")));
     imagePart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant(QByteArrayLiteral("image/").append(baFormat)));
@@ -247,9 +249,9 @@ bool QRCodeScanner::initializeApi()
     }
     else
     {
-        Setting::jsonObjectApiQRCodeScanner = apiArguments;
+        Settings::getSingletonSettings()->setJsonObjectApiQRCodeScanner(apiArguments);
 #ifdef Q_OS_ANDROID
-        Setting::saveToFile();
+        Settings::getSingletonSettings()->saveToFile();
 #endif // Q_OS_ANDROID
         emit this->initializeApiFinished(true);
         return true;

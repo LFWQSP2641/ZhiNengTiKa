@@ -1,5 +1,5 @@
 #include "XinjiaoyuNetwork.h"
-#include "Setting.h"
+#include "../Singleton/Settings.h"
 #include "../Singleton/Network.h"
 #include "XinjiaoyuEncryptioner.h"
 #include "../Logic/UserData.h"
@@ -26,7 +26,7 @@ QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url, const UserData &us
 
 QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url)
 {
-    return XinjiaoyuNetwork::setRequest(url, Setting::currentUserData());
+    return XinjiaoyuNetwork::setRequest(url, Settings::getSingletonSettings()->currentUserData());
 }
 
 QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, const UserData &userData)
@@ -105,7 +105,7 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, co
 
 QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
 {
-    return XinjiaoyuNetwork::getTemplateCodeData(templateCode, Setting::currentUserData());
+    return XinjiaoyuNetwork::getTemplateCodeData(templateCode, Settings::getSingletonSettings()->currentUserData());
 }
 
 QString XinjiaoyuNetwork::uploadFile(const QByteArray &fileData, const QString &fileName)

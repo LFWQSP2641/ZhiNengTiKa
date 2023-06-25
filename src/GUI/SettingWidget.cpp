@@ -1,10 +1,11 @@
 #include "SettingWidget.h"
 #include "../StaticClass/Global.h"
-#include "../StaticClass/Setting.h"
+#include "../Singleton/Settings.h"
 
 SettingWidget::SettingWidget(QWidget *parent)
     : QWidget{ parent }
 {
+    settings = Settings::getSingletonSettings();
     QGroupBox *accountGroupBox = new QGroupBox(QStringLiteral("账号"), this);
     QVBoxLayout *accountLayout = new QVBoxLayout(accountGroupBox);
     QGroupBox *appearanceGroupBox = new QGroupBox(QStringLiteral("外观(重启生效)"), this);
@@ -46,18 +47,20 @@ SettingWidget::SettingWidget(QWidget *parent)
 
     setUserList();
 
+
+
     resultTestLabel->setFixedHeight(resultTestLabel->fontMetrics().height());
     resultTestLabel->setText(QStringLiteral("AbCd字体测试1234"));
     fontComboBox->addItems(QFontDatabase::families(QFontDatabase::SimplifiedChinese));
-    fontComboBox->setCurrentText(Setting::font);
+    fontComboBox->setCurrentText(settings->getFont());
     fontPointSizeSpinBox->setMinimum(1);
-    fontPointSizeSpinBox->setValue(Setting::fontPointSize);
+    fontPointSizeSpinBox->setValue(settings->getFontPointSize());
 
     schoolNameComboBox->addItem(QStringLiteral("金川高级中学"));
     levelComboBox->addItem(QStringLiteral("2021级"));
-    listLatestTemplatePreferentiallyCheckBox->setChecked(Setting::listLatestTemplatePreferentially);
+    listLatestTemplatePreferentiallyCheckBox->setChecked(settings->getListLatestTemplatePreferentially());
 
-    compressQRCodeImageCheckBox->setChecked(Setting::compressQRCodeImage);
+    compressQRCodeImageCheckBox->setChecked(settings->getCompressQRCodeImage());
 
     auto addTwoWidgetToHBoxLayout{[](QWidget * widget1, QWidget * widget2)
     {
@@ -95,7 +98,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     {
         if(index > 0)
         {
-            Setting::userDataList.toFirst(index);
+            settings->getUserDataListReference().toFirst(index);
             setUserList();
         }
     });
@@ -163,7 +166,7 @@ SettingWidget::SettingWidget(QWidget *parent)
                         return;
                     }
                 }
-                Setting::userDataList.prepend(newUserData);
+                settings->getUserDataListReference().prepend(newUserData);
                 setUserList();
                 this->logoutButton->setEnabled(true);
                 QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(newUserData.getDetailDataJsonObject().value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(newUserData.getUsername())));
@@ -177,56 +180,34 @@ SettingWidget::SettingWidget(QWidget *parent)
 
     connect(this->logoutButton, &QPushButton::clicked, [this]
     {
-        Setting::userDataList.removeFirst();
+        settings->getUserDataListReference().removeFirst();
         QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登出成功"));
         setUserList();
     });
-
-    auto askRestart
-    {
-        []
-        {
-            QMessageBox msgBox;
-            msgBox.setText(QStringLiteral("重启生效,是否关闭程序?"));
-            QPushButton *yesButton = msgBox.addButton(QStringLiteral("关闭"), QMessageBox::ActionRole);
-            msgBox.addButton(QStringLiteral("稍后"), QMessageBox::ActionRole);
-            msgBox.setDefaultButton(yesButton);
-            msgBox.exec();
-
-            if (msgBox.clickedButton() == yesButton)
-            {
-                QApplication::exit(0);
-            }
-        }
-    };
-    auto connectCheckBoxWithBool{[askRestart](QCheckBox * checkBox, bool & setting, bool askToRestart = false)
-    {
-        QObject::connect(checkBox, &QCheckBox::stateChanged, [askRestart, &setting, askToRestart](int state)
-        {
-            setting = (state == Qt::CheckState::Checked);
-            if(askToRestart)
-            {
-                askRestart();
-            }
-        });
-    }};
 
     connect(fontComboBox, &QComboBox::currentTextChanged, [this](const QString & text)
     {
         testFont.setFamily(text);
         resultTestLabel->setFont(testFont);
         resultTestLabel->setFixedHeight(QFontMetrics(testFont).height());
-        Setting::font = text;
+        settings->setFont(text);
     });
     connect(fontPointSizeSpinBox, &QSpinBox::valueChanged, [this](int i)
     {
         testFont.setPointSize(i);
         resultTestLabel->setFont(testFont);
         resultTestLabel->setFixedHeight(QFontMetrics(testFont).height());
-        Setting::fontPointSize = i;
+        settings->setFontPointSize(i);
     });
-    connectCheckBoxWithBool(this->listLatestTemplatePreferentiallyCheckBox, Setting::listLatestTemplatePreferentially, true);
-    connectCheckBoxWithBool(this->compressQRCodeImageCheckBox, Setting::compressQRCodeImage);
+    QObject::connect(listLatestTemplatePreferentiallyCheckBox, &QCheckBox::stateChanged, [this](int state)
+    {
+        settings->setListLatestTemplatePreferentially(state == Qt::CheckState::Checked);
+        askRestart();
+    });
+    QObject::connect(compressQRCodeImageCheckBox, &QCheckBox::stateChanged, [this](int state)
+    {
+        settings->setCompressQRCodeImage(state == Qt::CheckState::Checked);
+    });
 
     connect(this->commonProblemButton, &QPushButton::clicked, [this]
     {
@@ -312,9 +293,9 @@ SettingWidget::SettingWidget(QWidget *parent)
 void SettingWidget::setUserList()
 {
     userListComboBox->clear();
-    if(Setting::logined())
+    if(settings->isLogin())
     {
-        for(const auto &i : Setting::userDataList)
+        for(const auto &i : settings->getUserDataList())
         {
             userListComboBox->addItem(i.getDetailDataJsonObject().value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(i.getUsername()));
         }
@@ -331,4 +312,20 @@ void SettingWidget::refreshTempSize()
 {
     auto size{ Global::getDirSize(Global::tempPath()) };
     showTempSize->setText(QStringLiteral("缓存大小:%0").arg(this->locale().formattedDataSize(size)));
+}
+
+void SettingWidget::askRestart()
+{
+    QMessageBox msgBox;
+    msgBox.setText(QStringLiteral("重启生效,是否关闭程序?"));
+    QPushButton *yesButton = msgBox.addButton(QStringLiteral("关闭"), QMessageBox::ActionRole);
+    msgBox.addButton(QStringLiteral("稍后"), QMessageBox::ActionRole);
+    msgBox.setDefaultButton(yesButton);
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == yesButton)
+    {
+        settings->saveToFile();
+        QApplication::exit(0);
+    }
 }

@@ -33,16 +33,16 @@ SelectWidget::SelectWidget(QWidget *parent)
     mainLayout->addWidget(OKButton);
 
 
-    connect(qrCodeScanner, &QRCodeScanner::analysisFinished, [this](const QString & decodeResult)
+    connect(qrCodeScanner, &QRCodeScanner::analysisFinished, [this](bool success, bool exception, const QString & decodeResult)
     {
         if(qrCodeScannerStateMessageBox != nullptr)
         {
             qrCodeScannerStateMessageBox->close();
         }
-        if(decodeResult.isEmpty())
+        if(!success)
         {
             QMessageBox::warning(this, QStringLiteral("解析二维码"), QStringLiteral("扫描失败\n"
-                                 "请确保二维码清晰可见"));
+                                 "请确保二维码清晰可见").append(decodeResult));
             scanQRCodeButton->setEnabled(true);
             return;
         }

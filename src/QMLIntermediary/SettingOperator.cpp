@@ -1,7 +1,7 @@
 #include "SettingOperator.h"
 #include "MultipleSubjectsTemplateListModelListSingleton.h"
 #include "../StaticClass/Global.h"
-#include "../StaticClass/Setting.h"
+#include "../Singleton/Settings.h"
 
 SettingOperator::SettingOperator(QObject *parent)
     : QObject{parent}
@@ -12,20 +12,15 @@ SettingOperator::SettingOperator(QObject *parent)
 bool SettingOperator::login(const QString &id, const QString &pw)
 {
     auto newUserData(UserData::login(id.toUtf8(), pw.toUtf8()));
-    if(newUserData.isEmpty())
+    if(newUserData.isValid())
     {
-        return false;
+        Settings::getSingletonSettings()->userDataListPrepend(newUserData);
+        return true;
     }
     else
     {
-        Setting::userDataList.prepend(newUserData);
-        return true;
+        return false;
     }
-}
-
-bool SettingOperator::logined()
-{
-    return Setting::logined();
 }
 
 QStringListModel *SettingOperator::getUserDataListModel()
@@ -35,7 +30,7 @@ QStringListModel *SettingOperator::getUserDataListModel()
         userDataListModel->deleteLater();
     }
     QStringList userDataList;
-    for(const auto &i : Setting::userDataList)
+    for(const auto &i : Settings::getSingletonSettings()->getUserDataList())
     {
         userDataList.append(i.getDetailDataJsonObject()
                             .value(QStringLiteral("realName"))
@@ -50,44 +45,14 @@ QStringListModel *SettingOperator::getUserDataListModel()
     return userDataListModel;
 }
 
-QString SettingOperator::getStyle()
+QString SettingOperator::getVersion()
 {
-    return Setting::qmlStyle;
+    return QStringLiteral(APP_VERSION);
 }
 
-void SettingOperator::setStyle(const QString &style)
+void SettingOperator::userDataListToFirst(qsizetype index)
 {
-    Setting::qmlStyle = style;
-}
-
-QString SettingOperator::getFont()
-{
-    return Setting::font;
-}
-
-void SettingOperator::setFont(const QString &font)
-{
-    Setting::font = font;
-}
-
-bool SettingOperator::getListLatestTemplatePreferentially()
-{
-    return Setting::listLatestTemplatePreferentially;
-}
-
-void SettingOperator::setListLatestTemplatePreferentially(bool state)
-{
-    Setting::listLatestTemplatePreferentially = state;
-}
-
-bool SettingOperator::getCompressQRCodeImage()
-{
-    return Setting::compressQRCodeImage;
-}
-
-void SettingOperator::setCompressQRCodeImage(bool state)
-{
-    Setting::compressQRCodeImage = state;
+    Settings::getSingletonSettings()->userDataListToFirst(index);
 }
 
 void SettingOperator::deleteTemplateFile()
@@ -103,27 +68,3 @@ void SettingOperator::deleteCacheImage()
     Global::deleteDir(Global::dataPath().append(QStringLiteral("/Image")));
     QDir().mkdir(Global::dataPath().append(QStringLiteral("/Image")));
 }
-
-QString SettingOperator::getVersion()
-{
-    return QStringLiteral(APP_VERSION);
-}
-
-void SettingOperator::save()
-{
-    Setting::saveToFile();
-}
-
-void SettingOperator::logout()
-{
-    if(Setting::logined())
-    {
-        Setting::userDataList.removeFirst();
-    }
-}
-
-void SettingOperator::userDataListToFirst(qsizetype index)
-{
-    Setting::userDataList.toFirst(index);
-}
-

@@ -2,7 +2,7 @@
 #include "AnswerAndAnalysisWidget.h"
 #include "QuestionWidget.h"
 #include "UploadWidget.h"
-#include "../StaticClass/Setting.h"
+#include "../Singleton/Settings.h"
 
 TemplateDetailWidget::TemplateDetailWidget(QSharedPointer<TemplateAnalysis> templateAnalysis, QWidget *parent)
     : NavigationBarTabWidget{parent}
@@ -26,6 +26,6 @@ void TemplateDetailWidget::setTemplateAnalysis(QSharedPointer<TemplateAnalysis> 
 void TemplateDetailWidget::showEvent(QShowEvent *event)
 {
     NavigationBarTabWidget::showEvent(event);
-    this->setTabVisible(TabIndex::UploadWidgetIndex, Setting::logined());
+    this->setTabVisible(TabIndex::UploadWidgetIndex, Settings::getSingletonSettings()->isLogin());
     event->accept();
 }

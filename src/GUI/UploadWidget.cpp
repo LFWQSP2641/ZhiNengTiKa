@@ -1,7 +1,7 @@
 #include "UploadWidget.h"
 #include "UploadChildWidget.h"
 #include "../Logic/TemplateAnalysis.h"
-#include "../StaticClass/Setting.h"
+#include "../Singleton/Settings.h"
 #include "../Singleton/Network.h"
 #include "../StaticClass/XinjiaoyuNetwork.h"
 
@@ -69,11 +69,13 @@ bool UploadWidget::upload()
 
 bool UploadWidget::uploadData(const QByteArray &data)
 {
+    auto currentUserData(Settings::getSingletonSettings()->currentUserData());
+    auto currentUserDataDetailData(currentUserData.getDetailDataJsonObject());
     auto ret{ QMessageBox::question(this,
                                     QStringLiteral(""),
                                     QStringLiteral("将提交到 %0 的账号\n"
                                             "且此操作不可撤回\n"
-                                            "是否继续?").arg(Setting::currentUserData().getDetailDataJsonObject().value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(Setting::currentUserData().getUsername()))) };
+                                            "是否继续?").arg(currentUserDataDetailData.value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(currentUserData.getUsername()))) };
     if(ret == QMessageBox::No)
     {
         return false;
@@ -242,13 +244,13 @@ void UploadWidget::showEvent(QShowEvent *event)
         templateAnalysisStateChanged = false;
         analysis();
     }
-    this->setEnabled(analysised && Setting::logined());
+    this->setEnabled(analysised && Settings::getSingletonSettings()->isLogin());
     event->accept();
 }
 
 QJsonObject UploadWidget::getAnswerJsonObject()
 {
-    return getAnswerJsonObject(Setting::currentUserData());
+    return getAnswerJsonObject(Settings::getSingletonSettings()->currentUserData());
 }
 
 QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)

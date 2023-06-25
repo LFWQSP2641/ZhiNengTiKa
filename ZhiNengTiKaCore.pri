@@ -64,9 +64,9 @@ HEADERS += \
     $$PWD/src/Logic/UserData.h \
     $$PWD/src/Logic/UserDataList.hpp \
     $$PWD/src/Singleton/Network.h \
+    $$PWD/src/Singleton/Settings.h \
     $$PWD/src/StaticClass/CallAndroidNativeComponent.h \
     $$PWD/src/StaticClass/Global.h \
-    $$PWD/src/StaticClass/Setting.h \
     $$PWD/src/StaticClass/XinjiaoyuEncryptioner.h \
     $$PWD/src/StaticClass/XinjiaoyuNetwork.h
 
@@ -83,9 +83,9 @@ SOURCES += \
     $$PWD/src/Logic/UpdateChecker.cpp \
     $$PWD/src/Logic/UserData.cpp \
     $$PWD/src/Singleton/Network.cpp \
+    $$PWD/src/Singleton/Settings.cpp \
     $$PWD/src/StaticClass/CallAndroidNativeComponent.cpp \
     $$PWD/src/StaticClass/Global.cpp \
-    $$PWD/src/StaticClass/Setting.cpp \
     $$PWD/src/StaticClass/XinjiaoyuEncryptioner.cpp \
     $$PWD/src/StaticClass/XinjiaoyuNetwork.cpp
 

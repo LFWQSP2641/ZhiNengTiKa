@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import SettingOperator
+import Settings
 
 Item {
     required property var builtInStyles
@@ -20,7 +21,6 @@ Item {
         onAccepted: {
             if(settingOperator.login(userIdTextField.text, userPwTextField.text))
             {
-                settingOperator.save()
                 accountComboBox.model = settingOperator.getUserDataListModel()
                 logoutButton.enabled = true
                 dialog.close()
@@ -105,11 +105,10 @@ Item {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             text: "登出"
-                            enabled: settingOperator.logined()
+                            enabled: Settings.isLogin()
                             onClicked: {
-                                settingOperator.logout()
-                                settingOperator.save()
-                                logoutButton.enabled = settingOperator.logined()
+                                Settings.logout()
+                                logoutButton.enabled = Settings.isLogin()
                                 accountComboBox.model = settingOperator.getUserDataListModel()
                             }
                         }
@@ -135,13 +134,12 @@ Item {
                             onActivated: {
                                 if(saving)
                                 {
-                                    settingOperator.setStyle(styleComboBox.currentText)
-                                    settingOperator.save()
+                                    Settings.qmlStyle = styleComboBox.currentText
                                 }
                             }
 
                             Component.onCompleted: {
-                                styleIndex = find(settingOperator.getStyle(), Qt.MatchFixedString)
+                                styleIndex = find(Settings.qmlStyle, Qt.MatchFixedString)
                                 if (styleIndex !== -1)
                                     currentIndex = styleIndex
                                 saving = true
@@ -170,13 +168,12 @@ Item {
                             onActivated: {
                                 if(saving)
                                 {
-                                    settingOperator.setFont(currentText)
-                                    settingOperator.save()
+                                    Settings.font = currentText
                                 }
                             }
 
                             Component.onCompleted: {
-                                fontIndex = find(settingOperator.getFont(), Qt.MatchFixedString)
+                                fontIndex = find(Settings.font, Qt.MatchFixedString)
                                 if (fontIndex !== -1)
                                     currentIndex = fontIndex
                                 saving = true
@@ -203,10 +200,9 @@ Item {
                     }
                     Switch {
                         text: "优先显示最新题卡(重启生效)"
-                        checked: settingOperator.getListLatestTemplatePreferentially()
+                        checked: Settings.listLatestTemplatePreferentially
                         onCheckedChanged: {
-                            settingOperator.setListLatestTemplatePreferentially(checked)
-                            settingOperator.save()
+                            Settings.listLatestTemplatePreferentially = checked
                         }
                     }
                 }
@@ -216,10 +212,9 @@ Item {
                 title: "扫码相关"
                 Switch {
                     text: "压缩二维码图片"
-                    checked: settingOperator.getCompressQRCodeImage()
+                    checked: Settings.compressQRCodeImage
                     onCheckedChanged: {
-                        settingOperator.setCompressQRCodeImage(checked)
-                        settingOperator.save()
+                        Settings.compressQRCodeImage = checked
                     }
                 }
             }
@@ -323,5 +318,9 @@ Item {
             messageDialogText.text = caption;
             messageDialog.open();
         }
+    }
+
+    Component.onDestruction: {
+        Settings.saveToFile()
     }
 }
