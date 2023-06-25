@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import QtMultimedia
 import Qt.labs.platform
 import QRCodeScannerQML
@@ -29,24 +30,24 @@ Item {
             color: "#297b6c"
             radius: 1
 
-            NumberAnimation {
-                id: scanAnimation
-                target: scannerLine
-                property: "y"
-                from: 0
-                to: scannerRectangle.height - scannerLine.height
-                duration: 1000
-                easing.type: Easing.Linear
+            SequentialAnimation {
+                id: scanLineAnimation
+                loops: Animation.Infinite
                 running: true
-                onFinished: {
-                    pauseTimer.start()
+                NumberAnimation {
+                    id: scanAnimation
+                    target: scannerLine
+                    property: "y"
+                    from: 0
+                    to: scannerRectangle.height - scannerLine.height
+                    duration: 1000
+                    easing.type: Easing.Linear
+                    onFinished: {
+                        pauseTimer.start()
+                    }
                 }
-            }
-            Timer {
-                id: pauseTimer
-                interval: 500
-                onTriggered: {
-                    scanAnimation.start()
+                PauseAnimation {
+                    duration: 500
                 }
             }
         }
@@ -110,27 +111,79 @@ Item {
     }
 
     MessageDialog {
-        id: initializeFailedDialog
+        property bool finish: false
+        id: scanFailedDialog
         buttons: MessageDialog.Ok
-        text: "初始化api参数失败"
-        onOkClicked: scanFinished("")
+        function show(text, finish)
+        {
+            scanFailedDialog.text = text
+            scanFailedDialog.open()
+        }
+        onButtonsChanged: {
+            if(finish)
+            {
+                scanFinished("")
+            }
+        }
     }
     QRCodeScannerQML {
         id: qrCodeScannerQML
         videoSink: videoOutput.videoSink
-        onInitializeApiFinished: function(success){
-            if(!success)
-            {
-                camera.stop()
-                initializeFailedDialog.open()
-            }
-        }
-        onAnalysisFinishedQML: function(result, success){
+        scanning: true
+        onAnalysisFinished: function(success, exception, result){
             if(success)
             {
                 templateCode = result
                 waitTimer.start()
             }
+            else if(exception)
+            {
+                camera.stop()
+                scanFailedDialog.show(result, false)
+            }
+        }
+    }
+
+    RoundButton {
+        id: selectFileRoundButton
+        icon.source: "qrc:/svg/icon/picture.svg"
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 10
+        anchors.bottomMargin: 10
+        onClicked: {
+            scanLineAnimation.stop()
+            qrCodeScannerQML.stotScanning()
+            fileDialog.open()
+            continueRoundButton.visible = true
+        }
+    }
+    FileDialog {
+        id: fileDialog
+        fileMode: FileDialog.OpenFile
+        title: "选择图片文件"
+        folder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
+
+        // 限制只显示图片文件
+        nameFilters:["Images (*.jpg *.jpeg *.png *.gif)"]
+
+        onAccepted: {
+            qrCodeScannerQML.scanQRCodeFromFile(currentFile)
+        }
+    }
+
+    RoundButton {
+        id: continueRoundButton
+        visible: false
+        icon.source: "qrc:/svg/icon/play.svg"
+        anchors.right: parent.right
+        anchors.bottom: selectFileRoundButton.top
+        anchors.rightMargin: 10
+        anchors.bottomMargin: 10
+        onClicked: {
+            scanLineAnimation.start()
+            qrCodeScannerQML.startScanning()
+            continueRoundButton.visible = false
         }
     }
 

@@ -9,9 +9,8 @@ class QRCodeScannerQML: public QRCodeScanner
 public:
     explicit QRCodeScannerQML(QObject *parent = nullptr);
 public slots:
-protected:
+    void scanQRCodeFromFile(const QString &filePath);
 signals:
-    void analysisFinishedQML(const QString &decodeResult, bool success);
 };
 
 #endif // QRCODESCANNERQML_H

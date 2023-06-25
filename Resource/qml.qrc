@@ -21,5 +21,7 @@
         <file>icon/angle-left.svg</file>
         <file>icon/menu-burger.svg</file>
         <file>icon/menu-dots-vertical.svg</file>
+        <file>icon/picture.svg</file>
+        <file>icon/play.svg</file>
     </qresource>
 </RCC>

@@ -12,6 +12,11 @@ QRCodeScanner::QRCodeScanner(QObject *parent)
 void QRCodeScanner::scanQRCode(const QImage &image)
 {
     this->finish = false;
+    if(image.isNull())
+    {
+        emit this->analysisFinished(false, true, QStringLiteral("传入图片为空"));
+        return;
+    }
     auto settings(Settings::getSingletonSettings());
     // 检查api参数是否过期
     if(settings->getJsonObjectApiQRCodeScanner().value(QStringLiteral("expire")).toInt(0) < QDateTime::currentSecsSinceEpoch())
@@ -19,8 +24,7 @@ void QRCodeScanner::scanQRCode(const QImage &image)
         // 重新获取api参数
         if(!this->initializeApi())
         {
-            // 获取api参数失败
-            emit this->analysisFinished(QString());
+            emit this->analysisFinished(false, true, QStringLiteral("初始化api参数失败"));
             this->finish = true;
             return;
         }
@@ -129,9 +133,37 @@ void QRCodeScanner::scanQRCode(const QImage &image)
         const auto data(Network::getGlobalNetworkManager()->replyReadAll(reply));
         const auto result(QJsonDocument::fromJson(data).object().value(QStringLiteral("data")).toString().toUtf8());
         qDebug() << "scanQRCodeResultData:" << data;
-        emit this->analysisFinished(result);
+        emit this->analysisFinished(!result.isEmpty(), false, result);
     });
     this->finish = true;
+}
+
+bool QRCodeScanner::getScanning() const
+{
+    return scanning;
+}
+
+void QRCodeScanner::setScanning(bool newScanning)
+{
+    if (scanning == newScanning)
+        return;
+    scanning = newScanning;
+    emit scanningChanged();
+}
+
+void QRCodeScanner::startScanning()
+{
+    setScanning(true);
+}
+
+void QRCodeScanner::stotScanning()
+{
+    setScanning(false);
+}
+
+void QRCodeScanner::resetScanning()
+{
+    setScanning(false);
 }
 
 bool QRCodeScanner::getFinish() const
@@ -260,6 +292,10 @@ bool QRCodeScanner::initializeApi()
 
 void QRCodeScanner::readVideoFrame(const QVideoFrame &frame)
 {
+    if(!this->scanning)
+    {
+        return;
+    }
     if(this->finish && this->continueScan)
     {
         this->scanQRCode(frame.toImage());

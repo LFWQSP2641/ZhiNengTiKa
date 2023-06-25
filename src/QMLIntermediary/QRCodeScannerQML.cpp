@@ -4,8 +4,11 @@
 QRCodeScannerQML::QRCodeScannerQML(QObject *parent)
     : QRCodeScanner{parent}
 {
-    connect(this, &QRCodeScannerQML::analysisFinished, [this](const QString & decodeResult)
-    {
-        emit this->analysisFinishedQML(decodeResult, !decodeResult.isEmpty());
-    });
+}
+
+void QRCodeScannerQML::scanQRCodeFromFile(const QString &filePath)
+{
+    QImage image;
+    image.load(filePath.right(filePath.size() - 8));
+    this->scanQRCode(image);
 }
