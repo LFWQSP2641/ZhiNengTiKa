@@ -146,6 +146,7 @@ Item {
 
     RoundButton {
         id: selectFileRoundButton
+        visible: false
         icon.source: "qrc:/svg/icon/picture.svg"
         anchors.right: parent.right
         anchors.bottom: parent.bottom
