@@ -112,7 +112,7 @@ void WebViewWidget::saveToFile(const QString &pathName)
             "<p>软件仓库: <a href=\"%2\">%2</a>.</p>"
             "</footer></body></html>")
         .arg(templateAnalysisPointer->getTemplateName(),
-             webView->getHtml(),
+             getAnalyzedHtml(currentPageIndex),
              QStringLiteral("https://github.com/LFWQSP2641/ZhiNengTiKa"))};
     QFile file(pathName);
     file.open(QFile::WriteOnly);
