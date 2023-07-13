@@ -6,6 +6,7 @@ import TemplateAnalysisQML
 
 Item {
     property var templateRawDataQMLPointer: null
+    property bool initFinish: false
 
     TemplateAnalysisQML {
         id: templateAnalysisQML
@@ -77,7 +78,9 @@ Item {
                 width: parent.width
                 wrapMode: Text.Wrap
 
-                function loadHtml(html) {
+                function setHtml(html) {
+                    console.log("setHtml")
+                    console.log(html)
                     templateDetailText.text = imageProvider.loadHtml(html)
                     flick.contentY = 0
                 }
@@ -98,23 +101,29 @@ Item {
     }
 
     function setTemplateRawDataQML(newTemplateAnalysisQML){
+        initFinish = false
         templateAnalysisQML.setValue(newTemplateAnalysisQML)
         questionsCountsListView.model = templateAnalysisQML.getQuestionsCountsStrListModel()
+        initFinish = true
         questionsCountsListView.currentIndex = -1
-        getHtml()
     }
     function getHtml() {
+        if(!initFinish)
+        {
+            return
+        }
+
         if(tabBar.currentIndex === 0)
         {
-            templateDetailText.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
+            templateDetailText.setHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
         }
         else if(tabBar.currentIndex === 1)
         {
-            templateDetailText.loadHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
+            templateDetailText.setHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
         }
         else if(tabBar.currentIndex === 2)
         {
-            templateDetailText.loadHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
+            templateDetailText.setHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
         }
     }
 }
