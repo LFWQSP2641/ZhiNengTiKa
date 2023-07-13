@@ -48,12 +48,16 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 include($$PWD/3rd/Qt-AES/QAESEncryption.pri)
+INCLUDEPATH += $$PWD/3rd/Qt-AES
+include($$PWD/3rd/zxing-cpp/core/ZxingInclude.pri)
+INCLUDEPATH += $$PWD/3rd/zxing-cpp/core/src
 
 HEADERS += \
     $$PWD/src/Logic/AnswerDetailData.hpp \
     $$PWD/src/Logic/ImageProvider.h \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.h \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.h \
+    $$PWD/src/Logic/QRCodeReader/QRCodeReader.h \
     $$PWD/src/Logic/QRCodeScanner.h \
     $$PWD/src/Logic/TemplateAnalysis.h \
     $$PWD/src/Logic/TemplateListModel.h \
@@ -72,6 +76,7 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/src/Logic/ImageProvider.cpp \
+    $$PWD/src/Logic/QRCodeReader/QRCodeReader.cpp \
     $$PWD/src/Logic/QRCodeScanner.cpp \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.cpp \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.cpp \
