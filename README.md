@@ -1,3 +1,16 @@
+# 摆烂, 不做了
+预编译头和[zxing-cpp](https://github.com/zxing-cpp/zxing-cpp)一起用, Android构建不通过
+> ```
+> C:\Qt\6.5.2\android_arm64_v8a\include\QtCore\qchar.h:9: error: 'functional' file not found
+> In file included from src\pchQML.h:4:
+> In file included from C:\Qt\6.5.2\android_arm64_v8a\include\QtWidgets/QApplication:1:
+> In file included from C:\Qt\6.5.2\android_arm64_v8a\include\QtWidgets/qapplication.h:8:
+> In file included from C:\Qt\6.5.2\android_arm64_v8a\include/QtCore/qcoreapplication.h:8:
+> In file included from C:\Qt\6.5.2\android_arm64_v8a\include/QtCore/qstring.h:14:
+> C:\Qt\6.5.2\android_arm64_v8a\include/QtCore/qchar.h:9:10: fatal error: 'functional' file not found
+> #include <functional> // for std::hash
+>          ^~~~~~~~~~~~
+> ```
 # 智能题卡
 
 ## 如何使用
