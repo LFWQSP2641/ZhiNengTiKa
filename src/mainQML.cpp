@@ -2,11 +2,11 @@
 #include "Singleton/Network.h"
 #include "Singleton/Settings.h"
 #include "Logic/ImageProvider.h"
+#include "Logic/QRCodeScanner.h"
 #include "Logic/UpdateChecker.h"
 #include "Logic/TemplateSearcher.h"
 #include "Logic/TemplateListModel.h"
 #include "QMLIntermediary/MultipleSubjectsTemplateListModelListSingleton.h"
-#include "QMLIntermediary/QRCodeScannerQML.h"
 #include "QMLIntermediary/TemplateSummaryQML.h"
 #include "QMLIntermediary/TemplateRawDataQML.h"
 #include "QMLIntermediary/TemplateAnalysisQML.h"
@@ -72,25 +72,25 @@ int main(int argc, char *argv[])
     qmlRegisterType<TemplateListModel>("TemplateListModel", 1, 0, "TemplateListModel");
     qmlRegisterType<SettingOperator>("SettingOperator", 1, 0, "SettingOperator");
     qmlRegisterType<UpdateChecker>("UpdateChecker", 1, 0, "UpdateChecker");
-    qmlRegisterType<QRCodeScannerQML>("QRCodeScannerQML", 1, 0, "QRCodeScannerQML");
+    qmlRegisterType<QRCodeScanner>("QRCodeScanner", 1, 0, "QRCodeScanner");
     qmlRegisterType<ImageProvider>("ImageProvider", 1, 0, "ImageProvider");
     QQmlApplicationEngine engine;
 
-    QStringList builtInStyles = { QLatin1String("Basic"), QLatin1String("Fusion"),
-                                  QLatin1String("Imagine"), QLatin1String("Material"), QLatin1String("Universal")
+    QStringList builtInStyles = { QStringLiteral("Basic"), QStringLiteral("Fusion"),
+                                  QStringLiteral("Imagine"), QStringLiteral("Material"), QStringLiteral("Universal")
                                 };
 #if defined(Q_OS_MACOS)
-    builtInStyles << QLatin1String("macOS");
-    builtInStyles << QLatin1String("iOS");
+    builtInStyles << QStringLiteral("macOS");
+    builtInStyles << QStringLiteral("iOS");
 #elif defined(Q_OS_IOS)
-    builtInStyles << QLatin1String("iOS");
+    builtInStyles << QStringLiteral("iOS");
 #elif defined(Q_OS_WINDOWS)
-    builtInStyles << QLatin1String("Windows");
+    builtInStyles << QStringLiteral("Windows");
 #endif
 
-    engine.setInitialProperties({{ "builtInStyles", builtInStyles }});
+    engine.setInitialProperties({{ QStringLiteral("builtInStyles"), builtInStyles }});
 
-    const QUrl url(u"qrc:/qml/main.qml"_qs);
+    const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &a, [url](const QObject * obj, const QUrl & objUrl)
     {

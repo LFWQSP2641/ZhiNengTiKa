@@ -47,10 +47,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+INCLUDEPATH += $$PWD/3rd
 include($$PWD/3rd/Qt-AES/QAESEncryption.pri)
-INCLUDEPATH += $$PWD/3rd/Qt-AES
 include($$PWD/3rd/zxing-cpp/core/ZxingInclude.pri)
-INCLUDEPATH += $$PWD/3rd/zxing-cpp/core/src
 
 HEADERS += \
     $$PWD/src/Logic/AnswerDetailData.hpp \

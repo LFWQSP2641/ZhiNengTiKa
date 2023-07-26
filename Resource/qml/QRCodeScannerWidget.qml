@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtMultimedia
 import Qt.labs.platform
-import QRCodeScannerQML
+import QRCodeScanner
 
 Item {
     id: qrCodeScannerWidget
@@ -126,21 +126,12 @@ Item {
             }
         }
     }
-    QRCodeScannerQML {
+    QRCodeScanner {
         id: qrCodeScannerQML
         videoSink: videoOutput.videoSink
-        scanning: true
-        onAnalysisFinished: function(success, exception, result){
-            if(success)
-            {
-                templateCode = result
-                waitTimer.start()
-            }
-            else if(exception)
-            {
-                camera.stop()
-                scanFailedDialog.show(result, false)
-            }
+        onDecodingFinished: function(succeeded, text){
+            console.log(succeeded)
+            console.log(text)
         }
     }
 
