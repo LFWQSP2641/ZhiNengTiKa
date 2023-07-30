@@ -26,5 +26,6 @@
         <file>icon/check.svg</file>
         <file>icon/download.svg</file>
         <file>icon/refresh.svg</file>
+        <file>icon/camera-viewfinder.svg</file>
     </qresource>
 </RCC>

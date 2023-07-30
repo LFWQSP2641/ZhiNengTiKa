@@ -8,9 +8,9 @@
 ### 编译
 
 #### 编译环境
->Windows: Qt 6.5.1 + MSVC2019
+>Windows: Qt 6.5.2 + MSVC2019
 
->Android: Qt 6.5.1 + NDK 25.1.8937393 + JDK 17
+>Android: Qt 6.5.2 + NDK 25.1.8937393 + JDK 17
 
 #### 如何编译
 

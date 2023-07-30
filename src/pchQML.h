@@ -31,6 +31,6 @@
 #include <QJniObject>
 #endif // Q_OS_ANDROID
 
-#include "D:/Softwares/scr/Qt-AES/qaesencryption.h"
+#include "Qt-AES/qaesencryption.h"
 
 #endif // PCHQML_H
