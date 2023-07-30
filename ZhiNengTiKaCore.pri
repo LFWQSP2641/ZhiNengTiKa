@@ -49,14 +49,22 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 INCLUDEPATH += $$PWD/3rd
 include($$PWD/3rd/Qt-AES/QAESEncryption.pri)
-include($$PWD/3rd/zxing-cpp/core/ZxingInclude.pri)
+
+win32:LIBS += -L$$PWD/lib/zxing-cpp/windows-msvc2019-64bit/release/ -lQRScanLib
+#android:for (abi, ANDROID_ABIS): ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/android-$${abi}/libQRScanLib_$${abi}.so
+#android:for (abi, ANDROID_ABIS): LIBS += -L$$PWD/lib/zxing-cpp/android-$${abi}/ -lQRScanLib_$${abi}
+android:ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/android-arm64-v8a/libQRScanLib_arm64-v8a.so
+android:LIBS += -L$$PWD/lib/zxing-cpp/android-arm64-v8a/ -lQRScanLib_arm64-v8a
+
+INCLUDEPATH += $$PWD/lib/zxing-cpp
+DEPENDPATH += $$PWD/lib/zxing-cpp
 
 HEADERS += \
     $$PWD/src/Logic/AnswerDetailData.hpp \
     $$PWD/src/Logic/ImageProvider.h \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.h \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.h \
-    $$PWD/src/Logic/QRCodeReader/QRCodeReader.h \
+    $$PWD/src/Logic/QRCodeReader.h \
     $$PWD/src/Logic/QRCodeScanner.h \
     $$PWD/src/Logic/TemplateAnalysis.h \
     $$PWD/src/Logic/TemplateListModel.h \
@@ -75,7 +83,7 @@ HEADERS += \
 
 SOURCES += \
     $$PWD/src/Logic/ImageProvider.cpp \
-    $$PWD/src/Logic/QRCodeReader/QRCodeReader.cpp \
+    $$PWD/src/Logic/QRCodeReader.cpp \
     $$PWD/src/Logic/QRCodeScanner.cpp \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.cpp \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.cpp \

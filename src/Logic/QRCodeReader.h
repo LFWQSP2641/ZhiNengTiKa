@@ -1,15 +1,13 @@
 #ifndef QRCODEREADER_H
 #define QRCODEREADER_H
 
-#include "zxing-cpp/core/src/DecodeHints.h"
-#include "zxing-cpp/core/src/ImageView.h"
-
+#include "QRScanLib.h"
 
 class QRCodeReader : public QObject
 {
     Q_OBJECT
 public:
-    explicit QRCodeReader(int maxWidth = -1, int maxHeight = -1, bool smoothTransformation = false, QObject *parent = nullptr);
+    explicit QRCodeReader(QObject *parent = nullptr);
 
     int getMaxWidth() const;
     void setMaxWidth(int newMaxWidth);
@@ -24,11 +22,11 @@ public:
     void resetSmoothTransformation();
 
 public slots:
-    QString decodeImage(const QImage &image);
+    QString decodeImage(const QImage &image, int maxWidth = -1, int maxHeight = -1, bool smoothTransformation = false);
+    QString decodeFrame(const QVideoFrame &frame, int maxWidth = -1, int maxHeight = -1, bool smoothTransformation = false);
 
 protected:
-    ZXing::DecodeHints hints;
-    static ZXing::ImageFormat imgFmtFromQImgFmt(const QImage::Format &qImgFmt);
+    QRScanLib scanner;
 
     int maxWidth = -1;
     int maxHeight = -1;
