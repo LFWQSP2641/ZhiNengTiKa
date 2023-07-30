@@ -6,7 +6,6 @@ import QRCodeScanner
 
 Item {
     id: qrCodeScannerWidget
-    property bool scanFinish: false
     property string templateCode: ""
     signal scanFinished(string templateCode)
 
@@ -24,12 +23,6 @@ Item {
     Camera {
         id: camera
         cameraDevice: mediaDevices.defaultVideoInput
-        onActiveChanged: {
-            // Camera关闭且扫描完成
-            if(camera.active === false && scanFinish === true) {
-                scanFinished(templateCode)
-            }
-        }
     }
     VideoOutput {
         id: videoOutput
@@ -58,14 +51,21 @@ Item {
             stateText.text = "扫描" + (succeeded ? ("成功\n" + text) : "失败")
             if(succeeded)
             {
-                scanFinish = true
                 templateCode = text
-                camera.stop()
+                delayCameraClose.start()
             }
         }
         onError: function(msg){
             console.log(msg)
             scanFailedDialog.show("error 发生:\n" + msg)
+        }
+    }
+    Timer {
+        id: delayCameraClose
+        interval: 500
+        onTriggered: {
+            camera.stop()
+            scanFinished(templateCode)
         }
     }
 
@@ -91,49 +91,33 @@ Item {
         }
     }
 
-    //    RoundButton {
-    //        id: selectFileRoundButton
-    //        visible: false
-    //        icon.source: "qrc:/svg/icon/picture.svg"
-    //        anchors.right: parent.right
-    //        anchors.bottom: parent.bottom
-    //        anchors.rightMargin: 10
-    //        anchors.bottomMargin: 10
-    //        onClicked: {
-    //            scanLineAnimation.stop()
-    //            qrCodeScannerQML.stotScanning()
-    //            fileDialog.open()
-    //            continueRoundButton.visible = true
-    //        }
-    //    }
-    //    FileDialog {
-    //        id: fileDialog
-    //        fileMode: FileDialog.OpenFile
-    //        title: "选择图片文件"
-    //        folder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
+    RoundButton {
+        id: selectFileRoundButton
+        visible: true
+        icon.source: "qrc:/svg/icon/picture.svg"
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.rightMargin: 10
+        anchors.bottomMargin: 10
+        onClicked: {
+            camera.stop()
+            fileDialog.open()
+        }
+    }
+    FileDialog {
+        id: fileDialog
+        fileMode: FileDialog.OpenFile
+        title: "选择图片文件"
+        folder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
 
-    //        // 限制只显示图片文件
-    //        nameFilters:["Images (*.jpg *.jpeg *.png *.gif)"]
+        // 限制只显示图片文件
+        nameFilters:["Images (*.jpg *.jpeg *.png *.gif)"]
 
-    //        onAccepted: {
-    //            qrCodeScannerQML.scanQRCodeFromFile(currentFile)
-    //        }
-    //    }
-
-    //    RoundButton {
-    //        id: continueRoundButton
-    //        visible: false
-    //        icon.source: "qrc:/svg/icon/play.svg"
-    //        anchors.right: parent.right
-    //        anchors.bottom: selectFileRoundButton.top
-    //        anchors.rightMargin: 10
-    //        anchors.bottomMargin: 10
-    //        onClicked: {
-    //            scanLineAnimation.start()
-    //            qrCodeScannerQML.startScanning()
-    //            continueRoundButton.visible = false
-    //        }
-    //    }
+        onAccepted: {
+            qrCodeScanner.decodeImageByPath(currentFile)
+            camera.start()
+        }
+    }
 
     Component.onCompleted: {
         camera.start()

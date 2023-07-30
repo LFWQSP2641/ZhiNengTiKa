@@ -22,8 +22,9 @@ public:
     void resetSmoothTransformation();
 
 public slots:
-    QString decodeImage(const QImage &image, int maxWidth = -1, int maxHeight = -1, bool smoothTransformation = false);
-    QString decodeFrame(const QVideoFrame &frame, int maxWidth = -1, int maxHeight = -1, bool smoothTransformation = false);
+    QString decodeImageByPath(const QUrl &imagePath);
+    QString decodeImage(const QImage &image);
+    QString decodeFrame(const QVideoFrame &frame);
 
 protected:
     QRScanLib scanner;

@@ -5,7 +5,7 @@ QRCodeReader::QRCodeReader(QObject *parent)
 {
 }
 
-QString QRCodeReader::decodeImage(const QImage &image, int maxWidth, int maxHeight, bool smoothTransformation)
+QString QRCodeReader::decodeImage(const QImage &image)
 {
     auto warning([this](const QString & errMsg)
     {
@@ -37,7 +37,7 @@ QString QRCodeReader::decodeImage(const QImage &image, int maxWidth, int maxHeig
     }
 }
 
-QString QRCodeReader::decodeFrame(const QVideoFrame &frame, int maxWidth, int maxHeight, bool smoothTransformation)
+QString QRCodeReader::decodeFrame(const QVideoFrame &frame)
 {
     auto warning([this](const QString & errMsg)
     {
@@ -85,6 +85,14 @@ void QRCodeReader::setSmoothTransformation(bool newSmoothTransformation)
 void QRCodeReader::resetSmoothTransformation()
 {
     setSmoothTransformation(false);
+}
+
+QString QRCodeReader::decodeImageByPath(const QUrl &imagePath)
+{
+    auto readablePath(imagePath.toString());
+    if(readablePath.startsWith(QStringLiteral("file:///")))
+        readablePath = readablePath.right(readablePath.size() - 8);
+    return decodeImage(QImage(readablePath));
 }
 
 int QRCodeReader::getMaxHeight() const
