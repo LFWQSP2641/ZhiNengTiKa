@@ -4,9 +4,6 @@
 [submodule "3rd/Qt-AES"]
 	path = 3rd/Qt-AES
 	url = git@github.com:LFWQSP2641/Qt-AES.git
-[submodule "3rd/zxing-cpp"]
-	path = 3rd/zxing-cpp
-	url = git@github.com:LFWQSP2641/zxing-cpp.git
 [submodule "lib/zxing-cpp/zxing-cpp"]
 	path = lib/zxing-cpp/zxing-cpp
 	url = git@github.com:LFWQSP2641/zxing-cpp.git
