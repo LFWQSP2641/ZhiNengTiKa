@@ -1,7 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import ImageProvider
+import QtWebView
+//import ImageProvider
 import TemplateAnalysisQML
 
 Item {
@@ -11,10 +12,10 @@ Item {
     TemplateAnalysisQML {
         id: templateAnalysisQML
     }
-    ImageProvider {
-        id: imageProvider
-        cacheMode: true
-    }
+//    ImageProvider {
+//        id: imageProvider
+//        cacheMode: true
+//    }
 
     ColumnLayout {
         id: mainColumnLayout
@@ -67,29 +68,34 @@ Item {
             }
         }
 
-        Flickable {
-            id: flick
+//        Flickable {
+//            id: flick
+//            Layout.fillHeight: true
+//            Layout.fillWidth: true
+//            contentHeight: templateDetailText.height
+//            clip: true
+//            Text {
+//                id: templateDetailText
+//                width: parent.width
+//                wrapMode: Text.Wrap
+
+//                function setHtml(html) {
+//                    console.log("setHtml")
+//                    console.log(html)
+//                    templateDetailText.text = imageProvider.loadHtml(html)
+//                    flick.contentY = 0
+//                }
+//                // https://stackoverflow.com/questions/5395106/qml-text-scroll
+//                // transform不知道是干嘛的
+//                // 注释了
+//                //transform: Scale { yScale: -1; origin.y: templateDetailText.height/2 }
+//            }
+//            //transform: Scale { yScale: -1; origin.y: flick.height/2 }
+//        }
+        WebView {
+            id: templateDetailWebView
             Layout.fillHeight: true
             Layout.fillWidth: true
-            contentHeight: templateDetailText.height
-            clip: true
-            Text {
-                id: templateDetailText
-                width: parent.width
-                wrapMode: Text.Wrap
-
-                function setHtml(html) {
-                    console.log("setHtml")
-                    console.log(html)
-                    templateDetailText.text = imageProvider.loadHtml(html)
-                    flick.contentY = 0
-                }
-                // https://stackoverflow.com/questions/5395106/qml-text-scroll
-                // transform不知道是干嘛的
-                // 注释了
-                //transform: Scale { yScale: -1; origin.y: templateDetailText.height/2 }
-            }
-            //transform: Scale { yScale: -1; origin.y: flick.height/2 }
         }
     }
 
@@ -115,15 +121,15 @@ Item {
 
         if(tabBar.currentIndex === 0)
         {
-            templateDetailText.setHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
+            templateDetailWebView.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
         }
         else if(tabBar.currentIndex === 1)
         {
-            templateDetailText.setHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
+            templateDetailWebView.loadHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
         }
         else if(tabBar.currentIndex === 2)
         {
-            templateDetailText.setHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
+            templateDetailWebView.loadHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
         }
     }
 }

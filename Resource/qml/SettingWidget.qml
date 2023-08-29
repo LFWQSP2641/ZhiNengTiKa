@@ -232,14 +232,6 @@ Item {
                             messageDialog.show("已删除用户已导入题卡")
                         }
                     }
-                    Button {
-                        Layout.fillWidth: true
-                        text: "删除缓存图片"
-                        onClicked: {
-                            settingOperator.deleteCacheImage()
-                            messageDialog.show("已删除缓存图片")
-                        }
-                    }
                 }
             }
             GroupBox {

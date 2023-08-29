@@ -25,6 +25,7 @@
 #include <QQuickStyle>
 #include <QVideoSink>
 #include <QVideoFrame>
+#include <QtWebView>
 #ifdef Q_OS_ANDROID
 #include <QtCore/private/qandroidextras_p.h>
 #include <QJniEnvironment>

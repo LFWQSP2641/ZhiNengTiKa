@@ -13,7 +13,6 @@ public:
 public slots:
     void userDataListToFirst(qsizetype index);
     void deleteTemplateFile();
-    void deleteCacheImage();
 
 protected:
     QStringListModel *userDataListModel = nullptr;

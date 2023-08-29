@@ -62,9 +62,3 @@ void SettingOperator::deleteTemplateFile()
     QDir().mkdir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
     MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList()->at(MultipleSubjectsTemplateListModelList::Undefined)->clear();
 }
-
-void SettingOperator::deleteCacheImage()
-{
-    Global::deleteDir(Global::dataPath().append(QStringLiteral("/Image")));
-    QDir().mkdir(Global::dataPath().append(QStringLiteral("/Image")));
-}
