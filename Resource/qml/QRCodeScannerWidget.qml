@@ -70,13 +70,14 @@ Item {
     }
 
     Rectangle {
-        width: stateText.contentWidth
-        height: stateText.contentHeight
+        width: stateText.contentWidth + 5
+        height: stateText.contentHeight + 5
         radius: 10
         color: "#7FFFFFFF"
 
         Text {
             id: stateText
+            anchors.centerIn: parent
             text: "点击屏幕扫码"
             wrapMode: Text.WordWrap
         }
