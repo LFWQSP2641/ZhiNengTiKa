@@ -1,4 +1,5 @@
 #include "QRCodeReader.h"
+#include "LibZXingCpp/ZXingReader.h"
 
 QRCodeReader::QRCodeReader(QObject *parent)
     : QObject{parent}
@@ -20,7 +21,7 @@ QString QRCodeReader::decodeImage(const QImage &image)
     }
     try
     {
-        const auto result(scanner.decodeImage(image, maxWidth, maxHeight, smoothTransformation));
+        const auto result(ZXingReader::decodeImage(image, maxWidth, maxHeight, smoothTransformation));
         qDebug() << Q_FUNC_INFO << "result:" << result;
         emit decodingFinished(!result.isEmpty(), result);
         return result;
@@ -52,7 +53,7 @@ QString QRCodeReader::decodeFrame(const QVideoFrame &frame)
     }
     try
     {
-        const auto result(scanner.decodeFrame(frame, maxWidth, maxHeight, smoothTransformation));
+        const auto result(ZXingReader::decodeFrame(frame, maxWidth, maxHeight, smoothTransformation));
         qDebug() << Q_FUNC_INFO << "result:" << result;
         emit decodingFinished(!result.isEmpty(), result);
         return result;

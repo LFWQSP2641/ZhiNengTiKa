@@ -50,11 +50,16 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 INCLUDEPATH += $$PWD/3rd
 include($$PWD/3rd/Qt-AES/QAESEncryption.pri)
 
-win32:LIBS += -L$$PWD/lib/zxing-cpp/windows-msvc2019-64bit/release/ -lQRScanLib
-#android:for (abi, ANDROID_ABIS): ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/android-$${abi}/libQRScanLib_$${abi}.so
-#android:for (abi, ANDROID_ABIS): LIBS += -L$$PWD/lib/zxing-cpp/android-$${abi}/ -lQRScanLib_$${abi}
-android:ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/android-arm64-v8a/libQRScanLib_arm64-v8a.so
-android:LIBS += -L$$PWD/lib/zxing-cpp/android-arm64-v8a/ -lQRScanLib_arm64-v8a
+win32:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/windows-msvc2019-64bit -lZXingCpp
+android:ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/LibZXingCpp/android/libZXingCpp_arm64-v8a.so
+#android:ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/LibZXingCpp/android/libZXingCpp_armeabi-v7a.so
+#android:ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/LibZXingCpp/android/libZXingCpp_x86.so
+#android:ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/LibZXingCpp/android/libZXingCpp_x86_64.so
+
+android:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/android/ -lZXingCpp_arm64-v8a
+#android:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/android/ -lZXingCpp_armeabi-v7a
+#android:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/android/ -lZXingCpp_x86
+#android:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/android/ -lZXingCpp_x86_64
 
 INCLUDEPATH += $$PWD/lib/zxing-cpp
 DEPENDPATH += $$PWD/lib/zxing-cpp

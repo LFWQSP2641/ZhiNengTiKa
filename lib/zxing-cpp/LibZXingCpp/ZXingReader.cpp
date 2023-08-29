@@ -1,13 +1,13 @@
-#include "QRScanLib.h"
+#include "ZXingReader.h"
 #include "ImageView.h"
 #include "ReadBarcode.h"
 #include <QDebug>
 
-QRScanLib::QRScanLib()
+ZXingReader::ZXingReader()
 {
 }
 
-QString QRScanLib::decodeImage(const QImage &image, int maxWidth, int maxHeight, bool smoothTransformation)
+QString ZXingReader::decodeImage(const QImage &image, int maxWidth, int maxHeight, bool smoothTransformation)
 {
     if(image.isNull())
     {
@@ -63,7 +63,7 @@ QString QRScanLib::decodeImage(const QImage &image, int maxWidth, int maxHeight,
     return resultData;
 }
 
-QString QRScanLib::decodeFrame(const QVideoFrame &frame, int maxWidth, int maxHeight, bool smoothTransformation)
+QString ZXingReader::decodeFrame(const QVideoFrame &frame, int maxWidth, int maxHeight, bool smoothTransformation)
 {
     ZXing::ImageFormat fmt = ZXing::ImageFormat::None;
     int pixStride = 0;

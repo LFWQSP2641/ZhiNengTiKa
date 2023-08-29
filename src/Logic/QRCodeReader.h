@@ -1,8 +1,6 @@
 #ifndef QRCODEREADER_H
 #define QRCODEREADER_H
 
-#include "QRScanLib.h"
-
 class QRCodeReader : public QObject
 {
     Q_OBJECT
@@ -27,8 +25,6 @@ public slots:
     QString decodeFrame(const QVideoFrame &frame);
 
 protected:
-    QRScanLib scanner;
-
     int maxWidth = -1;
     int maxHeight = -1;
     bool smoothTransformation = false;

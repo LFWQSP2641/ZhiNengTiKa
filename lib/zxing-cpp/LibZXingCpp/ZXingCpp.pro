@@ -1,7 +1,7 @@
 QT += gui multimedia
 
 TEMPLATE = lib
-DEFINES += QRSCANLIB_LIBRARY
+DEFINES += ZXINGCPP_LIBRARY
 
 CONFIG += c++17
 
@@ -9,15 +9,15 @@ CONFIG += c++17
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += $$PWD/zxing-cpp/core/src
-include($$PWD/zxing-cpp/core/ZxingInclude.pri)
+INCLUDEPATH += $$PWD/../zxing-cpp/core/src
+include($$PWD/../zxing-cpp/core/ZxingInclude.pri)
 
 SOURCES += \
-    QRScanLib.cpp
+    ZXingReader.cpp
 
 HEADERS += \
-    QRScanLib_global.h \
-    QRScanLib.h
+    ZXingCpp_global.h \
+    ZXingReader.h
 
 # Default rules for deployment.
 unix {
