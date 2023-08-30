@@ -38,6 +38,7 @@ TemplateRawData::TemplateRawData(const TemplateSummary &templateSummary)
         else if(!rawData.startsWith("{\"code\":200,"))
         {
             errorStr = QStringLiteral("服务器报错\n"
+                                      "请尝试在设置中登陆你所在学校, 同一学年的账号\n"
                                       "返回结果:%1").arg(rawData);
             return;
         }
