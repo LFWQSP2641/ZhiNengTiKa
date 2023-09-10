@@ -7,6 +7,7 @@ Rectangle {
     property alias iconSource: icon.source
     property alias buttonText: button.text
     property color backgroundColor: "#ffffff"
+    property real widgetSizeRatio: 1
 
     //自定义点击信号
     signal clickedLeft()
@@ -16,7 +17,9 @@ Rectangle {
     color: backgroundColor
 
     ColumnLayout {
-        anchors.fill: parent
+        anchors.centerIn: parent
+        height: parent.height * widgetSizeRatio
+        width: parent.width * widgetSizeRatio
         Image {
             id: icon
             fillMode: Image.PreserveAspectFit

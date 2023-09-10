@@ -44,47 +44,60 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
 
-        initialItem: ColumnLayout {
-            spacing: 0
-            IconButton {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                Layout.preferredHeight: parent.height * 0.67
-                iconSource: "qrc:/svg/icon/qrcode.svg"
-                buttonText: "扫码"
-                backgroundColor: RandomColorGenerator.generateRandomBrightColor()
-                onClickedLeft: stackView.push(qrCodeScannerWidgetComponent)
-            }
-            RowLayout {
-                Layout.fillHeight: true
-                Layout.fillWidth: true
-                Layout.preferredHeight: parent.height * 0.33
-                spacing: 0
+        initialItem: Rectangle {
+            color: RandomColorGenerator.generateRandomBrightColor()
+            ColumnLayout {
+                //                anchors.fill: parent
+                anchors.centerIn: parent
+                height: parent.height - 10
+                width: parent.width - 10
                 IconButton {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
-                    iconSource: "qrc:/svg/icon/list.svg"
-                    buttonText: "列表"
+                    Layout.preferredHeight: parent.height * 0.67
+                    radius: 45
+                    widgetSizeRatio: 0.5
+                    iconSource: "qrc:/svg/icon/qrcode.svg"
+                    buttonText: "扫码"
                     backgroundColor: RandomColorGenerator.generateRandomBrightColor()
-                    onClickedLeft: stackView.push(selectWidgetComponent)
+                    onClickedLeft: stackView.push(qrCodeScannerWidgetComponent)
                 }
-
-                IconButton {
+                RowLayout {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
-                    iconSource: "qrc:/svg/icon/search.svg"
-                    buttonText: "搜素"
-                    backgroundColor: RandomColorGenerator.generateRandomBrightColor()
-                    onClickedLeft: stackView.push(searchWidgetComponent)
-                }
+                    Layout.preferredHeight: parent.height * 0.33
+                    IconButton {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        radius: 45
+                        widgetSizeRatio: 0.5
+                        iconSource: "qrc:/svg/icon/list.svg"
+                        buttonText: "列表"
+                        backgroundColor: RandomColorGenerator.generateRandomBrightColor()
+                        onClickedLeft: stackView.push(selectWidgetComponent)
+                    }
 
-                IconButton {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    iconSource: "qrc:/svg/icon/settings.svg"
-                    buttonText: "设置"
-                    backgroundColor: RandomColorGenerator.generateRandomBrightColor()
-                    onClickedLeft: stackView.push("qrc:/qml/SettingWidget.qml", {builtInStyles: applicationWindow.builtInStyles})
+                    IconButton {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        radius: 45
+                        widgetSizeRatio: 0.5
+                        iconSource: "qrc:/svg/icon/search.svg"
+                        buttonText: "搜素"
+                        backgroundColor: RandomColorGenerator.generateRandomBrightColor()
+                        onClickedLeft: stackView.push(searchWidgetComponent)
+                    }
+
+                    IconButton {
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        radius: 45
+                        widgetSizeRatio: 0.5
+                        iconSource: "qrc:/svg/icon/settings.svg"
+                        buttonText: "设置"
+                        backgroundColor: RandomColorGenerator.generateRandomBrightColor()
+                        onClickedLeft: stackView.push("qrc:/qml/SettingWidget.qml", {builtInStyles: applicationWindow.builtInStyles})
+                    }
                 }
             }
         }
