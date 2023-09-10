@@ -14,6 +14,7 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QtWebView::initialize();
     QApplication a(argc, argv);
 

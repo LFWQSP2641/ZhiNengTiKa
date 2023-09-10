@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 
 Rectangle {
     id: rec
@@ -14,22 +15,21 @@ Rectangle {
 
     color: backgroundColor
 
-    Image {
-        id: icon
-        fillMode: Image.PreserveAspectFit
-        clip: true
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.left: parent.left
-    }
+    ColumnLayout {
+        anchors.fill: parent
+        Image {
+            id: icon
+            fillMode: Image.PreserveAspectFit
+            clip: true
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+        }
 
-    Text {
-        id: button
-        anchors.top: icon.bottom
-        anchors.topMargin: 5
-        anchors.horizontalCenter: icon.horizontalCenter
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 5
+        Text {
+            id: button
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillHeight: true
+        }
     }
 
     Rectangle {
