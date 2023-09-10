@@ -285,7 +285,7 @@ Item {
                                                       "<p>android_openssl ( <a href=\"https://github.com/KDAB/android_openssl\">https://github.com/KDAB/android_openssl</a> )</p>" +
                                                       "<p><small>Apache License 2.0</small></p>" +
                                                       "<br/>" +
-                                                      "<p>Qt-AES ( <a href=\"https://github.com/KDAB/android_openssl\">https://github.com/KDAB/android_openssl</a> )</p>" +
+                                                      "<p>Qt-AES ( <a href=\"https://github.com/bricke/Qt-AES\">https://github.com/bricke/Qt-AES</a> )</p>" +
                                                       "<p><small>The Unlicense</small></p>")
                     }
                 }
