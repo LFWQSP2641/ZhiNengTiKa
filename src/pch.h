@@ -21,6 +21,10 @@
 #include <QHttpMultiPart>
 #include <QVideoSink>
 #include <QVideoFrame>
+#include <QCamera>
+#include <QMediaDevices>
+#include <QMediaCaptureSession>
+#include <QVideoWidget>
 
 #include "D:/Softwares/scr/Qt-AES/qaesencryption.h"
 

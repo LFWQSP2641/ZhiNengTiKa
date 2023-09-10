@@ -1,6 +1,6 @@
 include(./ZhiNengTiKaCore.pri)
 
-QT       += widgets gui
+QT       += widgets gui multimedia multimediawidgets
 
 PRECOMPILED_HEADER = src/pch.h
 
@@ -12,6 +12,7 @@ HEADERS += \
     src/GUI/NavigationBarTabWidget.h \
     src/GUI/PixmapLabel.h \
     src/GUI/PlusSignLabel.h \
+    src/GUI/QRCodeScannerWidget.h \
     src/GUI/QuestionWidget.h \
     src/GUI/SearchWidget.h \
     src/GUI/SelectWidget.h \
@@ -29,6 +30,7 @@ SOURCES += \
     src/GUI/NavigationBarTabWidget.cpp \
     src/GUI/PixmapLabel.cpp \
     src/GUI/PlusSignLabel.cpp \
+    src/GUI/QRCodeScannerWidget.cpp \
     src/GUI/QuestionWidget.cpp \
     src/GUI/SearchWidget.cpp \
     src/GUI/SelectWidget.cpp \

@@ -3,7 +3,6 @@
 
 #include "../Logic/TemplateAnalysis.h"
 class MultipleSubjectsTemplateListView;
-class QRCodeScanner;
 
 class SelectWidget : public QWidget
 {
@@ -19,16 +18,13 @@ protected:
     QLineEdit *templateCodeLineEdit;
     QPushButton *scanQRCodeButton;
 
-    QRCodeScanner *qrCodeScanner;
-    QMessageBox *qrCodeScannerStateMessageBox = nullptr;
-
     TemplateAnalysis getTemplateAnalysis(const QString &templateCode);
 
 protected slots:
-    void searchButtonPush();
-    void OKButtonPush();
+    void onSearchButtonPush();
+    void onScanQRCodeButtonPush();
+    void onOKButtonPush();
     void showTemplateDetailWidget(const TemplateAnalysis &templateAnalysis);
-    void scanQRCode();
 };
 
 #endif // SEARCHDIALOG_H
