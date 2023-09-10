@@ -20,7 +20,6 @@ void Global::initOnce()
     QDir dir;
     dir.mkdir(Global::configPath());
     dir.mkdir(Global::dataPath());
-    dir.mkdir(Global::dataPath().append(QStringLiteral("/Image")));
     dir.mkdir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
     dir.mkdir(Global::tempPath());
 

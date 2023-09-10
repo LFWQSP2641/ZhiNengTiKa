@@ -2,25 +2,23 @@
 #define WEBVIEWWIDGET_H
 
 #include "../Logic/TemplateAnalysis.h"
-#include "../Logic/ImageProvider.h"
 
-class WebView: public QTextBrowser
+class WebView: public QWebEngineView
 {
     Q_OBJECT
 public:
-    using QTextBrowser::QTextBrowser;
+    using QWebEngineView::QWebEngineView;
     void setHtml(const QString &html)
     {
-        this->html = imageProvider.loadHtml(html);
-        this->QTextBrowser::setHtml(this->html);
+        this->html = html;
+        this->QWebEngineView::setHtml(this->html);
     }
     QString getHtml() const
     {
-        return html;
+        return this->html;
     }
 protected:
     QString html;
-    ImageProvider imageProvider;
 };
 
 class WebViewWidget : public QWidget

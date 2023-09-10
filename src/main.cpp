@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     Network::initOnce();
 
     Global::initOnce();
+    Global::deleteDir(Global::dataPath().append(QStringLiteral("/Image")));
 
     a.setWindowIcon(QIcon(QStringLiteral(":/ico/xinjiaoyuico.png")));
     a.setApplicationDisplayName(QStringLiteral("智能题卡"));

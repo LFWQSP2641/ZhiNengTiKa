@@ -1,6 +1,6 @@
 include(./ZhiNengTiKaCore.pri)
 
-QT       += widgets gui multimedia multimediawidgets
+QT       += widgets gui multimedia multimediawidgets webenginewidgets
 
 PRECOMPILED_HEADER = src/pch.h
 

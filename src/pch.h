@@ -25,6 +25,7 @@
 #include <QMediaDevices>
 #include <QMediaCaptureSession>
 #include <QVideoWidget>
+#include <QWebEngineView>
 
 #include "D:/Softwares/scr/Qt-AES/qaesencryption.h"
 

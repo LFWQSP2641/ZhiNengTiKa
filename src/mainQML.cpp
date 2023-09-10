@@ -16,12 +16,12 @@ int main(int argc, char *argv[])
 {
     QtWebView::initialize();
     QApplication a(argc, argv);
-    // 删除图片缓存
-    Global::deleteDir(Global::dataPath().append(QStringLiteral("/Image")));
 
     Network::initOnce();
 
     Global::initOnce();
+    // 删除图片缓存
+    Global::deleteDir(Global::dataPath().append(QStringLiteral("/Image")));
 
     a.setWindowIcon(QIcon(QStringLiteral(":/ico/xinjiaoyuico.png")));
     a.setApplicationDisplayName(QStringLiteral("智能题卡"));
