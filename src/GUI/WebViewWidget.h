@@ -33,7 +33,7 @@ protected:
     WebView *webView;
     QListWidget *pagesSwitch;
 
-    QPushButton *saveButton;
+    QPushButton *openBrowserButton;
 
     qsizetype currentPageIndex = -1;
     QHash<QString, qsizetype> pageHash;

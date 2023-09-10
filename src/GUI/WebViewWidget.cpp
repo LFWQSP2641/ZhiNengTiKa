@@ -7,15 +7,12 @@ WebViewWidget::WebViewWidget(QSharedPointer<TemplateAnalysis> newTemplateAnalysi
     mainLayout = new QGridLayout(this);
     webView = new WebView(this);
     pagesSwitch = new QListWidget(this);
-    saveButton = new QPushButton("另存为", this);
-    connect(saveButton, &QPushButton::clicked, [this]
+    openBrowserButton = new QPushButton("使用浏览器打开", this);
+    connect(openBrowserButton, &QPushButton::clicked, [this]
     {
-        saveToFile(QFileDialog::getSaveFileName(
-                       this, QStringLiteral("Save File"),
-                       QStringLiteral(".")
-                       .append(QStringLiteral("/"))
-                       .append(this->templateAnalysisPointer->getTemplateName()),
-                       QStringLiteral("Hyper Text Markup Language (*.html *.htm)")));
+        const QString path{Global::tempPath().append(QStringLiteral("/")).append(QStringLiteral("temp.html"))};
+        saveToFile(path);
+        QDesktopServices::openUrl(QUrl(path, QUrl::TolerantMode));
     });
 
     pagesSwitch->setFixedHeight(pagesSwitch->fontMetrics().height() * 3 / 2);
@@ -27,7 +24,7 @@ WebViewWidget::WebViewWidget(QSharedPointer<TemplateAnalysis> newTemplateAnalysi
     QScroller::grabGesture(pagesSwitch->viewport(), QScroller::TouchGesture);
 
 #ifndef LIMITED
-    mainLayout->addWidget(saveButton, 0, 1, 1, 1);
+    mainLayout->addWidget(openBrowserButton, 0, 1, 1, 1);
 #endif // LIMITED
     mainLayout->addWidget(pagesSwitch, 1, 0, 1, 2);
     mainLayout->addWidget(webView, 2, 0, 1, 2);
