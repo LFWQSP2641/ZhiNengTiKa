@@ -142,6 +142,9 @@ Item {
             qrCodeScanner.decodeImageByPath(currentFile)
             camera.start()
         }
+        onRejected: {
+            camera.start()
+        }
     }
 
     Component.onCompleted: {
