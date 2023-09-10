@@ -70,39 +70,63 @@ Item {
     }
 
     Rectangle {
-        width: stateText.contentWidth + 5
-        height: stateText.contentHeight + 5
-        radius: 10
-        color: "#7FFFFFFF"
-
+        anchors {left: parent.left; right: parent.right; bottom: parent.bottom}
+        height: Math.max(parent.height / 4, 100)
+        color: "black"
         Text {
             id: stateText
-            anchors.centerIn: parent
-            text: "点击屏幕扫码"
+            anchors.top: parent.top
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "white"
             wrapMode: Text.WordWrap
         }
-
-        anchors.centerIn: parent
-        anchors.verticalCenterOffset: parent.height / 3
-    }
-    MouseArea {
-        anchors.fill: parent
-        onClicked: {
-            qrCodeScanner.scan()
+        Rectangle {
+            id: whiteRing
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.margins: 10
+            height: parent.height / 2 + 20
+            width: height
+            z: parent.z + 1
+            radius: 90
+            color: "white"
         }
-    }
-
-    RoundButton {
-        id: selectFileRoundButton
-        visible: true
-        icon.source: "qrc:/svg/icon/picture.svg"
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        anchors.rightMargin: 10
-        anchors.bottomMargin: 10
-        onClicked: {
-            camera.stop()
-            fileDialog.open()
+        Rectangle {
+            id: blackRing
+            anchors.centerIn: whiteRing
+            height: parent.height / 2 + 10
+            width: height
+            z: parent.z + 2
+            radius: 90
+            color: "black"
+        }
+        Rectangle {
+            id: blueRoundButton
+            anchors.centerIn: whiteRing
+            height: parent.height / 2
+            width: height
+            z: parent.z + 3
+            radius: 90
+            color: "#3d94ff"
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    qrCodeScanner.scan()
+                }
+            }
+        }
+        RoundButton {
+            id: selectFileRoundButton
+            visible: true
+            icon.source: "qrc:/svg/icon/picture.svg"
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.rightMargin: 10
+            anchors.bottomMargin: 10
+            onClicked: {
+                camera.stop()
+                fileDialog.open()
+            }
         }
     }
     FileDialog {

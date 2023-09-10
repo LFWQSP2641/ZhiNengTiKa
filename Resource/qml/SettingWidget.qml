@@ -229,7 +229,8 @@ Item {
                         text: "删除用户已导入题卡"
                         onClicked: {
                             settingOperator.deleteTemplateFile()
-                            messageDialog.show("已删除用户已导入题卡")
+                            messageDialog.show("已删除用户已导入题卡\n" +
+                                               "建议重启程序")
                         }
                     }
                 }
@@ -270,22 +271,26 @@ Item {
                     height: parent.height
                     Button {
                         Layout.fillWidth: true
-                        text: "关于本软件"
+                        text: "软件信息"
                         onClicked: messageDialog.show("<p>使用 Qt 框架的跨平台软件,支持 Windows, Android, Linux</p>" +
+                                                      "<p>本软件使用<strong>GNU Affero General Public License v3.0</strong>协议开源</p>" +
                                                       "<p>作者:LFWQSP2641( <a href=\"https://github.com/LFWQSP2641\">https://github.com/LFWQSP2641</a> )</p>" +
                                                       "<p>Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserved.</p>" +
                                                       "<p>项目地址: <a href=\"https://github.com/LFWQSP2641/ZhiNengTiKa\">https://github.com/LFWQSP2641/ZhiNengTiKa</a></p>")
                     }
                     Button {
                         Layout.fillWidth: true
-                        text: "使用软件"
+                        text: "使用的开源库"
                         onClicked: messageDialog.show("<p>Qt ( <a href=\"https://www.qt.io\">https://www.qt.io</a> )</p>" +
                                                       "<p><small>GNU (Lesser) General Public License v3.0</small></p>" +
+                                                      "<br/>" +
+                                                      "<p>ZXing-C++ ( <a href=\"https://github.com/zxing-cpp/zxing-cpp\">https://github.com/zxing-cpp/zxing-cpp</a> )</p>" +
+                                                      "<p><small>Apache License 2.0</small></p>" +
                                                       "<br/>" +
                                                       "<p>android_openssl ( <a href=\"https://github.com/KDAB/android_openssl\">https://github.com/KDAB/android_openssl</a> )</p>" +
                                                       "<p><small>Apache License 2.0</small></p>" +
                                                       "<br/>" +
-                                                      "<p>Qt-AES ( <a href=\"https://github.com/KDAB/android_openssl\">https://github.com/KDAB/android_openssl</a> )</p>" +
+                                                      "<p>Qt-AES ( <a href=\"https://github.com/bricke/Qt-AES\">https://github.com/bricke/Qt-AES</a> )</p>" +
                                                       "<p><small>The Unlicense</small></p>")
                     }
                 }

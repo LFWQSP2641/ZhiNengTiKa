@@ -38,12 +38,16 @@ Item {
         }
         RowLayout {
             Layout.fillWidth: true
-            Button {
+            Text {
                 id: switchAllButton
-                height: questionsCountsListView.height
+                Layout.preferredWidth: 60
+                horizontalAlignment: Text.AlignHCenter
                 visible: questionsCountsListView.currentIndex !== -1
                 text: "All"
-                onClicked: questionsCountsListView.currentIndex = -1
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: questionsCountsListView.currentIndex = -1
+                }
             }
 
             ListView {

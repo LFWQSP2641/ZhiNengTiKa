@@ -52,7 +52,7 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
                 }
             }
             file.close();
-            templateListModelList.append(new TemplateListModel(tempTemplateList));
+            templateListModelList.append(new TemplateListModel(tempTemplateList, this));
         }
         else
         {
