@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Qt.labs.platform
 import TemplateRawDataQML
 import MultipleSubjectsTemplateListModelList
+import RandomColorGenerator
 
 ApplicationWindow {
     id: applicationWindow
@@ -50,7 +51,8 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: parent.height * 0.67
                 iconSource: "qrc:/svg/icon/qrcode.svg"
-                buttonText: "扫描二维码"
+                buttonText: "扫码"
+                backgroundColor: RandomColorGenerator.generateRandomBrightColor()
                 onClickedLeft: stackView.push(qrCodeScannerWidgetComponent)
             }
             RowLayout {
@@ -62,7 +64,8 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     iconSource: "qrc:/svg/icon/list.svg"
-                    buttonText: "题卡列表"
+                    buttonText: "列表"
+                    backgroundColor: RandomColorGenerator.generateRandomBrightColor()
                     onClickedLeft: stackView.push(selectWidgetComponent)
                 }
 
@@ -70,7 +73,8 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     iconSource: "qrc:/svg/icon/search.svg"
-                    buttonText: "题卡名称搜素"
+                    buttonText: "搜素"
+                    backgroundColor: RandomColorGenerator.generateRandomBrightColor()
                     onClickedLeft: stackView.push(searchWidgetComponent)
                 }
 
@@ -79,6 +83,7 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     iconSource: "qrc:/svg/icon/settings.svg"
                     buttonText: "设置"
+                    backgroundColor: RandomColorGenerator.generateRandomBrightColor()
                     onClickedLeft: stackView.push("qrc:/qml/SettingWidget.qml", {builtInStyles: applicationWindow.builtInStyles})
                 }
             }
