@@ -96,22 +96,46 @@ Item {
             anchors.centerIn: whiteRing
             height: parent.height / 2 + 10
             width: height
-            z: parent.z + 2
+            z: whiteRing.z + 1
             radius: 90
-            color: "black"
+            color: parent.color
         }
         Rectangle {
             id: blueRoundButton
             anchors.centerIn: whiteRing
             height: parent.height / 2
             width: height
-            z: parent.z + 3
+            z: blackRing.z + 1
             radius: 90
             color: "#3d94ff"
-            MouseArea {
+            Rectangle {
                 anchors.fill: parent
-                onClicked: {
-                    qrCodeScanner.scan()
+                z: parent.z + 1
+                radius: parent.radius
+                color: "black"
+                opacity: 0
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    //按下
+                    onPressed: {
+                        parent.opacity = 0.4
+                    }
+                    //释放
+                    onReleased: {
+                        parent.opacity = 0.2
+                    }
+                    //指针进入
+                    onEntered: {
+                        parent.opacity = 0.2
+                    }
+                    //指针退出
+                    onExited: {
+                        parent.opacity = 0
+                    }
+                    onClicked: {
+                        qrCodeScanner.scan()
+                    }
                 }
             }
         }
@@ -123,6 +147,7 @@ Item {
             anchors.bottom: parent.bottom
             anchors.rightMargin: 10
             anchors.bottomMargin: 10
+            z: parent.z + 1
             onClicked: {
                 camera.stop()
                 fileDialog.open()
