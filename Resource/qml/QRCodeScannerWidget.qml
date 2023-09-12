@@ -91,17 +91,13 @@ Item {
         color: "black"
         Text {
             id: stateText
-            anchors.top: parent.top
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors {top: parent.top; horizontalCenter: parent.horizontalCenter; margins: 10}
             color: "white"
             wrapMode: Text.WordWrap
         }
         Rectangle {
             id: whiteRing
-            anchors.bottom: parent.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.margins: 10
-            height: parent.height / 2 + 20
+            anchors {top: stateText.bottom; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: 10}
             width: height
             z: parent.z + 1
             radius: 90
@@ -110,7 +106,7 @@ Item {
         Rectangle {
             id: blackRing
             anchors.centerIn: whiteRing
-            height: parent.height / 2 + 10
+            height: whiteRing.height - 10
             width: height
             z: whiteRing.z + 1
             radius: 90
@@ -119,7 +115,7 @@ Item {
         Rectangle {
             id: blueRoundButton
             anchors.centerIn: whiteRing
-            height: parent.height / 2
+            height: blackRing.height - 10
             width: height
             z: blackRing.z + 1
             radius: 90
