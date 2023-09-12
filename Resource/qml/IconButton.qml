@@ -41,6 +41,7 @@ Rectangle {
         z: parent.z + 1
         anchors.fill: parent
         opacity: 0
+        radius: parent.radius
     }
 
     MouseArea {
