@@ -20,6 +20,7 @@ Rectangle {
         anchors.centerIn: parent
         height: parent.height * widgetSizeRatio
         width: parent.width * widgetSizeRatio
+        spacing: 10
         Image {
             id: icon
             fillMode: Image.PreserveAspectFit
