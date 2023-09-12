@@ -8,6 +8,7 @@ Rectangle {
     property alias buttonText: button.text
     property color backgroundColor: "#ffffff"
     property real widgetSizeRatio: 1
+    property bool acceptedRightButtons: false
 
     //自定义点击信号
     signal clickedLeft()
@@ -51,7 +52,7 @@ Rectangle {
         hoverEnabled: true
 
         //接受左键和右键输入
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
+        acceptedButtons: acceptedRightButtons ? (Qt.LeftButton | Qt.RightButton) : Qt.LeftButton
         onClicked: function(mouse){
             //左键点击
             if (mouse.button === Qt.LeftButton)
@@ -70,7 +71,10 @@ Rectangle {
         }
 
         //释放
-        onReleased: {
+        onReleased: function(mouse){
+            if(Math.abs(mouse.x - parent.x) > parent.width ||
+                    Math.abs(mouse.y - parent.y) > parent.height)
+                return
             foreground.opacity = 0.2
             parent.release()
         }
