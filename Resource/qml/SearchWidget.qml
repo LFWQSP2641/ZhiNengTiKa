@@ -15,7 +15,6 @@ Item {
         }
         onSearchFinished: {
             templateListView.model = templateListModel
-            // WARNING 第二次搜索之后只显示三个结果
             if (templateListView.count !== templateListModel.rowCount())
             {
                 templateListView.model = null
