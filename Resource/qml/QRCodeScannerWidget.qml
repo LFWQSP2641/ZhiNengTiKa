@@ -27,6 +27,22 @@ Item {
     VideoOutput {
         id: videoOutput
         anchors.fill: parent
+        Rectangle {
+            id: flashRectangle
+            anchors.fill: parent
+            color: "black"
+            opacity: 0
+            function flash() {
+                flashAnimation.start()
+            }
+            SequentialAnimation {
+                id: flashAnimation
+
+                // 使矩形透明度变为1，然后再变回0，从而实现 "闪一下" 的效果
+                PropertyAnimation { target: flashRectangle; property: "opacity"; to: 1; duration: 0 }
+                PropertyAnimation { target: flashRectangle; property: "opacity"; to: 0; duration: 200 }
+            }
+        }
     }
     CaptureSession {
         camera: camera
@@ -135,6 +151,7 @@ Item {
                     }
                     onClicked: {
                         qrCodeScanner.scan()
+                        flashRectangle.flash()
                     }
                 }
             }
