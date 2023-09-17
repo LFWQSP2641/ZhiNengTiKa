@@ -23,6 +23,7 @@ Item {
             {
                 accountComboBox.model = settingOperator.getUserDataListModel()
                 logoutButton.enabled = true
+                refleshUserState()
                 dialog.close()
             }
             else
@@ -73,43 +74,127 @@ Item {
                 ColumnLayout {
                     width: parent.width
                     height: parent.height
-                    ComboBox {
-                        id: accountComboBox
+                    GroupBox {
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        model: settingOperator.getUserDataListModel()
-                        textRole: "display"
+                        title: "账号管理"
+                        ColumnLayout {
+                            width: parent.width
+                            height: parent.height
+                            ComboBox {
+                                id: accountComboBox
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                model: settingOperator.getUserDataListModel()
+                                textRole: "display"
 
-                        onCurrentIndexChanged: {
-                            if(accountComboBox.currentIndex > 0)
-                            {
-                                settingOperator.userDataListToFirst(accountComboBox.currentIndex)
-                                accountComboBox.model = settingOperator.getUserDataListModel()
+                                onCurrentIndexChanged: {
+                                    if(accountComboBox.currentIndex > 0)
+                                    {
+                                        settingOperator.userDataListToFirst(accountComboBox.currentIndex)
+                                        accountComboBox.model = settingOperator.getUserDataListModel()
+                                        refleshUserState()
+                                    }
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                Button {
+                                    id: loginButton
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    text: "登入"
+                                    onClicked: {
+                                        dialog.open()
+                                    }
+                                }
+                                Button {
+                                    id:logoutButton
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    text: "登出"
+                                    enabled: Settings.isLogin()
+                                    onClicked: {
+                                        Settings.logout()
+                                        logoutButton.enabled = Settings.isLogin()
+                                        refleshUserState()
+                                        accountComboBox.model = settingOperator.getUserDataListModel()
+                                    }
+                                }
                             }
                         }
                     }
-                    RowLayout {
+                    GroupBox {
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Button {
-                            id: loginButton
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            text: "登入"
-                            onClicked: {
-                                dialog.open()
+                        title: "账号状态"
+                        ColumnLayout {
+                            width: parent.width
+                            height: parent.height
+                            Text {
+                                id: currentUserValidText
+                                text: "可用性:"
+                                Rectangle {
+                                    id: currentUserValidRectangle
+                                    anchors.left: parent.right
+                                    anchors.margins: 10
+                                    height: parent.height
+                                    width: height
+                                    radius: 90
+                                    color: settingOperator.isCurrentUserEmpty() ? "red" : (settingOperator.isCurrentUserValid() ? "green" : "yellow")
+                                }
                             }
-                        }
-                        Button {
-                            id:logoutButton
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            text: "登出"
-                            enabled: Settings.isLogin()
-                            onClicked: {
-                                Settings.logout()
-                                logoutButton.enabled = Settings.isLogin()
-                                accountComboBox.model = settingOperator.getUserDataListModel()
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Text {
+                                    id: currentUserName
+                                    Layout.fillWidth: true
+                                    clip: true
+                                }
+                                Text {
+                                    id: currentUserPassword
+                                    Layout.fillWidth: true
+                                    clip: true
+                                }
+                            }
+                            RowLayout {
+                                Layout.fillWidth: true
+                                Text {
+                                    id: currentUserSchoolId
+                                    Layout.fillWidth: true
+                                    clip: true
+                                }
+                                Text {
+                                    id: currentUserStudentId
+                                    Layout.fillWidth: true
+                                    clip: true
+                                }
+                            }
+                            Text {
+                                id: currentUserAccessToken
+                                Layout.fillWidth: true
+                                clip: true
+                            }
+                            Text {
+                                id: currentUserAuthorization
+                                Layout.fillWidth: true
+                                clip: true
+                            }
+                            Text {
+                                id: currentUserClientSession
+                                Layout.fillWidth: true
+                                clip: true
+                            }
+                            Button {
+                                id: currentUserRelogin
+                                Layout.fillWidth: true
+                                text: "重新登陆"
+                                onClicked: {
+                                    if(settingOperator.currentUserRelogin())
+                                        messageDialog.show("重新登陆成功")
+                                    else
+                                        messageDialog.show("重新登陆失败")
+                                    refleshUserState()
+                                }
                             }
                         }
                     }
@@ -315,6 +400,36 @@ Item {
             messageDialogText.text = caption;
             messageDialog.open();
         }
+    }
+
+    function refleshUserState() {
+        var userValid = settingOperator.isCurrentUserValid()
+        currentUserValidRectangle.color = userValid ? "green" : "red"
+        currentUserRelogin.visible = (!userValid) && Settings.isLogin()
+        if(Settings.isLogin())
+        {
+            currentUserName.text = "账号:" + settingOperator.getCurrentUserUsername()
+            currentUserPassword.text = "密码:****************"
+            currentUserAccessToken.text = "AccessToken:" + settingOperator.getCurrentUserAccessToken()
+            currentUserAuthorization.text = "Authorization:" + settingOperator.getCurrentUserAuthorization()
+            currentUserSchoolId.text = "SchoolId:" + settingOperator.getCurrentUserSchoolId()
+            currentUserStudentId.text = "StudentId:" + settingOperator.getCurrentUserStudentId()
+            currentUserClientSession.text = "ClientSession:" + settingOperator.getCurrentUserClientSession()
+        }
+        else
+        {
+            currentUserName.text = "账号:****************"
+            currentUserPassword.text = "密码:****************"
+            currentUserAccessToken.text = "AccessToken:****************"
+            currentUserAuthorization.text = "Authorization:****************"
+            currentUserSchoolId.text = "SchoolId:****************"
+            currentUserStudentId.text = "StudentId:****************"
+            currentUserClientSession.text = "ClientSession:****************"
+        }
+    }
+
+    Component.onCompleted: {
+        refleshUserState()
     }
 
     Component.onDestruction: {

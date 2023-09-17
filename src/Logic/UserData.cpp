@@ -1,5 +1,6 @@
 #include "UserData.h"
 #include "../StaticClass/XinjiaoyuEncryptioner.h"
+#include "../StaticClass/XinjiaoyuNetwork.h"
 #include "../Singleton/Network.h"
 
 QByteArray UserData::publicAccessToken;
@@ -80,7 +81,31 @@ UserData UserData::getPublicUserData()
                     UserData::publicStudentId);
 }
 
+bool UserData::relogin()
+{
+    const auto newUserData(UserData::login(this->getUsername(), this->getPassword()));
+    if(newUserData.isEmpty())
+    {
+        this->errorStr = newUserData.getErrorStr();
+        return false;
+    }
+    this->accessToken = newUserData.getAccessToken();
+    this->authorization = newUserData.getAuthorization();
+    this->clientSession = newUserData.getClientSession();
+    this->detailDataJsonObject = newUserData.getDetailDataJsonObject();
+    this->schoolId = newUserData.getSchoolId();
+    this->studentId = newUserData.getStudentId();
+    return true;
+}
+
 QString UserData::getErrorStr() const
 {
     return errorStr;
+}
+
+bool UserData::isValid() const
+{
+    auto request{XinjiaoyuNetwork::setRequest(QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_system/member/user/vip"), *this)};
+    const auto returnData{Network::getGlobalNetworkManager()->getData(request)};
+    return returnData.startsWith("{\"code\":200,");
 }

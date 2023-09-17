@@ -15,6 +15,8 @@ public:
           password(password), schoolId(schoolId),
           studentId(studentId), username(username) {}
 
+    bool relogin();
+
     QByteArray getAccessToken() const
     {
         return accessToken;
@@ -55,10 +57,7 @@ public:
                authorization.isEmpty() ||
                clientSession.isEmpty();
     }
-    bool isValid() const
-    {
-        return !isEmpty();
-    }
+    bool isValid() const;
 
     static UserData login(const QByteArray &username, const QByteArray &password);
     static void initPublicUserData();

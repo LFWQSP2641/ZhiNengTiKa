@@ -9,12 +9,72 @@ SettingOperator::SettingOperator(QObject *parent)
 
 }
 
+QByteArray SettingOperator::getCurrentUserAccessToken() const
+{
+    return Settings::getSingletonSettings()->currentUserData().getAccessToken();
+}
+
+QByteArray SettingOperator::getCurrentUserAuthorization() const
+{
+    return Settings::getSingletonSettings()->currentUserData().getAuthorization();
+}
+
+QByteArray SettingOperator::getCurrentUserClientSession() const
+{
+    return Settings::getSingletonSettings()->currentUserData().getClientSession();
+}
+
+QByteArray SettingOperator::getCurrentUserPassword() const
+{
+    return Settings::getSingletonSettings()->currentUserData().getPassword();
+}
+
+QByteArray SettingOperator::getCurrentUserSchoolId() const
+{
+    return Settings::getSingletonSettings()->currentUserData().getSchoolId();
+}
+
+QByteArray SettingOperator::getCurrentUserStudentId() const
+{
+    return Settings::getSingletonSettings()->currentUserData().getStudentId();
+}
+
+QByteArray SettingOperator::getCurrentUserUsername() const
+{
+    return Settings::getSingletonSettings()->currentUserData().getUsername();
+}
+
+bool SettingOperator::isCurrentUserEmpty() const
+{
+    return Settings::getSingletonSettings()->currentUserData().isEmpty();
+}
+
+bool SettingOperator::isCurrentUserValid() const
+{
+    return Settings::getSingletonSettings()->currentUserData().isValid();
+}
+
 bool SettingOperator::login(const QString &id, const QString &pw)
 {
     auto newUserData(UserData::login(id.toUtf8(), pw.toUtf8()));
     if(newUserData.isValid())
     {
         Settings::getSingletonSettings()->userDataListPrepend(newUserData);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool SettingOperator::currentUserRelogin()
+{
+    auto userDate(Settings::getSingletonSettings()->currentUserData());
+    if(userDate.relogin())
+    {
+        Settings::getSingletonSettings()->userDataListRemoveFirst();
+        Settings::getSingletonSettings()->userDataListPrepend(userDate);
         return true;
     }
     else

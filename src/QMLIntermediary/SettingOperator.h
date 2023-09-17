@@ -7,7 +7,18 @@ class SettingOperator : public QObject
 public:
     explicit SettingOperator(QObject *parent = nullptr);
 
+    Q_INVOKABLE QByteArray getCurrentUserAccessToken() const;
+    Q_INVOKABLE QByteArray getCurrentUserAuthorization() const;
+    Q_INVOKABLE QByteArray getCurrentUserClientSession() const;
+    Q_INVOKABLE QByteArray getCurrentUserPassword() const;
+    Q_INVOKABLE QByteArray getCurrentUserSchoolId() const;
+    Q_INVOKABLE QByteArray getCurrentUserStudentId() const;
+    Q_INVOKABLE QByteArray getCurrentUserUsername() const;
+    Q_INVOKABLE bool isCurrentUserEmpty() const;
+    Q_INVOKABLE bool isCurrentUserValid() const;
+
     Q_INVOKABLE bool login(const QString &id, const QString &pw);
+    Q_INVOKABLE bool currentUserRelogin();
     Q_INVOKABLE QStringListModel *getUserDataListModel();
     Q_INVOKABLE QString getVersion();
 public slots:
