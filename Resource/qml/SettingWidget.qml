@@ -55,6 +55,8 @@ Item {
 
     UpdateWidget {
         id: updateWidget
+        anchors.centerIn: parent
+        width: parent.width
         showQuestionDialog: true
         onFinished: {
             checkUpdate.enabled = true

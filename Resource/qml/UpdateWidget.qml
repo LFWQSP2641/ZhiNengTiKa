@@ -6,7 +6,6 @@ import UpdateChecker
 // TODO Dialog无法显示在控件中心
 Dialog {
     id: updateDialog
-    anchors.centerIn: parent
     modal: true
     focus: true
     property bool showQuestionDialog: false
@@ -46,6 +45,7 @@ Dialog {
             clip: true
             Text {
                 id: updateDialogText
+                width: parent.width
                 wrapMode: Text.WordWrap
                 onLinkActivated: function(link){ Qt.openUrlExternally(link) }
             }

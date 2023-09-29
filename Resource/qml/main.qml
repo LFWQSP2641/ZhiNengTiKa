@@ -125,6 +125,8 @@ ApplicationWindow {
 
     UpdateWidget {
         id: updateWidget
+        anchors.centerIn: parent
+        width: parent.width
         showQuestionDialog: false
     }
 
