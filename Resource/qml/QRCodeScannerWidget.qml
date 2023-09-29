@@ -48,23 +48,6 @@ Item {
         camera: camera
         videoOutput: videoOutput
     }
-    ListModel {
-        id: videoInputsListModel
-    }
-
-    ComboBox {
-        id: videoInputsComboBox
-        anchors {top: parent.top; left: parent.left; right: parent.right}
-        model: videoInputsListModel
-        onCurrentIndexChanged: {
-            if(videoInputsComboBox.currentIndex >= 0)
-            {
-                camera.stop()
-                camera.cameraDevice = mediaDevices.videoInputs[videoInputsComboBox.currentIndex]
-                camera.start()
-            }
-        }
-    }
 
     MessageDialog {
         id: scanFailedDialog
@@ -83,6 +66,7 @@ Item {
             console.log(text)
             if(succeeded)
             {
+                stateText.text = text
                 templateCode = text
                 delayCameraClose.start()
             }
@@ -174,16 +158,27 @@ Item {
         }
         RoundButton {
             id: selectFileRoundButton
-            visible: true
             icon.source: "qrc:/svg/icon/picture.svg"
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.rightMargin: 10
-            anchors.bottomMargin: 10
+            anchors {right: parent.right; bottom: parent.bottom; rightMargin: 10; bottomMargin: 10}
             z: parent.z + 1
             onClicked: {
                 camera.stop()
                 fileDialog.open()
+            }
+        }
+        RoundButton {
+            id: switchCameraDevice
+            property int currentDeviceIndex: 0
+            icon.source: "qrc:/svg/icon/refresh.svg"
+            anchors {left: parent.left; bottom: parent.bottom; leftMargin: 10; bottomMargin: 10}
+            z: parent.z + 1
+            onClicked: {
+                switchCameraDevice.currentDeviceIndex += 1
+                if(switchCameraDevice.currentDeviceIndex > (mediaDevices.videoInputs.length - 1))
+                    switchCameraDevice.currentDeviceIndex = 0
+                camera.cameraDevice = mediaDevices.videoInputs[switchCameraDevice.currentDeviceIndex]
+                camera.stop()
+                camera.start()
             }
         }
     }
@@ -207,11 +202,6 @@ Item {
 
     Component.onCompleted: {
         camera.start()
-        for (var i = 0; i < mediaDevices.videoInputs.length; i++)
-        {
-            videoInputsListModel.append({"text": mediaDevices.videoInputs[i].description})
-        }
-        videoInputsComboBox.currentIndex = 0
     }
     Component.onDestruction: {
         camera.stop()
