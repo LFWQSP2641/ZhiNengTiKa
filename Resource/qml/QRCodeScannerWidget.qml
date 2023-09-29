@@ -48,6 +48,23 @@ Item {
         camera: camera
         videoOutput: videoOutput
     }
+    ListModel {
+        id: videoInputsListModel
+    }
+
+    ComboBox {
+        id: videoInputsComboBox
+        anchors {top: parent.top; left: parent.left; right: parent.right}
+        model: videoInputsListModel
+        onCurrentIndexChanged: {
+            if(videoInputsComboBox.currentIndex >= 0)
+            {
+                camera.stop()
+                camera.cameraDevice = mediaDevices.videoInputs[videoInputsComboBox.currentIndex]
+                camera.start()
+            }
+        }
+    }
 
     MessageDialog {
         id: scanFailedDialog
@@ -64,11 +81,14 @@ Item {
         onDecodingFinished: function(succeeded, text){
             console.log(succeeded)
             console.log(text)
-            stateText.text = "扫描" + (succeeded ? ("成功\n" + text) : "失败")
             if(succeeded)
             {
                 templateCode = text
                 delayCameraClose.start()
+            }
+            else
+            {
+                stateText.text = "未检测到二维码, 请重试"
             }
         }
         onError: function(msg){
@@ -187,6 +207,11 @@ Item {
 
     Component.onCompleted: {
         camera.start()
+        for (var i = 0; i < mediaDevices.videoInputs.length; i++)
+        {
+            videoInputsListModel.append({"text": mediaDevices.videoInputs[i].description})
+        }
+        videoInputsComboBox.currentIndex = 0
     }
     Component.onDestruction: {
         camera.stop()
