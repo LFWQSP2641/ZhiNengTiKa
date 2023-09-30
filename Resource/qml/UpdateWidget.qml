@@ -54,7 +54,7 @@ Dialog {
             Layout.fillWidth: true
             visible: false
             from: 0
-            to: 30000000
+            to: 40000000
         }
         RowLayout {
             Layout.fillWidth: true
