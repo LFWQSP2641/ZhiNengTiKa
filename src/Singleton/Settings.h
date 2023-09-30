@@ -52,9 +52,13 @@ public:
     void resetAnimeImageUrl();
 
     const QList<QPair<QString, QString>> animeImageUrlList = QList<QPair<QString, QString>>()
+                                      << QPair<QString, QString>("IMGAPI(风景竖屏)", "https://imgapi.cn/api.php?zd=mobile&fl=fengjing&gs=images")
+                                      << QPair<QString, QString>("IMGAPI(风景横屏)", "https://imgapi.cn/api.php?zd=pc&fl=fengjing&gs=images")
+                                      << QPair<QString, QString>("IMGAPI(动漫竖屏)", "https://imgapi.cn/api.php?zd=mobile&fl=dongman&gs=images")
+                                      << QPair<QString, QString>("IMGAPI(动漫横屏)", "https://imgapi.cn/api.php?zd=pc&fl=dongman&gs=images")
+                                      << QPair<QString, QString>("t.mwm.moe(二次元随机图片API)(风景横屏)", "https://t.mwm.moe/fj")
                                       << QPair<QString, QString>("t.mwm.moe(二次元随机图片API)(竖屏)", "https://t.mwm.moe/mp")
                                       << QPair<QString, QString>("t.mwm.moe(二次元随机图片API)(横屏)", "https://t.mwm.moe/pc")
-                                      << QPair<QString, QString>("t.mwm.moe(二次元随机图片API)(风景横屏)", "https://t.mwm.moe/mp")
                                       << QPair<QString, QString>("樱道(动漫综合1~18)", "https://api.r10086.com/樱道随机图片api接口.php?图片系列=动漫综合^(1~18)^")
                                       << QPair<QString, QString>("樱道(某科学的超电磁炮竖屏系列)", "https://api.r10086.com/樱道随机图片api接口.php?图片系列=某科学的超电磁炮竖屏系列1")
                                       << QPair<QString, QString>("樱道(某科学的超电磁炮横屏系列)", "https://api.r10086.com/樱道随机图片api接口.php?图片系列=某科学的超电磁炮横屏系列1")
