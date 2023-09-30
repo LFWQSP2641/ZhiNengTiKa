@@ -57,6 +57,31 @@ Settings::Settings(QObject *parent)
     {
         resetUuid();
     }
+
+    animeImageUrl =  settingJsonObject.value(QStringLiteral("animeImageUrl")).toString(animeImageUrlList.at(0).second);
+}
+
+QString Settings::getAnimeImageUrl() const
+{
+    return animeImageUrl;
+}
+
+void Settings::setAnimeImageUrl(const QString &newAnimeImageUrl)
+{
+    if (animeImageUrl == newAnimeImageUrl)
+        return;
+    animeImageUrl = newAnimeImageUrl;
+    emit animeImageUrlChanged();
+}
+
+void Settings::resetAnimeImageUrl()
+{
+    setAnimeImageUrl(animeImageUrlList.at(0).second);
+}
+
+QList<QPair<QString, QString> > Settings::getAnimeImageUrlList() const
+{
+    return animeImageUrlList;
 }
 
 UserDataList Settings::getUserDataList() const
@@ -294,6 +319,8 @@ void Settings::saveToFile() const
     settingJsonObject.insert(QStringLiteral("qmlStyle"), qmlStyle);
     settingJsonObject.insert(QStringLiteral("apiQRCodeScanner"), jsonObjectApiQRCodeScanner);
     settingJsonObject.insert(QStringLiteral("uuid"), uuid);
+
+    settingJsonObject.insert(QStringLiteral("animeImageUrl"), animeImageUrl);
 
     QFile file{ Global::configPath().append(QStringLiteral("/setting.json")) };
     file.open(QFile::WriteOnly);

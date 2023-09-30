@@ -83,7 +83,7 @@ bool SettingOperator::currentUserRelogin()
     }
 }
 
-QVariant SettingOperator::getUserDataList()
+QVariant SettingOperator::getUserDataList() const
 {
     QStringList userDataList;
     for(const auto &i : Settings::getSingletonSettings()->getUserDataList())
@@ -100,9 +100,34 @@ QVariant SettingOperator::getUserDataList()
     return QVariant::fromValue(userDataList);
 }
 
-QString SettingOperator::getVersion()
+QVariant SettingOperator::getAnimeImageNameList() const
+{
+    QStringList animeImageNameList;
+    for(const auto &i : Settings::getSingletonSettings()->getAnimeImageUrlList())
+    {
+        animeImageNameList.append(i.first);
+    }
+    return QVariant::fromValue(animeImageNameList);
+}
+
+QString SettingOperator::getVersion() const
 {
     return QStringLiteral(APP_VERSION);
+}
+
+QString SettingOperator::getAnimeImageUrl(qsizetype index) const
+{
+    return Settings::getSingletonSettings()->getAnimeImageUrlList().at(index).second;
+}
+
+qsizetype SettingOperator::getCurrentAnimeImageNameIndex() const
+{
+    for(auto i(0); i < Settings::getSingletonSettings()->getAnimeImageUrlList().size(); ++i)
+    {
+        if(Settings::getSingletonSettings()->getAnimeImageUrlList().at(i).second == Settings::getSingletonSettings()->getAnimeImageUrl())
+            return i;
+    }
+    return -1;
 }
 
 void SettingOperator::userDataListToFirst(qsizetype index)

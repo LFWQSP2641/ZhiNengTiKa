@@ -44,10 +44,13 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
 
-        initialItem: Rectangle {
-            color: RandomColorGenerator.generateRandomBrightColor()
+        initialItem: Image {
+            id: backgroundImage
+            cache: false
+            mipmap: true
+            fillMode: Image.PreserveAspectFit
+            source: "image://AnimeImageProvider/image"
             ColumnLayout {
-                //                anchors.fill: parent
                 anchors.centerIn: parent
                 height: parent.height - 10
                 width: parent.width - 10
@@ -57,6 +60,7 @@ ApplicationWindow {
                     Layout.preferredHeight: parent.height * 0.67
                     radius: 45
                     widgetSizeRatio: 0.5
+                    opacity: 0.3
                     iconSource: "qrc:/svg/icon/qrcode.svg"
                     buttonText: "扫码"
                     backgroundColor: RandomColorGenerator.generateRandomBrightColor()
@@ -71,6 +75,7 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         radius: 45
                         widgetSizeRatio: 0.5
+                        opacity: 0.3
                         iconSource: "qrc:/svg/icon/list.svg"
                         buttonText: "列表"
                         backgroundColor: RandomColorGenerator.generateRandomBrightColor()
@@ -82,6 +87,7 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         radius: 45
                         widgetSizeRatio: 0.5
+                        opacity: 0.3
                         iconSource: "qrc:/svg/icon/search.svg"
                         buttonText: "搜素"
                         backgroundColor: RandomColorGenerator.generateRandomBrightColor()
@@ -93,12 +99,41 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         radius: 45
                         widgetSizeRatio: 0.5
+                        opacity: 0.3
                         iconSource: "qrc:/svg/icon/settings.svg"
                         buttonText: "设置"
                         backgroundColor: RandomColorGenerator.generateRandomBrightColor()
-                        onClickedLeft: stackView.push("qrc:/qml/SettingWidget.qml", {builtInStyles: applicationWindow.builtInStyles})
+                        onClickedLeft: {
+                            enabled = false
+                            stackView.push("qrc:/qml/SettingWidget.qml", {builtInStyles: applicationWindow.builtInStyles})
+                            enabled = true
+                        }
                     }
                 }
+            }
+        }
+        onDepthChanged: {
+            if(stackView.depth == 1 && imageRefreshTimer.needToRefresh)
+            {
+                refreshImage()
+            }
+        }
+    }
+
+    Timer {
+        id: imageRefreshTimer
+        property bool needToRefresh: false
+        running: true
+        repeat: true
+        interval: 5000
+        onTriggered: {
+            if(stackView.depth == 1)
+            {
+                refreshImage()
+            }
+            else
+            {
+                imageRefreshTimer.needToRefresh = true
             }
         }
     }
@@ -215,5 +250,9 @@ ApplicationWindow {
         {
             stackView.pop()
         }
+    }
+    function refreshImage() {
+        backgroundImage.source = ""
+        backgroundImage.source = "image://AnimeImageProvider/image"
     }
 }

@@ -6,6 +6,7 @@
 #include "Logic/UpdateChecker.h"
 #include "Logic/TemplateSearcher.h"
 #include "Logic/TemplateListModel.h"
+#include "QMLIntermediary/AnimeImageProvider.h"
 #include "QMLIntermediary/MultipleSubjectsTemplateListModelListSingleton.h"
 #include "QMLIntermediary/RandomColorGenerator.h"
 #include "QMLIntermediary/TemplateSummaryQML.h"
@@ -81,6 +82,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<QRCodeScanner>("QRCodeScanner", 1, 0, "QRCodeScanner");
     qmlRegisterType<ImageProvider>("ImageProvider", 1, 0, "ImageProvider");
     QQmlApplicationEngine engine;
+    engine.addImageProvider(QStringLiteral("AnimeImageProvider"), new AnimeImageProvider);
 
     QStringList builtInStyles = { QStringLiteral("Basic"), QStringLiteral("Fusion"),
                                   QStringLiteral("Imagine"), QStringLiteral("Material"), QStringLiteral("Universal")
