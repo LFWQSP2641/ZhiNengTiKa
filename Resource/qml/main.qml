@@ -6,6 +6,7 @@ import Qt.labs.platform
 import TemplateRawDataQML
 import MultipleSubjectsTemplateListModelList
 import QMLUtils
+import ZAccelerationToOpacityConverter
 
 ApplicationWindow {
     id: applicationWindow
@@ -54,24 +55,14 @@ ApplicationWindow {
             Item {
                 id: buttonsItem
                 anchors.fill: parent
-                opacity: QMLUtils.convertZAccelerationToOpacity(accelerometer.z)
+                opacity: 0.5
                 NumberAnimation {
                     id: buttonsItemOpacityAnimation
-                    target: parent
+                    target: buttonsItem
                     property: "opacity"
-                    duration: 500
+                    duration: 490
                     easing.type: Easing.Linear
                 }
-                Timer {
-                    running: true
-                    repeat: true
-                    interval: 500
-                    onTriggered: {
-                        buttonsItemOpacityAnimation.to = QMLUtils.convertZAccelerationToOpacity(accelerometer.z)
-                        buttonsItemOpacityAnimation.restart()
-                    }
-                }
-
                 ColumnLayout {
                     anchors.centerIn: parent
                     height: parent.height - 10
@@ -170,6 +161,24 @@ ApplicationWindow {
         }
     }
 
+    Timer {
+        running: true
+        repeat: true
+        interval: 500
+        onTriggered: {
+            if(stackView.depth === 1)
+                converter.trySetZAcceleration(accelerometer.z)
+        }
+    }
+
+    ZAccelerationToOpacityConverter {
+        id: converter
+        onOpacityChanged: function(newOpacity) {
+            buttonsItemOpacityAnimation.to = newOpacity
+            buttonsItemOpacityAnimation.restart()
+        }
+    }
+
     MessageDialog {
         id: messageDialog
 
@@ -241,11 +250,16 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        converter.start()
         updateWidget.checkUpdate()
         if(!updateWidget.checkMinimumVersion())
         {
             applicationWindowQuitDialog.open()
         }
+    }
+    Component.onDestruction: {
+        converter.stop()
+        converter.wait()
     }
 
     function showTemplateDetailWidget(templateCode) {

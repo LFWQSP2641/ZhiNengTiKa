@@ -23,9 +23,3 @@ QColor QMLUtils::generateRandomBrightColor()
 
     return QColor(red, green, blue);
 }
-
-qreal QMLUtils::convertZAccelerationToOpacity(qreal zAcceleration)
-{
-    const auto transformZ(qAbs(zAcceleration) / 10);
-    return 4 * transformZ * transformZ * transformZ - 6 * transformZ * transformZ + 3 * transformZ;
-}

@@ -9,6 +9,7 @@
 #include "QMLIntermediary/AnimeImageProvider.h"
 #include "QMLIntermediary/MultipleSubjectsTemplateListModelListSingleton.h"
 #include "QMLIntermediary/QMLUtils.h"
+#include "QMLIntermediary/ZAccelerationToOpacityConverter.h"
 #include "QMLIntermediary/TemplateSummaryQML.h"
 #include "QMLIntermediary/TemplateRawDataQML.h"
 #include "QMLIntermediary/TemplateAnalysisQML.h"
@@ -81,6 +82,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<UpdateChecker>("UpdateChecker", 1, 0, "UpdateChecker");
     qmlRegisterType<QRCodeScanner>("QRCodeScanner", 1, 0, "QRCodeScanner");
     qmlRegisterType<ImageProvider>("ImageProvider", 1, 0, "ImageProvider");
+    qmlRegisterType<ZAccelerationToOpacityConverter>("ZAccelerationToOpacityConverter", 1, 0, "ZAccelerationToOpacityConverter");
     QQmlApplicationEngine engine;
     engine.addImageProvider(QStringLiteral("AnimeImageProvider"), new AnimeImageProvider);
 

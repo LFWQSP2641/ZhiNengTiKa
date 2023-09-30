@@ -9,7 +9,6 @@ public:
     explicit QMLUtils(QObject *parent = nullptr);
     Q_INVOKABLE QColor generateRandomColor();
     Q_INVOKABLE QColor generateRandomBrightColor();
-    Q_INVOKABLE qreal convertZAccelerationToOpacity(qreal zAcceleration);
 signals:
 
 };

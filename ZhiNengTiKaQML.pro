@@ -11,7 +11,8 @@ HEADERS += \
     src/QMLIntermediary/SettingOperator.h \
     src/QMLIntermediary/TemplateAnalysisQML.h \
     src/QMLIntermediary/TemplateRawDataQML.h \
-    src/QMLIntermediary/TemplateSummaryQML.h
+    src/QMLIntermediary/TemplateSummaryQML.h \
+    src/QMLIntermediary/ZAccelerationToOpacityConverter.h
 SOURCES += \
     src/QMLIntermediary/AnimeImageProvider.cpp \
     src/QMLIntermediary/MultipleSubjectsTemplateListModelListSingleton.cpp \
@@ -20,6 +21,7 @@ SOURCES += \
     src/QMLIntermediary/TemplateAnalysisQML.cpp \
     src/QMLIntermediary/TemplateRawDataQML.cpp \
     src/QMLIntermediary/TemplateSummaryQML.cpp \
+    src/QMLIntermediary/ZAccelerationToOpacityConverter.cpp \
     src/mainQML.cpp \
     src/pchQML.h.cpp
 
