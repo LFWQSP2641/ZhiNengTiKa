@@ -234,6 +234,7 @@ Item {
                         ComboBox {
                             id: fontComboBox
                             Layout.fillWidth: true
+                            font: currentText.length == 0 ? undefined : currentText
                             property int fontIndex: -1
                             model: Qt.fontFamilies()
                             delegate: ItemDelegate {
