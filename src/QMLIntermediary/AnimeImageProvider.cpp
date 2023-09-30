@@ -3,22 +3,22 @@
 #include "../Singleton/Settings.h"
 
 AnimeImageProvider::AnimeImageProvider()
-    : QQuickImageProvider(QQuickImageProvider::Pixmap),
-      cacheList(32, QPair<QPixmap, bool>(QPixmap(), false))
+    : QQuickImageProvider(QQuickImageProvider::Image),
+      cacheList(8, QPair<QImage, bool>(QImage(), false))
 {
     fillCacheList();
 }
 
-QPixmap AnimeImageProvider::requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
+QImage AnimeImageProvider::requestImage(const QString &id, QSize *size, const QSize &requestedSize)
 {
     Q_UNUSED(id);
-    QPixmap pixmap;
+    QImage image;
     for(auto i(0); i < cacheList.size(); ++i)
     {
         if(cacheList.at(i).second)
         {
             lock.lockForRead();
-            pixmap = cacheList.at(i).first;
+            image = cacheList.at(i).first;
             lock.unlock();
             lock.lockForWrite();
             cacheList[i].second = false;
@@ -27,30 +27,47 @@ QPixmap AnimeImageProvider::requestPixmap(const QString &id, QSize *size, const 
             break;
         }
     }
-    if(pixmap.isNull())
+    if(image.isNull())
     {
-        pixmap = QPixmap(requestedSize.width() > 0 ? requestedSize.width() : 100,
-                         requestedSize.height() > 0 ? requestedSize.height() : 100);
-        pixmap.fill(QColor(255, 255, 255, 0).rgba());
+        image = QImage(requestedSize.width() > 0 ? requestedSize.width() : 100,
+                       requestedSize.height() > 0 ? requestedSize.height() : 100,
+                       QImage::Format::Format_ARGB32);
+        image.fill(QColor(255, 255, 255, 0).rgba());
     }
-    int width = pixmap.width();
-    int height = pixmap.height();
+    int width = image.width();
+    int height = image.height();
 
     if (size)
         *size = QSize(width, height);
-    return pixmap;
+    return image;
 }
 
 void AnimeImageProvider::fillCache(int index)
 {
+    // TODO: 只要QImage在子线程构造, 必报错:
+    // Cannot create children for a parent that is in a different thread.
+    // (Parent is NetworkAccessManagerBlockable(0x***********), parent's thread is QThread(0x***********), current thread is QQuickPixmapReader(0x***********)
+    // 无论是copy还是啥的, 都无法避免
+#if 1
     const auto url(replaceRandomNumbers(Settings::getSingletonSettings()->getAnimeImageUrl()));
     auto reply(Network::getGlobalNetworkManager()->getByStrUrl(url));
     QObject::connect(reply, &QNetworkReply::finished, this, [this, index, reply]
     {
+        if(reply->error() != QNetworkReply::NoError)
+        {
+            fillCache(index);
+            return;
+        }
         QWriteLocker locker(&lock);
-        cacheList[index].first = QPixmap::fromImage(QImage::fromData(Network::getGlobalNetworkManager()->replyReadAll(reply)));
+        cacheList[index].first = QImage::fromData(reply->readAll());
         cacheList[index].second = true;
+        reply->deleteLater();
     }, Qt::DirectConnection);
+#else
+    QWriteLocker locker(&lock);
+    cacheList[index].first = QImage("D:/Downloads/736f354a405b251541368b560cd1f665.jpg");
+    cacheList[index].second = true;
+#endif
 }
 
 void AnimeImageProvider::fillCacheList()

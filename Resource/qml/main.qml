@@ -48,6 +48,7 @@ ApplicationWindow {
 
         initialItem: Image {
             id: backgroundImage
+            asynchronous: true
             cache: false
             mipmap: true
             fillMode: Image.PreserveAspectFit
@@ -60,7 +61,7 @@ ApplicationWindow {
                     id: buttonsItemOpacityAnimation
                     target: buttonsItem
                     property: "opacity"
-                    duration: 490
+                    duration: zAccelerationReportTimer.interval - 10
                     easing.type: Easing.Linear
                 }
                 ColumnLayout {
@@ -162,9 +163,10 @@ ApplicationWindow {
     }
 
     Timer {
+        id: zAccelerationReportTimer
         running: true
         repeat: true
-        interval: 500
+        interval: 100
         onTriggered: {
             if(stackView.depth === 1)
                 converter.trySetZAcceleration(accelerometer.z)
@@ -240,8 +242,12 @@ ApplicationWindow {
         QRCodeScannerWidget {
             id: qrCodeScannerWidget
             Component.onCompleted: {
+                imageRefreshTimer.stop()
+                zAccelerationReportTimer.stop()
             }
             Component.onDestruction: {
+                imageRefreshTimer.start()
+                zAccelerationReportTimer.start()
             }
             onScanFinished: function(templateCode){
                 showTemplateDetailWidgetAndPop(templateCode)
