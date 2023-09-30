@@ -9,6 +9,31 @@ Item {
 
     SettingOperator {
         id: settingOperator
+        onCheckCurrentValidFinished: function(valid) {
+            currentUserValidRectangle.color = valid ? "green" : "red"
+            accountComboBox.enabled = true
+            currentUserRelogin.visible = (!valid) && Settings.isLogin()
+            if(Settings.isLogin())
+            {
+                currentUserName.text = "账号:" + settingOperator.getCurrentUserUsername()
+                currentUserPassword.text = "密码:****************"
+                currentUserAccessToken.text = "AccessToken:" + settingOperator.getCurrentUserAccessToken()
+                currentUserAuthorization.text = "Authorization:" + settingOperator.getCurrentUserAuthorization()
+                currentUserSchoolId.text = "SchoolId:" + settingOperator.getCurrentUserSchoolId()
+                currentUserStudentId.text = "StudentId:" + settingOperator.getCurrentUserStudentId()
+                currentUserClientSession.text = "ClientSession:" + settingOperator.getCurrentUserClientSession()
+            }
+            else
+            {
+                currentUserName.text = "账号:****************"
+                currentUserPassword.text = "密码:****************"
+                currentUserAccessToken.text = "AccessToken:****************"
+                currentUserAuthorization.text = "Authorization:****************"
+                currentUserSchoolId.text = "SchoolId:****************"
+                currentUserStudentId.text = "StudentId:****************"
+                currentUserClientSession.text = "ClientSession:****************"
+            }
+        }
     }
 
     Dialog {
@@ -24,7 +49,7 @@ Item {
             {
                 accountComboBox.model = settingOperator.getUserDataList()
                 logoutButton.enabled = true
-                refleshUserState()
+                settingOperator.checkCurrentValid()
                 loginDialog.close()
             }
             else
@@ -122,13 +147,15 @@ Item {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 model: settingOperator.getUserDataList()
+                                enabled: false
 
                                 onActivated: {
                                     if(accountComboBox.currentIndex > 0)
                                     {
+                                        currentUserValidRectangle.color = "blue"
                                         settingOperator.userDataListToFirst(accountComboBox.currentIndex)
                                         accountComboBox.model = settingOperator.getUserDataList()
-                                        refleshUserState()
+                                        settingOperator.checkCurrentValid()
                                     }
                                 }
                             }
@@ -153,7 +180,7 @@ Item {
                                     onClicked: {
                                         Settings.logout()
                                         logoutButton.enabled = Settings.isLogin()
-                                        refleshUserState()
+                                        settingOperator.checkCurrentValid()
                                         accountComboBox.model = settingOperator.getUserDataList()
                                     }
                                 }
@@ -176,7 +203,7 @@ Item {
                                     height: parent.height
                                     width: height
                                     radius: 90
-                                    color: settingOperator.isCurrentUserEmpty() ? "red" : (settingOperator.isCurrentUserValid() ? "green" : "yellow")
+                                    color: settingOperator.isCurrentUserEmpty() ? "red" : "blue"
                                 }
                             }
                             RowLayout {
@@ -222,6 +249,7 @@ Item {
                             }
                             Button {
                                 id: currentUserRelogin
+                                visible: false
                                 Layout.fillWidth: true
                                 text: "重新登陆"
                                 onClicked: {
@@ -229,7 +257,7 @@ Item {
                                         messageDialog.show("重新登陆成功")
                                     else
                                         messageDialog.show("重新登陆失败")
-                                    refleshUserState()
+                                    settingOperator.checkCurrentValid()
                                 }
                             }
                         }
@@ -451,34 +479,8 @@ Item {
         }
     }
 
-    function refleshUserState() {
-        var userValid = settingOperator.isCurrentUserValid()
-        currentUserValidRectangle.color = userValid ? "green" : "red"
-        currentUserRelogin.visible = (!userValid) && Settings.isLogin()
-        if(Settings.isLogin())
-        {
-            currentUserName.text = "账号:" + settingOperator.getCurrentUserUsername()
-            currentUserPassword.text = "密码:****************"
-            currentUserAccessToken.text = "AccessToken:" + settingOperator.getCurrentUserAccessToken()
-            currentUserAuthorization.text = "Authorization:" + settingOperator.getCurrentUserAuthorization()
-            currentUserSchoolId.text = "SchoolId:" + settingOperator.getCurrentUserSchoolId()
-            currentUserStudentId.text = "StudentId:" + settingOperator.getCurrentUserStudentId()
-            currentUserClientSession.text = "ClientSession:" + settingOperator.getCurrentUserClientSession()
-        }
-        else
-        {
-            currentUserName.text = "账号:****************"
-            currentUserPassword.text = "密码:****************"
-            currentUserAccessToken.text = "AccessToken:****************"
-            currentUserAuthorization.text = "Authorization:****************"
-            currentUserSchoolId.text = "SchoolId:****************"
-            currentUserStudentId.text = "StudentId:****************"
-            currentUserClientSession.text = "ClientSession:****************"
-        }
-    }
-
     Component.onCompleted: {
-        refleshUserState()
+        settingOperator.checkCurrentValid()
     }
 
     Component.onDestruction: {

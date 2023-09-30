@@ -2,6 +2,9 @@
 #include "MultipleSubjectsTemplateListModelListSingleton.h"
 #include "../StaticClass/Global.h"
 #include "../Singleton/Settings.h"
+#include "../StaticClass/XinjiaoyuEncryptioner.h"
+#include "../StaticClass/XinjiaoyuNetwork.h"
+#include "../Singleton/Network.h"
 
 SettingOperator::SettingOperator(QObject *parent)
     : QObject{parent}
@@ -47,11 +50,6 @@ QByteArray SettingOperator::getCurrentUserUsername() const
 bool SettingOperator::isCurrentUserEmpty() const
 {
     return Settings::getSingletonSettings()->currentUserData().isEmpty();
-}
-
-bool SettingOperator::isCurrentUserValid() const
-{
-    return Settings::getSingletonSettings()->currentUserData().isValid();
 }
 
 bool SettingOperator::login(const QString &id, const QString &pw)
@@ -141,4 +139,16 @@ void SettingOperator::deleteTemplateFile()
     Global::deleteDir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
     QDir().mkdir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
     MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList()->at(MultipleSubjectsTemplateListModelList::Undefined)->clear();
+}
+
+void SettingOperator::checkCurrentValid()
+{
+    auto request{XinjiaoyuNetwork::setRequest(QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_system/member/user/vip"), Settings::getSingletonSettings()->currentUserData())};
+    const auto reply{Network::getGlobalNetworkManager()->get(request)};
+    connect(reply, &QNetworkReply::finished, this, [this, reply]
+    {
+        const auto returnData(reply->readAll());
+        reply->deleteLater();
+        emit checkCurrentValidFinished(returnData.startsWith("{\"code\":200,"));
+    });
 }

@@ -15,7 +15,6 @@ public:
     Q_INVOKABLE QByteArray getCurrentUserStudentId() const;
     Q_INVOKABLE QByteArray getCurrentUserUsername() const;
     Q_INVOKABLE bool isCurrentUserEmpty() const;
-    Q_INVOKABLE bool isCurrentUserValid() const;
 
     Q_INVOKABLE bool login(const QString &id, const QString &pw);
     Q_INVOKABLE bool currentUserRelogin();
@@ -27,8 +26,9 @@ public:
 public slots:
     void userDataListToFirst(qsizetype index);
     void deleteTemplateFile();
+    void checkCurrentValid();
 signals:
-
+    void checkCurrentValidFinished(bool valid);
 };
 
 #endif // SETTINGOPERATOR_H
