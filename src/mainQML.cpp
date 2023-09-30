@@ -8,7 +8,7 @@
 #include "Logic/TemplateListModel.h"
 #include "QMLIntermediary/AnimeImageProvider.h"
 #include "QMLIntermediary/MultipleSubjectsTemplateListModelListSingleton.h"
-#include "QMLIntermediary/RandomColorGenerator.h"
+#include "QMLIntermediary/QMLUtils.h"
 #include "QMLIntermediary/TemplateSummaryQML.h"
 #include "QMLIntermediary/TemplateRawDataQML.h"
 #include "QMLIntermediary/TemplateAnalysisQML.h"
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
                                  "MultipleSubjectsTemplateListModelList",
                                  MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList());
     qmlRegisterSingletonInstance("Settings", 1, 0, "Settings", settings);
-    qmlRegisterSingletonInstance("RandomColorGenerator", 1, 0, "RandomColorGenerator", new RandomColorGenerator);
+    qmlRegisterSingletonInstance("QMLUtils", 1, 0, "QMLUtils", new QMLUtils);
     qmlRegisterType<TemplateSummaryQML>("TemplateSummaryQML", 1, 0, "TemplateSummaryQML");
     qmlRegisterType<TemplateRawDataQML>("TemplateRawDataQML", 1, 0, "TemplateRawDataQML");
     qmlRegisterType<TemplateAnalysisQML>("TemplateAnalysisQML", 1, 0, "TemplateAnalysisQML");

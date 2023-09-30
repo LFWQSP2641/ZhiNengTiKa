@@ -13,6 +13,7 @@ Item {
 
     Dialog {
         id: loginDialog
+        width: parent.width
         anchors.centerIn: parent
         modal: true
         focus: true
@@ -55,6 +56,7 @@ Item {
 
     Dialog {
         id: setImageUrlDialog
+        width: parent.width
         anchors.centerIn: parent
         modal: true
         focus: true
