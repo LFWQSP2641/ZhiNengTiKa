@@ -124,9 +124,15 @@ ApplicationWindow {
             }
         }
         onDepthChanged: {
-            if(stackView.depth === 1 && imageRefreshTimer.needToRefresh)
+            if(stackView.depth === 1)
             {
-                refreshImage()
+                if(imageRefreshTimer.needToRefresh)
+                    refreshImage()
+                zAccelerationReportTimer.start()
+            }
+            else
+            {
+                zAccelerationReportTimer.stop()
             }
         }
     }
@@ -242,12 +248,8 @@ ApplicationWindow {
         QRCodeScannerWidget {
             id: qrCodeScannerWidget
             Component.onCompleted: {
-                imageRefreshTimer.stop()
-                zAccelerationReportTimer.stop()
             }
             Component.onDestruction: {
-                imageRefreshTimer.start()
-                zAccelerationReportTimer.start()
             }
             onScanFinished: function(templateCode){
                 showTemplateDetailWidgetAndPop(templateCode)
