@@ -1,4 +1,5 @@
 #include "TemplateSearcher.h"
+#include "../StaticClass/Global.h"
 
 TemplateSearcher::TemplateSearcher(QObject *parent)
     : QThread{parent}
@@ -20,41 +21,36 @@ void TemplateSearcher::run()
 {
     this->toStop = false;
 #ifdef Q_OS_ANDROID
-    const QString dirPath { QStringLiteral("assets:/templateList/") };
+    const QString dirPath { QStringLiteral("assets:/templateList/all") };
 #else
-    const QString dirPath { QStringLiteral(":/templateList/") };
+    const QString dirPath { QStringLiteral(":/templateList/all") };
 #endif
 
-    QDir allDir { QString(dirPath).append(QStringLiteral("all")) };
+    QDir allDir { dirPath };
+    auto list = allDir.entryInfoList(QDir::Files);
+    list.append(QFileInfo(Global::dataPath().append(QStringLiteral("/templateList_undefined"))));
 
-    allDir.setFilter(QDir::NoDotAndDotDot | QDir::AllEntries);
-    allDir.setSorting(QDir::Time | QDir::DirsFirst);
-    QFileInfoList list = allDir.entryInfoList();
-
-    for(int i = 0; i < list.size(); i++)
+    for(const auto &i : list)
     {
-        if(list.at(i).isFile())
+        QFile file(i.absoluteFilePath());
+        file.open(QFile::ReadOnly);
+        while(!file.atEnd())
         {
-            QFile file(list.at(i).absoluteFilePath());
-            file.open(QFile::ReadOnly);
-            while(!file.atEnd())
+            if(this->toStop)
             {
-                if(this->toStop)
-                {
-                    emit this->searchStoped();
-                    emit this->searchFinished(false);
-                    return;
-                }
-                QString tempTemplateName(file.readLine());
-                tempTemplateName.resize(tempTemplateName.size() - 1);
+                emit this->searchStoped();
+                emit this->searchFinished(false);
+                return;
+            }
+            QString tempTemplateName(file.readLine());
+            tempTemplateName.resize(tempTemplateName.size() - 1);
 
-                QString tempTemplateCode(file.readLine());
-                tempTemplateCode.resize(tempTemplateCode.size() - 1);
+            QString tempTemplateCode(file.readLine());
+            tempTemplateCode.resize(tempTemplateCode.size() - 1);
 
-                if(tempTemplateName.contains(this->templateName, Qt::CaseInsensitive))
-                {
-                    emit this->searchResult(TemplateSummary(tempTemplateName, tempTemplateCode));
-                }
+            if(tempTemplateName.contains(this->templateName, Qt::CaseInsensitive))
+            {
+                emit this->searchResult(TemplateSummary(tempTemplateName, tempTemplateCode));
             }
         }
     }
