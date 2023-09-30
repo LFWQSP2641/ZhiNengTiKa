@@ -88,7 +88,7 @@ Item {
                                 Layout.fillHeight: true
                                 model: settingOperator.getUserDataList()
 
-                                onCurrentIndexChanged: {
+                                onActivated: {
                                     if(accountComboBox.currentIndex > 0)
                                     {
                                         settingOperator.userDataListToFirst(accountComboBox.currentIndex)
@@ -215,20 +215,15 @@ Item {
                             id: styleComboBox
                             Layout.fillWidth: true
                             property int styleIndex: -1
-                            property bool saving: false
                             model: builtInStyles
                             onActivated: {
-                                if(saving)
-                                {
-                                    Settings.qmlStyle = styleComboBox.currentText
-                                }
+                                Settings.qmlStyle = styleComboBox.currentText
                             }
 
                             Component.onCompleted: {
                                 styleIndex = find(Settings.qmlStyle, Qt.MatchFixedString)
                                 if (styleIndex !== -1)
                                     currentIndex = styleIndex
-                                saving = true
                             }
                         }
                     }
@@ -240,7 +235,6 @@ Item {
                             id: fontComboBox
                             Layout.fillWidth: true
                             property int fontIndex: -1
-                            property bool saving: false
                             model: Qt.fontFamilies()
                             delegate: ItemDelegate {
                                 text: modelData
@@ -252,17 +246,13 @@ Item {
                             }
 
                             onActivated: {
-                                if(saving)
-                                {
-                                    Settings.font = currentText
-                                }
+                                Settings.font = currentText
                             }
 
                             Component.onCompleted: {
                                 fontIndex = find(Settings.font, Qt.MatchFixedString)
                                 if (fontIndex !== -1)
                                     currentIndex = fontIndex
-                                saving = true
                             }
                         }
                     }
