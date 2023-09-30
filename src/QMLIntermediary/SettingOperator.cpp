@@ -83,12 +83,8 @@ bool SettingOperator::currentUserRelogin()
     }
 }
 
-QStringListModel *SettingOperator::getUserDataListModel()
+QVariant SettingOperator::getUserDataList()
 {
-    if(userDataListModel != nullptr)
-    {
-        userDataListModel->deleteLater();
-    }
     QStringList userDataList;
     for(const auto &i : Settings::getSingletonSettings()->getUserDataList())
     {
@@ -101,8 +97,7 @@ QStringListModel *SettingOperator::getUserDataListModel()
     {
         userDataList.append(QStringLiteral("公共账号"));
     }
-    userDataListModel = new QStringListModel(userDataList);
-    return userDataListModel;
+    return QVariant::fromValue(userDataList);
 }
 
 QString SettingOperator::getVersion()

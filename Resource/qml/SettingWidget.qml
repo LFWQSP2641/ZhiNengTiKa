@@ -21,7 +21,7 @@ Item {
         onAccepted: {
             if(settingOperator.login(userIdTextField.text, userPwTextField.text))
             {
-                accountComboBox.model = settingOperator.getUserDataListModel()
+                accountComboBox.model = settingOperator.getUserDataList()
                 logoutButton.enabled = true
                 refleshUserState()
                 dialog.close()
@@ -86,14 +86,13 @@ Item {
                                 id: accountComboBox
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                model: settingOperator.getUserDataListModel()
-                                textRole: "display"
+                                model: settingOperator.getUserDataList()
 
                                 onCurrentIndexChanged: {
                                     if(accountComboBox.currentIndex > 0)
                                     {
                                         settingOperator.userDataListToFirst(accountComboBox.currentIndex)
-                                        accountComboBox.model = settingOperator.getUserDataListModel()
+                                        accountComboBox.model = settingOperator.getUserDataList()
                                         refleshUserState()
                                     }
                                 }
@@ -120,7 +119,7 @@ Item {
                                         Settings.logout()
                                         logoutButton.enabled = Settings.isLogin()
                                         refleshUserState()
-                                        accountComboBox.model = settingOperator.getUserDataListModel()
+                                        accountComboBox.model = settingOperator.getUserDataList()
                                     }
                                 }
                             }
