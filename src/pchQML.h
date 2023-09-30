@@ -22,6 +22,7 @@
 #include <QQmlApplicationEngine>
 #include <QSGRendererInterface>
 #include <QQuickWindow>
+#include <QQuickImageProvider>
 #include <QQuickStyle>
 #include <QVideoSink>
 #include <QVideoFrame>

@@ -12,7 +12,8 @@ Item {
     }
 
     Dialog {
-        id: dialog
+        id: loginDialog
+        width: parent.width
         anchors.centerIn: parent
         modal: true
         focus: true
@@ -21,10 +22,10 @@ Item {
         onAccepted: {
             if(settingOperator.login(userIdTextField.text, userPwTextField.text))
             {
-                accountComboBox.model = settingOperator.getUserDataListModel()
+                accountComboBox.model = settingOperator.getUserDataList()
                 logoutButton.enabled = true
                 refleshUserState()
-                dialog.close()
+                loginDialog.close()
             }
             else
             {
@@ -34,7 +35,7 @@ Item {
         onRejected: {
             userIdTextField.clear()
             userPwTextField.clear()
-            dialog.close()
+            loginDialog.close()
         }
 
         contentItem: ColumnLayout {
@@ -50,6 +51,40 @@ Item {
                 Layout.fillWidth: true
                 placeholderText: "密码"
             }
+        }
+    }
+
+    Dialog {
+        id: setImageUrlDialog
+        width: parent.width
+        anchors.centerIn: parent
+        modal: true
+        focus: true
+
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        contentItem: ColumnLayout {
+            width: parent.width
+            height: parent.height
+            ComboBox {
+                id: imageNameComboBox
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                model: settingOperator.getAnimeImageNameList()
+                currentIndex: settingOperator.getCurrentAnimeImageNameIndex()
+                onActivated: {
+                    imageUrlTextField.text = settingOperator.getAnimeImageUrl(currentIndex)
+                }
+            }
+            TextField {
+                id: imageUrlTextField
+                Layout.fillWidth: true
+                placeholderText: "图片url"
+                text: Settings.animeImageUrl
+            }
+        }
+        onAccepted: {
+            Settings.animeImageUrl = imageUrlTextField.text
+            imageNameComboBox.currentIndex = settingOperator.getCurrentAnimeImageNameIndex()
         }
     }
 
@@ -86,14 +121,13 @@ Item {
                                 id: accountComboBox
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                model: settingOperator.getUserDataListModel()
-                                textRole: "display"
+                                model: settingOperator.getUserDataList()
 
-                                onCurrentIndexChanged: {
+                                onActivated: {
                                     if(accountComboBox.currentIndex > 0)
                                     {
                                         settingOperator.userDataListToFirst(accountComboBox.currentIndex)
-                                        accountComboBox.model = settingOperator.getUserDataListModel()
+                                        accountComboBox.model = settingOperator.getUserDataList()
                                         refleshUserState()
                                     }
                                 }
@@ -107,7 +141,7 @@ Item {
                                     Layout.fillHeight: true
                                     text: "登入"
                                     onClicked: {
-                                        dialog.open()
+                                        loginDialog.open()
                                     }
                                 }
                                 Button {
@@ -120,7 +154,7 @@ Item {
                                         Settings.logout()
                                         logoutButton.enabled = Settings.isLogin()
                                         refleshUserState()
-                                        accountComboBox.model = settingOperator.getUserDataListModel()
+                                        accountComboBox.model = settingOperator.getUserDataList()
                                     }
                                 }
                             }
@@ -204,66 +238,79 @@ Item {
             }
             GroupBox {
                 Layout.fillWidth: true
-                title: "外观(重启生效)"
+                title: "外观"
                 ColumnLayout {
                     width: parent.width
                     height: parent.height
-                    RowLayout {
-                        Label {
-                            text: "主题:"
-                        }
-                        ComboBox {
-                            id: styleComboBox
-                            Layout.fillWidth: true
-                            property int styleIndex: -1
-                            property bool saving: false
-                            model: builtInStyles
-                            onActivated: {
-                                if(saving)
-                                {
-                                    Settings.qmlStyle = styleComboBox.currentText
+                    GroupBox {
+                        Layout.fillWidth: true
+                        title: "重启生效"
+                        ColumnLayout {
+                            width: parent.width
+                            height: parent.height
+                            RowLayout {
+                                Label {
+                                    text: "主题:"
+                                }
+                                ComboBox {
+                                    id: styleComboBox
+                                    Layout.fillWidth: true
+                                    property int styleIndex: -1
+                                    model: builtInStyles
+                                    onActivated: {
+                                        Settings.qmlStyle = styleComboBox.currentText
+                                    }
+
+                                    Component.onCompleted: {
+                                        styleIndex = find(Settings.qmlStyle, Qt.MatchFixedString)
+                                        if (styleIndex !== -1)
+                                            currentIndex = styleIndex
+                                    }
                                 }
                             }
+                            RowLayout {
+                                Label {
+                                    text: "字体:"
+                                }
+                                ComboBox {
+                                    id: fontComboBox
+                                    Layout.fillWidth: true
+                                    font: currentText.length == 0 ? undefined : currentText
+                                    property int fontIndex: -1
+                                    model: Qt.fontFamilies()
+                                    delegate: ItemDelegate {
+                                        text: modelData
+                                        font: modelData
+                                        width: fontComboBox.width
+                                        onClicked: {
+                                            fontComboBox.popup.close()
+                                        }
+                                    }
 
-                            Component.onCompleted: {
-                                styleIndex = find(Settings.qmlStyle, Qt.MatchFixedString)
-                                if (styleIndex !== -1)
-                                    currentIndex = styleIndex
-                                saving = true
+                                    onActivated: {
+                                        Settings.font = currentText
+                                    }
+
+                                    Component.onCompleted: {
+                                        fontIndex = find(Settings.font, Qt.MatchFixedString)
+                                        if (fontIndex !== -1)
+                                            currentIndex = fontIndex
+                                    }
+                                }
                             }
                         }
                     }
-                    RowLayout {
-                        Label {
-                            text: "字体:"
-                        }
-                        ComboBox {
-                            id: fontComboBox
-                            Layout.fillWidth: true
-                            property int fontIndex: -1
-                            property bool saving: false
-                            model: Qt.fontFamilies()
-                            delegate: ItemDelegate {
-                                text: modelData
-                                font: modelData
-                                width: fontComboBox.width
-                                onClicked: {
-                                    fontComboBox.popup.close()
-                                }
-                            }
-
-                            onActivated: {
-                                if(saving)
-                                {
-                                    Settings.font = currentText
-                                }
-                            }
-
-                            Component.onCompleted: {
-                                fontIndex = find(Settings.font, Qt.MatchFixedString)
-                                if (fontIndex !== -1)
-                                    currentIndex = fontIndex
-                                saving = true
+                    GroupBox {
+                        Layout.fillWidth: true
+                        title: "即时生效"
+                        ColumnLayout {
+                            width: parent.width
+                            height: parent.height
+                            Button {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                text: "设置图片源"
+                                onClicked: setImageUrlDialog.open()
                             }
                         }
                     }

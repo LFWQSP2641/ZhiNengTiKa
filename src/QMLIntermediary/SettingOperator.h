@@ -19,15 +19,14 @@ public:
 
     Q_INVOKABLE bool login(const QString &id, const QString &pw);
     Q_INVOKABLE bool currentUserRelogin();
-    Q_INVOKABLE QStringListModel *getUserDataListModel();
-    Q_INVOKABLE QString getVersion();
+    Q_INVOKABLE QVariant getUserDataList() const;
+    Q_INVOKABLE QString getVersion() const;
+    Q_INVOKABLE QVariant getAnimeImageNameList() const;
+    Q_INVOKABLE QString getAnimeImageUrl(qsizetype index) const;
+    Q_INVOKABLE qsizetype getCurrentAnimeImageNameIndex() const;
 public slots:
     void userDataListToFirst(qsizetype index);
     void deleteTemplateFile();
-
-protected:
-    QStringListModel *userDataListModel = nullptr;
-
 signals:
 
 };

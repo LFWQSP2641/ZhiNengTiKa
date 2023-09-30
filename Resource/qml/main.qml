@@ -1,10 +1,11 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtSensors
 import Qt.labs.platform
 import TemplateRawDataQML
 import MultipleSubjectsTemplateListModelList
-import RandomColorGenerator
+import QMLUtils
 
 ApplicationWindow {
     id: applicationWindow
@@ -44,62 +45,128 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
 
-        initialItem: Rectangle {
-            color: RandomColorGenerator.generateRandomBrightColor()
-            ColumnLayout {
-                //                anchors.fill: parent
-                anchors.centerIn: parent
-                height: parent.height - 10
-                width: parent.width - 10
-                IconButton {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: parent.height * 0.67
-                    radius: 45
-                    widgetSizeRatio: 0.5
-                    iconSource: "qrc:/svg/icon/qrcode.svg"
-                    buttonText: "扫码"
-                    backgroundColor: RandomColorGenerator.generateRandomBrightColor()
-                    onClickedLeft: stackView.push(qrCodeScannerWidgetComponent)
+        initialItem: Image {
+            id: backgroundImage
+            cache: false
+            mipmap: true
+            fillMode: Image.PreserveAspectFit
+            source: "image://AnimeImageProvider/image"
+            Item {
+                id: buttonsItem
+                anchors.fill: parent
+                opacity: QMLUtils.convertZAccelerationToOpacity(accelerometer.z)
+                NumberAnimation {
+                    id: buttonsItemOpacityAnimation
+                    target: parent
+                    property: "opacity"
+                    duration: 500
+                    easing.type: Easing.Linear
                 }
-                RowLayout {
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: parent.height * 0.33
-                    IconButton {
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        radius: 45
-                        widgetSizeRatio: 0.5
-                        iconSource: "qrc:/svg/icon/list.svg"
-                        buttonText: "列表"
-                        backgroundColor: RandomColorGenerator.generateRandomBrightColor()
-                        onClickedLeft: stackView.push(selectWidgetComponent)
+                Timer {
+                    running: true
+                    repeat: true
+                    interval: 500
+                    onTriggered: {
+                        buttonsItemOpacityAnimation.to = QMLUtils.convertZAccelerationToOpacity(accelerometer.z)
+                        buttonsItemOpacityAnimation.restart()
                     }
+                }
 
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    height: parent.height - 10
+                    width: parent.width - 10
                     IconButton {
                         Layout.fillHeight: true
                         Layout.fillWidth: true
+                        Layout.preferredHeight: parent.height * 0.67
                         radius: 45
                         widgetSizeRatio: 0.5
-                        iconSource: "qrc:/svg/icon/search.svg"
-                        buttonText: "搜素"
-                        backgroundColor: RandomColorGenerator.generateRandomBrightColor()
-                        onClickedLeft: stackView.push(searchWidgetComponent)
+                        iconSource: "qrc:/svg/icon/qrcode.svg"
+                        buttonText: "扫码"
+                        backgroundColor: QMLUtils.generateRandomBrightColor()
+                        onClickedLeft: stackView.push(qrCodeScannerWidgetComponent)
                     }
-
-                    IconButton {
+                    RowLayout {
                         Layout.fillHeight: true
                         Layout.fillWidth: true
-                        radius: 45
-                        widgetSizeRatio: 0.5
-                        iconSource: "qrc:/svg/icon/settings.svg"
-                        buttonText: "设置"
-                        backgroundColor: RandomColorGenerator.generateRandomBrightColor()
-                        onClickedLeft: stackView.push("qrc:/qml/SettingWidget.qml", {builtInStyles: applicationWindow.builtInStyles})
+                        Layout.preferredHeight: parent.height * 0.33
+                        IconButton {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            radius: 45
+                            widgetSizeRatio: 0.5
+                            iconSource: "qrc:/svg/icon/list.svg"
+                            buttonText: "列表"
+                            backgroundColor: QMLUtils.generateRandomBrightColor()
+                            onClickedLeft: stackView.push(selectWidgetComponent)
+                        }
+
+                        IconButton {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            radius: 45
+                            widgetSizeRatio: 0.5
+                            iconSource: "qrc:/svg/icon/search.svg"
+                            buttonText: "搜素"
+                            backgroundColor: QMLUtils.generateRandomBrightColor()
+                            onClickedLeft: stackView.push(searchWidgetComponent)
+                        }
+
+                        IconButton {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            radius: 45
+                            widgetSizeRatio: 0.5
+                            iconSource: "qrc:/svg/icon/settings.svg"
+                            buttonText: "设置"
+                            backgroundColor: QMLUtils.generateRandomBrightColor()
+                            onClickedLeft: {
+                                enabled = false
+                                stackView.push("qrc:/qml/SettingWidget.qml", {builtInStyles: applicationWindow.builtInStyles})
+                                enabled = true
+                            }
+                        }
                     }
                 }
             }
+        }
+        onDepthChanged: {
+            if(stackView.depth === 1 && imageRefreshTimer.needToRefresh)
+            {
+                refreshImage()
+            }
+        }
+    }
+
+    Timer {
+        id: imageRefreshTimer
+        property bool needToRefresh: false
+        running: true
+        repeat: true
+        interval: 5000
+        onTriggered: {
+            if(stackView.depth === 1)
+            {
+                refreshImage()
+            }
+            else
+            {
+                imageRefreshTimer.needToRefresh = true
+            }
+        }
+    }
+
+    Accelerometer {
+        id: accelerometer
+        property real x: 0
+        property real y: 0
+        property real z: 5
+        active: true
+        onReadingChanged: {
+            x = (reading as AccelerometerReading).x
+            y = (reading as AccelerometerReading).y
+            z = (reading as AccelerometerReading).z
         }
     }
 
@@ -215,5 +282,9 @@ ApplicationWindow {
         {
             stackView.pop()
         }
+    }
+    function refreshImage() {
+        backgroundImage.source = ""
+        backgroundImage.source = "image://AnimeImageProvider/image"
     }
 }
