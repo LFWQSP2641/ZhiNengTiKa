@@ -10,6 +10,7 @@
         <file>qml/UpdateWidget.qml</file>
         <file>qml/QRCodeScannerWidget.qml</file>
         <file>qml/IconButton.qml</file>
+        <file>qml/AnnouncementWidget.qml</file>
     </qresource>
     <qresource prefix="/svg">
         <file>icon/barcode-scan.svg</file>
@@ -27,5 +28,6 @@
         <file>icon/download.svg</file>
         <file>icon/refresh.svg</file>
         <file>icon/camera-viewfinder.svg</file>
+        <file>icon/megaphone.svg</file>
     </qresource>
 </RCC>

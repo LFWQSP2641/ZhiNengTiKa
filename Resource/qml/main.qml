@@ -104,7 +104,28 @@ ApplicationWindow {
                             backgroundColor: QMLUtils.generateRandomBrightColor()
                             onClickedLeft: stackView.push(searchWidgetComponent)
                         }
-
+                        IconButton {
+                            Rectangle {
+                                id: unreadStateRectangle
+                                anchors {right: parent.right; top: parent.top}
+                                width: 10
+                                height: width
+                                radius: 90
+                                visible: false
+                                color: "red"
+                            }
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            radius: 45
+                            widgetSizeRatio: 0.5
+                            iconSource: "qrc:/svg/icon/megaphone.svg"
+                            buttonText: "公告"
+                            backgroundColor: QMLUtils.generateRandomBrightColor()
+                            onClickedLeft: {
+                                unreadStateRectangle.visible = false
+                                stackView.push(announcementListView)
+                            }
+                        }
                         IconButton {
                             Layout.fillHeight: true
                             Layout.fillWidth: true
@@ -212,6 +233,21 @@ ApplicationWindow {
         anchors.centerIn: parent
         width: parent.width
         showQuestionDialog: false
+    }
+
+    AnnouncementWidget {
+        id: announcementListView
+        visible: false
+        onManagerError: function(msgStr) {
+            messageDialog(msgStr)
+        }
+        onManagerObtainFinished: function(hasNew) {
+            if(hasNew)
+            {
+                unreadStateRectangle.visible = true
+                stackView.push(announcementListView)
+            }
+        }
     }
 
     // stackView.push在第二个参数连接信号槽好像有点问题

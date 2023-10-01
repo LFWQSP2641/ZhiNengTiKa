@@ -1,6 +1,7 @@
 #include "StaticClass/Global.h"
 #include "Singleton/Network.h"
 #include "Singleton/Settings.h"
+#include "Singleton/AnnouncementManager.h"
 #include "Logic/ImageProvider.h"
 #include "Logic/QRCodeScanner.h"
 #include "Logic/UpdateChecker.h"
@@ -83,6 +84,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<QRCodeScanner>("QRCodeScanner", 1, 0, "QRCodeScanner");
     qmlRegisterType<ImageProvider>("ImageProvider", 1, 0, "ImageProvider");
     qmlRegisterType<ZAccelerationToOpacityConverter>("ZAccelerationToOpacityConverter", 1, 0, "ZAccelerationToOpacityConverter");
+    qmlRegisterType<AnnouncementManager>("AnnouncementManager", 1, 0, "AnnouncementManager");
     QQmlApplicationEngine engine;
     engine.addImageProvider(QStringLiteral("AnimeImageProvider"), new AnimeImageProvider);
 
