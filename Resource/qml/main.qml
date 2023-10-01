@@ -244,7 +244,6 @@ ApplicationWindow {
         onManagerObtainFinished: function(hasNew) {
             if(hasNew)
             {
-                unreadStateRectangle.visible = true
                 stackView.push(announcementListView)
             }
         }

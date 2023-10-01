@@ -69,10 +69,10 @@ void AnnouncementManager::analysisRawData(const QByteArray &data)
     {
         const auto jsonObject(i.toObject());
         const auto platform(jsonObject.value(QStringLiteral("platform")).toString().toLower());
-//        if(platform != QSysInfo::productType().toLower() && platform != QStringLiteral("all") && (!platform.isEmpty()))
-//        {
-//            continue;
-//        }
+        if(platform != QSysInfo::productType().toLower() && platform != QStringLiteral("all") && (!platform.isEmpty()))
+        {
+            continue;
+        }
         const auto version(jsonObject.value(QStringLiteral("version")).toString().toLower());
         const auto result(UpdateChecker::compareVersion(QStringLiteral(APP_VERSION), version));
         const auto versionComparisonMethod(jsonObject.value(QStringLiteral("versionComparisonMethod")).toString().toLower());
