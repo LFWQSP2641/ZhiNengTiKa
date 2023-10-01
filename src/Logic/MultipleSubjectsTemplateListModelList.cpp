@@ -16,10 +16,12 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
             while (!file.atEnd())
             {
                 QString tempTemplateName{file.readLine()};
-                tempTemplateName.resize(tempTemplateName.size() - 1);
+                if(tempTemplateName.endsWith(QByteArrayLiteral("\n")))
+                    tempTemplateName.resize(tempTemplateName.size() - 1);
                 tempTemplateName.squeeze();
                 QString tempTemplateCode{file.readLine()};
-                tempTemplateCode.resize(tempTemplateCode.size() - 1);
+                if(tempTemplateCode.endsWith(QByteArrayLiteral("\n")))
+                    tempTemplateCode.resize(tempTemplateCode.size() - 1);
                 tempTemplateCode.squeeze();
                 if(split)
                 {

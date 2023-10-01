@@ -6,9 +6,12 @@ class UpdateChecker : public QThread
     Q_OBJECT
 public:
     explicit UpdateChecker(QObject *parent = nullptr);
-    // compareVersion, checkMinimumVersion和getCurrentVersion能static
+    // version1 < version2, 返回-1
+    // version1 = version2, 返回0
+    // version1 > version2, 返回1
+    static int compareVersion(const QString &version1, const QString &version2);
+    // checkMinimumVersion和getCurrentVersion能static
     // 但是QML要调用
-    Q_INVOKABLE int compareVersion(const QString &version1, const QString &version2) const;
     Q_INVOKABLE bool checkMinimumVersion() const;
 
     Q_INVOKABLE QString getCurrentVersion() const;

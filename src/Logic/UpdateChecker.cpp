@@ -14,7 +14,7 @@ UpdateChecker::UpdateChecker(QObject *parent)
 
 }
 
-int UpdateChecker::compareVersion(const QString &version1, const QString &version2) const
+int UpdateChecker::compareVersion(const QString &version1, const QString &version2)
 {
     QStringList list1 = version1.split(".");
     QStringList list2 = version2.split(".");
