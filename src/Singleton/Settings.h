@@ -52,10 +52,10 @@ public:
     void resetAnimeImageUrl();
 
     const QList<QPair<QString, QString>> animeImageUrlList = QList<QPair<QString, QString>>()
-                                      << QPair<QString, QString>("IMGAPI(风景竖屏)", "https://imgapi.cn/api.php?zd=mobile&fl=fengjing&gs=images")
-                                      << QPair<QString, QString>("IMGAPI(风景横屏)", "https://imgapi.cn/api.php?zd=pc&fl=fengjing&gs=images")
                                       << QPair<QString, QString>("IMGAPI(动漫竖屏)", "https://imgapi.cn/api.php?zd=mobile&fl=dongman&gs=images")
                                       << QPair<QString, QString>("IMGAPI(动漫横屏)", "https://imgapi.cn/api.php?zd=pc&fl=dongman&gs=images")
+                                      << QPair<QString, QString>("IMGAPI(风景竖屏)", "https://imgapi.cn/api.php?zd=mobile&fl=fengjing&gs=images")
+                                      << QPair<QString, QString>("IMGAPI(风景横屏)", "https://imgapi.cn/api.php?zd=pc&fl=fengjing&gs=images")
                                       << QPair<QString, QString>("t.mwm.moe(二次元随机图片API)(风景横屏)", "https://t.mwm.moe/fj")
                                       << QPair<QString, QString>("t.mwm.moe(二次元随机图片API)(竖屏)", "https://t.mwm.moe/mp")
                                       << QPair<QString, QString>("t.mwm.moe(二次元随机图片API)(横屏)", "https://t.mwm.moe/pc")
