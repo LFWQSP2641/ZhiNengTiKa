@@ -1,8 +1,8 @@
 #include "AnnouncementManager.h"
-#include "../Logic/AnnouncementModel.h"
-#include "Network.h"
+#include "AnnouncementModel.h"
+#include "../Singleton/Network.h"
 #include "../StaticClass/Global.h"
-#include "../Logic/UpdateChecker.h"
+#include "UpdateChecker.h"
 
 AnnouncementManager::AnnouncementManager(QObject *parent)
     : QObject{parent},
@@ -119,16 +119,13 @@ void AnnouncementManager::analysisRawData(const QByteArray &data)
         }
     }
 
-    if(!announcementAsReadHashList.isEmpty())
+    file.open(QFile::WriteOnly);
+    for(const auto &i : announcementAsReadHashList)
     {
-        file.open(QFile::WriteOnly);
-        for(const auto &i : announcementAsReadHashList)
-        {
-            file.write(i.toUtf8());
-            file.write(QByteArrayLiteral("\n"));
-        }
-        file.close();
+        file.write(i.toUtf8());
+        file.write(QByteArrayLiteral("\n"));
     }
+    file.close();
 
     bool hasNew(false);
 

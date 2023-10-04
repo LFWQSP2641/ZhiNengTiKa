@@ -1,7 +1,7 @@
 #include "StaticClass/Global.h"
 #include "Singleton/Network.h"
 #include "Singleton/Settings.h"
-#include "Singleton/AnnouncementManager.h"
+#include "Logic/AnnouncementManager.h"
 #include "Logic/ImageProvider.h"
 #include "Logic/QRCodeScanner.h"
 #include "Logic/UpdateChecker.h"

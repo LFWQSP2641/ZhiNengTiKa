@@ -65,6 +65,7 @@ INCLUDEPATH += $$PWD/lib/zxing-cpp
 DEPENDPATH += $$PWD/lib/zxing-cpp
 
 HEADERS += \
+    $$PWD/src/Logic/AnnouncementManager.h \
     $$PWD/src/Logic/AnnouncementModel.h \
     $$PWD/src/Logic/AnswerDetailData.hpp \
     $$PWD/src/Logic/ImageProvider.h \
@@ -80,7 +81,6 @@ HEADERS += \
     $$PWD/src/Logic/UpdateChecker.h \
     $$PWD/src/Logic/UserData.h \
     $$PWD/src/Logic/UserDataList.hpp \
-    $$PWD/src/Singleton/AnnouncementManager.h \
     $$PWD/src/Singleton/Network.h \
     $$PWD/src/Singleton/Settings.h \
     $$PWD/src/StaticClass/CallAndroidNativeComponent.h \
@@ -89,6 +89,7 @@ HEADERS += \
     $$PWD/src/StaticClass/XinjiaoyuNetwork.h
 
 SOURCES += \
+    $$PWD/src/Logic/AnnouncementManager.cpp \
     $$PWD/src/Logic/AnnouncementModel.cpp \
     $$PWD/src/Logic/ImageProvider.cpp \
     $$PWD/src/Logic/QRCodeReader.cpp \
@@ -102,7 +103,6 @@ SOURCES += \
     $$PWD/src/Logic/TemplateSummary.cpp \
     $$PWD/src/Logic/UpdateChecker.cpp \
     $$PWD/src/Logic/UserData.cpp \
-    $$PWD/src/Singleton/AnnouncementManager.cpp \
     $$PWD/src/Singleton/Network.cpp \
     $$PWD/src/Singleton/Settings.cpp \
     $$PWD/src/StaticClass/CallAndroidNativeComponent.cpp \
