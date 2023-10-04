@@ -127,12 +127,12 @@ void AnnouncementManager::analysisRawData(const QByteArray &data)
     }
     file.close();
 
-    bool hasNew(false);
+    int newCount(0);
 
     for(const auto &i : readList)
     {
         if(!i)
-            hasNew = true;
+            ++newCount;
     }
 
     if(!announcementModel->titleList.isEmpty())
@@ -149,5 +149,5 @@ void AnnouncementManager::analysisRawData(const QByteArray &data)
     announcementModel->readList = std::move(readList);
     announcementModel->endInsertRows();
 
-    emit obtainFinished(hasNew);
+    emit obtainFinished(newCount);
 }

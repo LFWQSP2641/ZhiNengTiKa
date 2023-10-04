@@ -122,7 +122,6 @@ ApplicationWindow {
                             buttonText: "公告"
                             backgroundColor: QMLUtils.generateRandomBrightColor()
                             onClickedLeft: {
-                                unreadStateRectangle.visible = false
                                 stackView.push(announcementListView)
                             }
                         }
@@ -241,11 +240,14 @@ ApplicationWindow {
         onManagerError: function(msgStr) {
             messageDialog(msgStr)
         }
-        onManagerObtainFinished: function(hasNew) {
-            if(hasNew)
+        onManagerObtainFinished: function(newCount) {
+            if(newCount > 0)
             {
                 stackView.push(announcementListView)
             }
+        }
+        onUnreadCountChanged: {
+            unreadStateRectangle.visible = (announcementListView.unreadCount != 0)
         }
     }
 

@@ -22,7 +22,7 @@ protected slots:
     void analysisRawData(const QByteArray &data);
 
 signals:
-    void obtainFinished(bool hasNew);
+    void obtainFinished(int newCount);
     void error(const QString &msg);
 private:
     Q_PROPERTY(AnnouncementModel *announcementModel READ getAnnouncementModel CONSTANT FINAL)

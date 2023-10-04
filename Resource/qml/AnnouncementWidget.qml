@@ -6,8 +6,10 @@ import AnnouncementManager
 ListView {
     id: announcementListView
 
-    signal managerObtainFinished(bool hasNew)
+    signal managerObtainFinished(int newCount)
     signal managerError(string msgStr)
+
+    property int unreadCount: 0
 
     clip: true
     model: manager.announcementModel
@@ -43,6 +45,7 @@ ListView {
                         }
                         if(!read)
                         {
+                            unreadCount -= 1
                             unreadStateRectangle.visible = false
                             manager.markAnnouncementAsRead(index)
                         }
@@ -73,8 +76,9 @@ ListView {
         onError: function(msgStr) {
             managerError(msgStr)
         }
-        onObtainFinished: function(hasNew) {
-            managerObtainFinished(hasNew)
+        onObtainFinished: function(newCount) {
+            unreadCount = newCount
+            managerObtainFinished(newCount)
         }
     }
     Component.onCompleted: {
