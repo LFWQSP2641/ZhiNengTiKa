@@ -6,14 +6,17 @@ AnnouncementModel::AnnouncementModel(QObject *parent)
 
 }
 
-int AnnouncementModel::rowCount(const QModelIndex &parent) const
+int AnnouncementModel::rowCount([[maybe_unused]]const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
     return titleList.count();
 }
 
 QVariant AnnouncementModel::data(const QModelIndex &index, int role) const
 {
+    if(!index.isValid())
+    {
+        return QVariant();
+    }
     int row = index.row();
     if(row < 0 || row >= titleList.count())
     {
