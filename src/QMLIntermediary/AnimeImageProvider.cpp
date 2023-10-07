@@ -51,18 +51,8 @@ void AnimeImageProvider::fillCache(int index)
 #if 1
     const auto url(replaceRandomNumbers(Settings::getSingletonSettings()->getAnimeImageUrl()));
     auto reply(Network::getGlobalNetworkManager()->getByStrUrl(url));
-    QObject::connect(reply, &QNetworkReply::finished, this, [this, index, reply]
-    {
-        if(reply->error() != QNetworkReply::NoError)
-        {
-            fillCache(index);
-            return;
-        }
-        QWriteLocker locker(&lock);
-        cacheList[index].first = QImage::fromData(reply->readAll());
-        cacheList[index].second = true;
-        reply->deleteLater();
-    }, Qt::DirectConnection);
+    fillCacheHash.insert(reply, index);
+    connect(reply, &QNetworkReply::finished, this, &AnimeImageProvider::onFillCacheReplyFinished, Qt::DirectConnection);
 #else
     QWriteLocker locker(&lock);
     cacheList[index].first = QImage("D:/Downloads/736f354a405b251541368b560cd1f665.jpg");
@@ -78,6 +68,21 @@ void AnimeImageProvider::fillCacheList()
             continue;
         fillCache(i);
     }
+}
+
+void AnimeImageProvider::onFillCacheReplyFinished()
+{
+    auto reply(qobject_cast<QNetworkReply *>(sender()));
+    auto index(fillCacheHash.value(reply));
+    if(reply->error() != QNetworkReply::NoError)
+    {
+        fillCache(index);
+        return;
+    }
+    QWriteLocker locker(&lock);
+    cacheList[index].first = QImage::fromData(reply->readAll());
+    cacheList[index].second = true;
+    reply->deleteLater();
 }
 
 QString AnimeImageProvider::replaceRandomNumbers(const QString &input)
