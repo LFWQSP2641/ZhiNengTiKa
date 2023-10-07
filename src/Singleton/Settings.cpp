@@ -1,11 +1,13 @@
 #include "Settings.h"
 #include "../StaticClass/CallAndroidNativeComponent.h"
 #include "../StaticClass/Global.h"
+#include "src/Logic/UserData.h"
 
 Settings *Settings::singletonSettings = nullptr;
 
 Settings::Settings(QObject *parent)
-    : QObject{parent}
+    : QObject{parent},
+      accountManager(new AccountManager(this))
 {
     QByteArray fileData;
     QFile file{ Global::configPath().append(QStringLiteral("/setting.json")) };
@@ -31,15 +33,16 @@ Settings::Settings(QObject *parent)
         {
             continue;
         }
-        userDataList.append(UserData(
-                                jsonObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
-                                jsonObject.value(QStringLiteral("authorization")).toString().toUtf8(),
-                                jsonObject.value(QStringLiteral("clientSession")).toString(QUuid::createUuid().toString(QUuid::WithoutBraces)).toUtf8(),
-                                jsonObject.value(QStringLiteral("studentId")).toString().toUtf8(),
-                                QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("detailData")).toString().toUtf8())).object(),
-                                jsonObject.value(QStringLiteral("password")).toString().toUtf8(),
-                                jsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
-                                jsonObject.value(QStringLiteral("username")).toString().toUtf8()));
+        accountManager->append(new UserData(
+                                   jsonObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
+                                   jsonObject.value(QStringLiteral("authorization")).toString().toUtf8(),
+                                   jsonObject.value(QStringLiteral("clientSession")).toString(QUuid::createUuid().toString(QUuid::WithoutBraces)).toUtf8(),
+                                   jsonObject.value(QStringLiteral("studentId")).toString().toUtf8(),
+                                   QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("detailData")).toString().toUtf8())).object(),
+                                   jsonObject.value(QStringLiteral("password")).toString().toUtf8(),
+                                   jsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
+                                   jsonObject.value(QStringLiteral("username")).toString().toUtf8(),
+                                   accountManager));
     }
 
     compressQRCodeImage = settingJsonObject.value(QStringLiteral("compressQRCodeImage")).toBool(true);
@@ -59,6 +62,11 @@ Settings::Settings(QObject *parent)
     }
 
     animeImageUrl =  settingJsonObject.value(QStringLiteral("animeImageUrl")).toString(animeImageUrlList.at(0).second);
+}
+
+AccountManager *Settings::getAccountManager() const
+{
+    return accountManager;
 }
 
 QString Settings::getAnimeImageUrl() const
@@ -82,37 +90,6 @@ void Settings::resetAnimeImageUrl()
 QList<QPair<QString, QString> > Settings::getAnimeImageUrlList() const
 {
     return animeImageUrlList;
-}
-
-UserDataList Settings::getUserDataList() const
-{
-    return userDataList;
-}
-
-UserDataList &Settings::getUserDataListReference()
-{
-    return userDataList;
-}
-
-void Settings::userDataListPrepend(const UserData &newUserData)
-{
-    userDataList.prepend(newUserData);
-}
-
-void Settings::userDataListRemoveFirst()
-{
-    if(!userDataList.isEmpty())
-    {
-        userDataList.removeFirst();
-    }
-}
-
-void Settings::userDataListToFirst(qsizetype index)
-{
-    if(userDataList.length() > index)
-    {
-        userDataList.toFirst(index);
-    }
 }
 
 void Settings::initOnce()
@@ -221,16 +198,6 @@ void Settings::resetQmlStyle()
     setQmlStyle(QString{});
 }
 
-bool Settings::isLogin() const
-{
-    return !userDataList.isEmpty();
-}
-
-UserData Settings::currentUserData() const
-{
-    return isLogin() ? userDataList.at(0) : UserData::getPublicUserData();
-}
-
 QJsonObject Settings::getJsonObjectApiQRCodeScanner() const
 {
     return jsonObjectApiQRCodeScanner;
@@ -293,17 +260,17 @@ void Settings::saveToFile() const
 {
     QJsonObject settingJsonObject;
     QJsonArray accountsJsonArray;
-    for(const auto &i : userDataList)
+    for(const auto &i : *accountManager)
     {
         QJsonObject jsonObject;
-        jsonObject.insert(QStringLiteral("accessToken"), QString(i.getAccessToken()));
-        jsonObject.insert(QStringLiteral("authorization"), QString(i.getAuthorization()));
-        jsonObject.insert(QStringLiteral("clientSession"), QString(i.getClientSession()));
-        jsonObject.insert(QStringLiteral("password"), QString(i.getPassword()));
-        jsonObject.insert(QStringLiteral("schoolId"), QString(i.getSchoolId()));
-        jsonObject.insert(QStringLiteral("detailData"), QString(QJsonDocument(i.getDetailDataJsonObject()).toJson(QJsonDocument::Compact).toBase64()));
-        jsonObject.insert(QStringLiteral("studentId"), QString(i.getStudentId()));
-        jsonObject.insert(QStringLiteral("username"), QString(i.getUsername()));
+        jsonObject.insert(QStringLiteral("accessToken"), QString(i->getAccessToken()));
+        jsonObject.insert(QStringLiteral("authorization"), QString(i->getAuthorization()));
+        jsonObject.insert(QStringLiteral("clientSession"), QString(i->getClientSession()));
+        jsonObject.insert(QStringLiteral("password"), QString(i->getPassword()));
+        jsonObject.insert(QStringLiteral("schoolId"), QString(i->getSchoolId()));
+        jsonObject.insert(QStringLiteral("detailData"), QString(QJsonDocument(i->getDetailDataJsonObject()).toJson(QJsonDocument::Compact).toBase64()));
+        jsonObject.insert(QStringLiteral("studentId"), QString(i->getStudentId()));
+        jsonObject.insert(QStringLiteral("username"), QString(i->getUsername()));
 
         accountsJsonArray.append(jsonObject);
     }
@@ -326,9 +293,4 @@ void Settings::saveToFile() const
     file.open(QFile::WriteOnly);
     file.write(QJsonDocument(settingJsonObject).toJson(QJsonDocument::Compact));
     file.close();
-}
-
-void Settings::logout()
-{
-    userDataListRemoveFirst();
 }

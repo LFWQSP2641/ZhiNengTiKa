@@ -3,36 +3,78 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import SettingOperator
 import Settings
+import AccountManager
 
 Item {
     required property var builtInStyles
 
+    function displayCurrentUserData() {
+        if(Settings.accountManager.isLoggedin())
+        {
+            currentUserName.text = "账号:" + Settings.accountManager.getCurrentUserData().username
+            currentUserPassword.text = "密码:****************"
+            currentUserAccessToken.text = "AccessToken:" + Settings.accountManager.getCurrentUserData().accessToken
+            currentUserAuthorization.text = "Authorization:" + Settings.accountManager.getCurrentUserData().authorization
+            currentUserSchoolId.text = "SchoolId:" + Settings.accountManager.getCurrentUserData().schoolId
+            currentUserStudentId.text = "StudentId:" + Settings.accountManager.getCurrentUserData().studentId
+            currentUserClientSession.text = "ClientSession:" + Settings.accountManager.getCurrentUserData().clientSession
+        }
+        else
+        {
+            currentUserName.text = "账号:****************"
+            currentUserPassword.text = "密码:****************"
+            currentUserAccessToken.text = "AccessToken:****************"
+            currentUserAuthorization.text = "Authorization:****************"
+            currentUserSchoolId.text = "SchoolId:****************"
+            currentUserStudentId.text = "StudentId:****************"
+            currentUserClientSession.text = "ClientSession:****************"
+        }
+    }
+
+    function accountControlsEnabled(enabled) {
+        accountComboBox.enabled = enabled
+        loginButton.enabled = enabled
+        logoutButton.enabled = enabled && Settings.accountManager.isLoggedin()
+        currentUserRelogin.enabled = enabled
+    }
+
     SettingOperator {
         id: settingOperator
-        onCheckCurrentValidFinished: function(valid) {
-            currentUserValidRectangle.color = valid ? "green" : "red"
-            accountComboBox.enabled = true
-            currentUserRelogin.visible = (!valid) && Settings.isLogin()
-            if(Settings.isLogin())
+    }
+    Connections {
+        target: Settings.accountManager
+        function onLoginFinished(success, object) {
+            messageDialog.close()
+            if(success)
             {
-                currentUserName.text = "账号:" + settingOperator.getCurrentUserUsername()
-                currentUserPassword.text = "密码:****************"
-                currentUserAccessToken.text = "AccessToken:" + settingOperator.getCurrentUserAccessToken()
-                currentUserAuthorization.text = "Authorization:" + settingOperator.getCurrentUserAuthorization()
-                currentUserSchoolId.text = "SchoolId:" + settingOperator.getCurrentUserSchoolId()
-                currentUserStudentId.text = "StudentId:" + settingOperator.getCurrentUserStudentId()
-                currentUserClientSession.text = "ClientSession:" + settingOperator.getCurrentUserClientSession()
+                accountComboBox.model = Settings.accountManager.getDescriptionOfUserDatas()
+                logoutButton.enabled = true
+                Settings.accountManager.checkCurrentAccountValid()
+                accountControlsEnabled(false)
             }
             else
             {
-                currentUserName.text = "账号:****************"
-                currentUserPassword.text = "密码:****************"
-                currentUserAccessToken.text = "AccessToken:****************"
-                currentUserAuthorization.text = "Authorization:****************"
-                currentUserSchoolId.text = "SchoolId:****************"
-                currentUserStudentId.text = "StudentId:****************"
-                currentUserClientSession.text = "ClientSession:****************"
+                messageDialog.show("登录失败,请确认账号密码是否正确")
+                accountControlsEnabled(true)
             }
+        }
+        function onReloginFinished(success, object) {
+            if(success)
+                messageDialog.show("重新登陆成功")
+            else
+                messageDialog.show("重新登陆失败")
+            accountControlsEnabled(true)
+        }
+        function onCheckCurrentAccountValidFinished(valid) {
+            currentUserValidRectangle.color = valid ? "green" : "red"
+            accountComboBox.enabled = true
+            currentUserRelogin.visible = (!valid) && Settings.accountManager.isLoggedin()
+            displayCurrentUserData()
+            accountControlsEnabled(true)
+        }
+        function onError(msg) {
+            messageDialog.show(msg)
+            accountControlsEnabled(true)
         }
     }
 
@@ -45,17 +87,9 @@ Item {
 
         standardButtons: Dialog.Ok | Dialog.Cancel
         onAccepted: {
-            if(settingOperator.login(userIdTextField.text, userPwTextField.text))
-            {
-                accountComboBox.model = settingOperator.getUserDataList()
-                logoutButton.enabled = true
-                settingOperator.checkCurrentValid()
-                loginDialog.close()
-            }
-            else
-            {
-                messageDialog.show("登录失败,请确认账号密码是否正确")
-            }
+            Settings.accountManager.login(userIdTextField.text, userPwTextField.text)
+            accountControlsEnabled(false)
+            loginDialog.close()
         }
         onRejected: {
             userIdTextField.clear()
@@ -146,16 +180,17 @@ Item {
                                 id: accountComboBox
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
-                                model: settingOperator.getUserDataList()
+                                model: Settings.accountManager.getDescriptionOfUserDatas()
                                 enabled: false
 
                                 onActivated: {
                                     if(accountComboBox.currentIndex > 0)
                                     {
                                         currentUserValidRectangle.color = "blue"
-                                        settingOperator.userDataListToFirst(accountComboBox.currentIndex)
-                                        accountComboBox.model = settingOperator.getUserDataList()
-                                        settingOperator.checkCurrentValid()
+                                        Settings.accountManager.toFirst(accountComboBox.currentIndex)
+                                        accountComboBox.model = Settings.accountManager.getDescriptionOfUserDatas()
+                                        Settings.accountManager.checkCurrentAccountValid()
+                                        accountControlsEnabled(false)
                                     }
                                 }
                             }
@@ -176,12 +211,13 @@ Item {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     text: "登出"
-                                    enabled: Settings.isLogin()
+                                    enabled: Settings.accountManager.isLoggedin()
                                     onClicked: {
-                                        Settings.logout()
-                                        logoutButton.enabled = Settings.isLogin()
-                                        settingOperator.checkCurrentValid()
-                                        accountComboBox.model = settingOperator.getUserDataList()
+                                        Settings.accountManager.logout()
+                                        logoutButton.enabled = Settings.accountManager.isLoggedin()
+                                        accountComboBox.model = Settings.accountManager.getDescriptionOfUserDatas()
+                                        Settings.accountManager.checkCurrentAccountValid()
+                                        accountControlsEnabled(false)
                                     }
                                 }
                             }
@@ -203,7 +239,7 @@ Item {
                                     height: parent.height
                                     width: height
                                     radius: 90
-                                    color: settingOperator.isCurrentUserEmpty() ? "red" : "blue"
+                                    color: "blue"
                                 }
                             }
                             RowLayout {
@@ -253,11 +289,8 @@ Item {
                                 Layout.fillWidth: true
                                 text: "重新登陆"
                                 onClicked: {
-                                    if(settingOperator.currentUserRelogin())
-                                        messageDialog.show("重新登陆成功")
-                                    else
-                                        messageDialog.show("重新登陆失败")
-                                    settingOperator.checkCurrentValid()
+                                    Settings.accountManager.checkCurrentAccountValid()
+                                    accountControlsEnabled(false)
                                 }
                             }
                         }
@@ -480,7 +513,8 @@ Item {
     }
 
     Component.onCompleted: {
-        settingOperator.checkCurrentValid()
+        Settings.accountManager.checkCurrentAccountValid()
+        accountControlsEnabled(false)
     }
 
     Component.onDestruction: {

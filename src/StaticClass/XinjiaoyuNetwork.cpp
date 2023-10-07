@@ -4,7 +4,7 @@
 #include "XinjiaoyuEncryptioner.h"
 #include "../Logic/UserData.h"
 
-QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url, const UserData &userData)
+QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url, const UserData *userData)
 {
     QNetworkRequest requestInfo;
     requestInfo.setUrl(url);
@@ -13,29 +13,29 @@ QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url, const UserData &us
     requestInfo.setRawHeader(QByteArrayLiteral("client"), QByteArrayLiteral("android"));
     requestInfo.setRawHeader(QByteArrayLiteral("Content-Type"), QByteArrayLiteral("application/json"));
     requestInfo.setRawHeader(QByteArrayLiteral("User-Agent"), QByteArrayLiteral("okhttp/4.9.3"));
-    requestInfo.setRawHeader(QByteArrayLiteral("Authorization"), userData.getAuthorization());
-    requestInfo.setRawHeader(QByteArrayLiteral("accessToken"), userData.getAccessToken());
-    requestInfo.setRawHeader(QByteArrayLiteral("clientSession"), userData.getClientSession());
+    requestInfo.setRawHeader(QByteArrayLiteral("Authorization"), userData->getAuthorization());
+    requestInfo.setRawHeader(QByteArrayLiteral("accessToken"), userData->getAccessToken());
+    requestInfo.setRawHeader(QByteArrayLiteral("clientSession"), userData->getClientSession());
 
     const auto tVal{QString::number(QDateTime::currentMSecsSinceEpoch()).toUtf8()};
     requestInfo.setRawHeader(QByteArrayLiteral("t"), tVal);
-    const auto encryptVal{XinjiaoyuEncryptioner::getXinjiaoyuMD5(tVal, userData.getClientSession())};
+    const auto encryptVal{XinjiaoyuEncryptioner::getXinjiaoyuMD5(tVal, userData->getClientSession())};
     requestInfo.setRawHeader(QByteArrayLiteral("encrypt"), encryptVal);
     return requestInfo;
 }
 
 QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url)
 {
-    return XinjiaoyuNetwork::setRequest(url, Settings::getSingletonSettings()->currentUserData());
+    return XinjiaoyuNetwork::setRequest(url, Settings::getSingletonSettings()->getAccountManager()->getCurrentUserData());
 }
 
-QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, const UserData &userData)
+QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, const UserData *userData)
 {
     QByteArray responseByte;
     responseByte = Network::getGlobalNetworkManager()->getData(
                        XinjiaoyuNetwork::setRequest(
                            QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_homework/"
-                                          "homework/template/question/list?templateCode=%0&studentId=%1&isEncrypted=true").arg(templateCode, userData.getStudentId())));
+                                          "homework/template/question/list?templateCode=%0&studentId=%1&isEncrypted=true").arg(templateCode, userData->getStudentId())));
 
     const auto stateCode{responseByte.mid(8, 3)};
 
@@ -105,7 +105,7 @@ QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, co
 
 QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
 {
-    return XinjiaoyuNetwork::getTemplateCodeData(templateCode, Settings::getSingletonSettings()->currentUserData());
+    return XinjiaoyuNetwork::getTemplateCodeData(templateCode, Settings::getSingletonSettings()->getAccountManager()->getCurrentUserData());
 }
 
 QString XinjiaoyuNetwork::uploadFile(const QByteArray &fileData, const QString &fileName)

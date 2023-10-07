@@ -1,6 +1,7 @@
 #include "StaticClass/Global.h"
 #include "Singleton/Network.h"
 #include "Singleton/Settings.h"
+#include "Logic/AccountManager.h"
 #include "Logic/AnnouncementManager.h"
 #include "Logic/ImageProvider.h"
 #include "Logic/QRCodeScanner.h"
@@ -33,7 +34,6 @@ int main(int argc, char *argv[])
 
     Settings::initOnce();
     auto settings(Settings::getSingletonSettings());
-    UserData::initPublicUserData();
     MultipleSubjectsTemplateListModelListSingleton::initOnce();
 
     QFont appFont;
@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<ImageProvider>("ImageProvider", 1, 0, "ImageProvider");
     qmlRegisterType<ZAccelerationToOpacityConverter>("ZAccelerationToOpacityConverter", 1, 0, "ZAccelerationToOpacityConverter");
     qmlRegisterType<AnnouncementManager>("AnnouncementManager", 1, 0, "AnnouncementManager");
+    qmlRegisterType<AccountManager>("AccountManager", 1, 0, "AccountManager");
     QQmlApplicationEngine engine;
     engine.addImageProvider(QStringLiteral("AnimeImageProvider"), new AnimeImageProvider);
 

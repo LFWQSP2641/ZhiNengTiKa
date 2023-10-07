@@ -1,7 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include "../Logic/UserDataList.hpp"
+#include "../Logic/AccountManager.h"
 
 class Settings : public QObject
 {
@@ -30,11 +30,6 @@ public:
     QString getQmlStyle() const;
     void setQmlStyle(const QString &newQmlStyle);
     void resetQmlStyle();
-
-    Q_INVOKABLE bool isLogin() const;
-    UserData currentUserData() const;
-    UserDataList getUserDataList() const;
-    UserDataList &getUserDataListReference();
 
     QJsonObject getJsonObjectApiQRCodeScanner() const;
     void setJsonObjectApiQRCodeScanner(const QJsonObject &newJsonObjectApiQRCodeScanner);
@@ -77,12 +72,10 @@ public:
 
     QList<QPair<QString, QString> > getAnimeImageUrlList() const;
 
+    AccountManager *getAccountManager() const;
+
 public slots:
     void saveToFile() const;
-    void logout();
-    void userDataListPrepend(const UserData &newUserData);
-    void userDataListRemoveFirst();
-    void userDataListToFirst(qsizetype index);
 
 protected:
     explicit Settings(QObject *parent = nullptr);
@@ -96,7 +89,7 @@ protected:
     QString font;
     QString qmlStyle;
 
-    UserDataList userDataList;
+    AccountManager *accountManager;
 
     QJsonObject jsonObjectApiQRCodeScanner;
 
@@ -129,8 +122,8 @@ private:
     Q_PROPERTY(QString qmlStyle READ getQmlStyle WRITE setQmlStyle RESET resetQmlStyle NOTIFY qmlStyleChanged)
     Q_PROPERTY(QJsonObject jsonObjectApiQRCodeScanner READ getJsonObjectApiQRCodeScanner WRITE setJsonObjectApiQRCodeScanner RESET resetJsonObjectApiQRCodeScanner NOTIFY jsonObjectApiQRCodeScannerChanged)
     Q_PROPERTY(QString uuid READ getUuid WRITE setUuid RESET resetUuid NOTIFY uuidChanged)
-    Q_PROPERTY(UserDataList userDataList READ getUserDataList CONSTANT)
     Q_PROPERTY(QString animeImageUrl READ getAnimeImageUrl WRITE setAnimeImageUrl RESET resetAnimeImageUrl NOTIFY animeImageUrlChanged FINAL)
+    Q_PROPERTY(AccountManager *accountManager READ getAccountManager CONSTANT FINAL)
 };
 
 #endif // SETTINGS_H
