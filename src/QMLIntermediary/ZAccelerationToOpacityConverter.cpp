@@ -65,5 +65,9 @@ void ZAccelerationToOpacityConverter::run()
 qreal ZAccelerationToOpacityConverter::convertZAccelerationToOpacity(qreal zAcceleration)
 {
     const auto transformZ(qAbs(zAcceleration) / 10);
+#if 0
     return 4 * transformZ * transformZ * transformZ - 6 * transformZ * transformZ + 3 * transformZ;
+#else
+    return transformZ - 0.1;
+#endif
 }
