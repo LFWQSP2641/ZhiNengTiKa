@@ -35,7 +35,7 @@ void TemplateFetcher::handleTemplateRequest(TemplateSummary *templateSummary)
     {
         templateAnalysis->external = true;
         fileTemp.open(QFile::ReadOnly);
-        QByteArray rawData(file.readAll());
+        QByteArray rawData(fileTemp.readAll());
         fileTemp.close();
         templateAnalysis->analyze(rawData);
         emit templateAnalysisReady(templateAnalysis);
