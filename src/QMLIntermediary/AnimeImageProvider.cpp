@@ -17,12 +17,8 @@ QImage AnimeImageProvider::requestImage(const QString &id, QSize *size, const QS
     {
         if(cacheList.at(i).second)
         {
-            lock.lockForRead();
             image = cacheList.at(i).first;
-            lock.unlock();
-            lock.lockForWrite();
             cacheList[i].second = false;
-            lock.unlock();
             fillCache(i);
             break;
         }
@@ -52,9 +48,8 @@ void AnimeImageProvider::fillCache(int index)
     const auto url(replaceRandomNumbers(Settings::getSingletonSettings()->getAnimeImageUrl()));
     auto reply(Network::getGlobalNetworkManager()->getByStrUrl(url));
     fillCacheHash.insert(reply, index);
-    connect(reply, &QNetworkReply::finished, this, &AnimeImageProvider::onFillCacheReplyFinished, Qt::DirectConnection);
+    connect(reply, &QNetworkReply::finished, this, &AnimeImageProvider::onFillCacheReplyFinished, Qt::QueuedConnection);
 #else
-    QWriteLocker locker(&lock);
     cacheList[index].first = QImage("D:/Downloads/736f354a405b251541368b560cd1f665.jpg");
     cacheList[index].second = true;
 #endif
@@ -76,10 +71,11 @@ void AnimeImageProvider::onFillCacheReplyFinished()
     auto index(fillCacheHash.value(reply));
     if(reply->error() != QNetworkReply::NoError)
     {
+        qWarning() << Q_FUNC_INFO << QStringLiteral("reply->error() != QNetworkReply::NoError") << reply->errorString() << reply->readAll();
+        reply->deleteLater();
         fillCache(index);
         return;
     }
-    QWriteLocker locker(&lock);
     cacheList[index].first = QImage::fromData(reply->readAll());
     cacheList[index].second = true;
     reply->deleteLater();

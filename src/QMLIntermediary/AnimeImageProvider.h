@@ -13,7 +13,6 @@ public:
 protected slots:
     void onFillCacheReplyFinished();
 protected:
-    QReadWriteLock lock;
     QList<QPair<QImage, bool>> cacheList;
     QHash<QNetworkReply *, int> fillCacheHash;
 
