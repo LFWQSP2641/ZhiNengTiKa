@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtSensors
 import Qt.labs.platform
 import TemplateFetcher
 import MultipleSubjectsTemplateListModelList
@@ -61,8 +60,8 @@ ApplicationWindow {
                     id: buttonsItemOpacityAnimation
                     target: buttonsItem
                     property: "opacity"
-                    duration: zAccelerationReportTimer.interval - 10
-                    easing.type: Easing.Linear
+                    duration: converter.interval > 10 ? (converter.interval / 10 * 9) : 250
+                    easing.type: Easing.InOutQuad
                 }
                 ColumnLayout {
                     anchors.centerIn: parent
@@ -148,11 +147,11 @@ ApplicationWindow {
             {
                 if(imageRefreshTimer.needToRefresh)
                     refreshImage()
-                zAccelerationReportTimer.start()
+                converter.start()
             }
             else
             {
-                zAccelerationReportTimer.stop()
+                converter.stop()
             }
         }
     }
@@ -172,30 +171,6 @@ ApplicationWindow {
             {
                 imageRefreshTimer.needToRefresh = true
             }
-        }
-    }
-
-    Accelerometer {
-        id: accelerometer
-        property real x: 0
-        property real y: 0
-        property real z: 5
-        active: true
-        onReadingChanged: {
-            x = (reading as AccelerometerReading).x
-            y = (reading as AccelerometerReading).y
-            z = (reading as AccelerometerReading).z
-        }
-    }
-
-    Timer {
-        id: zAccelerationReportTimer
-        running: true
-        repeat: true
-        interval: 100
-        onTriggered: {
-            if(stackView.depth === 1)
-                converter.trySetZAcceleration(accelerometer.z)
         }
     }
 

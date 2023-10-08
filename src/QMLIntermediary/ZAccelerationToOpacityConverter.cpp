@@ -1,37 +1,10 @@
 #include "ZAccelerationToOpacityConverter.h"
+#include "AccelerometerSingleton.h"
 
 ZAccelerationToOpacityConverter::ZAccelerationToOpacityConverter(QObject *parent)
     : QThread{parent}
 {
 
-}
-
-qreal ZAccelerationToOpacityConverter::getZAcceleration() const
-{
-    return zAcceleration;
-}
-
-void ZAccelerationToOpacityConverter::setZAcceleration(qreal newZAcceleration)
-{
-    if (zAcceleration == newZAcceleration)
-        return;
-    lock.lockForWrite();
-    zAcceleration = newZAcceleration;
-    read = false;
-    lock.unlock();
-    emit zAccelerationChanged();
-}
-
-void ZAccelerationToOpacityConverter::trySetZAcceleration(qreal newZAcceleration)
-{
-    if (zAcceleration == newZAcceleration)
-        return;
-    if(!lock.tryLockForWrite())
-        return;
-    zAcceleration = newZAcceleration;
-    read = false;
-    lock.unlock();
-    emit zAccelerationChanged();
 }
 
 void ZAccelerationToOpacityConverter::start(Priority priority)
@@ -50,17 +23,42 @@ void ZAccelerationToOpacityConverter::wait()
     this->QThread::wait();
 }
 
+int ZAccelerationToOpacityConverter::getInterval() const
+{
+    return interval;
+}
+
+void ZAccelerationToOpacityConverter::setInterval(int newInterval)
+{
+    if (interval == newInterval)
+        return;
+    interval = newInterval;
+    emit intervalChanged();
+}
+
 void ZAccelerationToOpacityConverter::run()
 {
     while(canRun)
     {
-        if(read)
-            continue;
-        lock.lockForWrite();
-        read = true;
-        const auto opacity(convertZAccelerationToOpacity(zAcceleration));
-        emit opacityChanged(opacity);
-        lock.unlock();
+        if(this->interval > 0)
+            QThread::msleep(this->interval);
+        const auto reading(AccelerometerSingleton::getAccelerometerSingleton()->reading());
+        if(reading != nullptr)
+        {
+            const auto opacity(convertZAccelerationToOpacity(reading->z()));
+            emit opacityChanged(opacity);
+        }
+        else
+        {
+            ++tryCount;
+            if(tryCount > maxTryCount)
+            {
+                qDebug() << Q_FUNC_INFO << QStringLiteral("reading != nullptr & tryCount > maxTryCount, stop thread");
+                canRun = false;
+                tryCount = 0;
+                emit opacityChanged(0.5);
+            }
+        }
     }
 }
 

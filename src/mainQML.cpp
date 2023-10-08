@@ -11,6 +11,7 @@
 #include "Logic/TemplateFetcher.h"
 #include "Logic/TemplateSearcher.h"
 #include "Logic/TemplateListModel.h"
+#include "QMLIntermediary/AccelerometerSingleton.h"
 #include "QMLIntermediary/AnimeImageProvider.h"
 #include "QMLIntermediary/MultipleSubjectsTemplateListModelListSingleton.h"
 #include "QMLIntermediary/QMLUtils.h"
@@ -22,6 +23,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QtWebView::initialize();
     QApplication a(argc, argv);
+
+    AccelerometerSingleton::initOnce(&a);
 
     Network::initOnce();
 
