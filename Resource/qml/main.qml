@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtSensors
 import Qt.labs.platform
-import TemplateRawDataQML
+import TemplateFetcher
 import MultipleSubjectsTemplateListModelList
 import QMLUtils
 import ZAccelerationToOpacityConverter
@@ -223,8 +223,18 @@ ApplicationWindow {
         onOkClicked: Qt.exit(1)
     }
 
-    TemplateRawDataQML {
-        id: templateRawDataQML
+    TemplateFetcher {
+        id: templateFetcher
+        onError: function(msg) {
+            messageDialog.close()
+            messageDialog.show(msg)
+        }
+        onTemplateAnalysisReady: function(object) {
+            if(object.network)
+                MultipleSubjectsTemplateListModelList.addNewTemplate(object)
+            stackView.push(templateDetailWidgetComponent, {templateAnalysisPointer: object})
+            messageDialog.close()
+        }
     }
 
     UpdateWidget {
@@ -258,8 +268,11 @@ ApplicationWindow {
         id: selectWidgetComponent
         SelectWidget {
             id: selectWidget
-            onOkButtonClicked: function(templateCode){
-                showTemplateDetailWidget(templateCode)
+            onTemplateCodeObtainFinished: function(templateCode){
+                templateFetcher.handleTemplateRequestByCode(templateCode)
+            }
+            onTemplateSummaryObtainFinished: function(templateSummary){
+                templateFetcher.handleTemplateRequest(templateSummary)
             }
         }
     }
@@ -267,8 +280,8 @@ ApplicationWindow {
     Component {
         id: searchWidgetComponent
         SearchWidget {
-            onOkButtonClicked: function(templateCode){
-                showTemplateDetailWidget(templateCode)
+            onTemplateSummaryObtainFinished: function(templateSummary){
+                templateFetcher.handleTemplateRequest(templateSummary)
             }
         }
     }
@@ -276,7 +289,6 @@ ApplicationWindow {
     Component {
         id: templateDetailWidgetComponent
         TemplateDetailWidget {
-            templateRawDataQMLPointer: templateRawDataQML
         }
     }
 
@@ -289,7 +301,9 @@ ApplicationWindow {
             Component.onDestruction: {
             }
             onScanFinished: function(templateCode){
-                showTemplateDetailWidgetAndPop(templateCode)
+                messageDialog.show("获取中...")
+                stackView.pop()
+                templateFetcher.handleTemplateRequestByCode(templateCode)
             }
         }
     }
@@ -307,35 +321,6 @@ ApplicationWindow {
         converter.wait()
     }
 
-    function showTemplateDetailWidget(templateCode) {
-        templateRawDataQML.setValue(templateCode)
-        if(!templateRawDataQML.isValid())
-        {
-            messageDialog.show(templateRawDataQML.getErrorStr())
-            return
-        }
-        if(templateRawDataQML.isNetwork())
-        {
-            MultipleSubjectsTemplateListModelList.addNewTemplate(templateRawDataQML)
-        }
-
-        stackView.push(templateDetailWidgetComponent)
-    }
-    function showTemplateDetailWidgetAndPop(templateCode) {
-        templateRawDataQML.setValue(templateCode)
-        if(!templateRawDataQML.isValid())
-        {
-            messageDialog.show(templateRawDataQML.getErrorStr())
-            return
-        }
-        if(templateRawDataQML.isNetwork())
-        {
-            MultipleSubjectsTemplateListModelList.addNewTemplate(templateRawDataQML)
-        }
-
-        stackView.pop()
-        stackView.push(templateDetailWidgetComponent)
-    }
     function stackViewPopAll() {
         while(stackView.depth > 1)
         {

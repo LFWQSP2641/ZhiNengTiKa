@@ -5,12 +5,13 @@ import TemplateSearcher
 import TemplateListModel
 
 Item {
-    signal okButtonClicked(string templateCode)
-    property string currentTemplateCode: ""
+    signal templateSummaryObtainFinished(var templateSummary)
+    property var currentTemplateSummary: null
     TemplateSearcher {
         id: templateSearcher
 
         onSearchResult: function(templateSummary){
+            templateSummary.parent = templateListModel
             templateListModel.addNewTemplate(templateSummary)
         }
         onSearchFinished: {
@@ -70,15 +71,15 @@ Item {
             id: templateListView
             Layout.fillWidth: true
             Layout.fillHeight: true
-            onTemplateNameClicked: function(templateCode){
-                currentTemplateCode = templateCode
+            onTemplateNameClicked: function(templateSummary){
+                currentTemplateSummary = templateSummary
             }
         }
         Button {
             id: selectOKButton
             Layout.fillWidth: true
             text: "确定"
-            onClicked: okButtonClicked(currentTemplateCode)
+            onClicked: templateSummaryObtainFinished(currentTemplateSummary)
         }
     }
 }

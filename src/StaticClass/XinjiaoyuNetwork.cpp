@@ -29,83 +29,81 @@ QNetworkRequest XinjiaoyuNetwork::setRequest(const QUrl &url)
     return XinjiaoyuNetwork::setRequest(url, Settings::getSingletonSettings()->getAccountManager()->getCurrentUserData());
 }
 
-QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, const UserData *userData)
+QNetworkReply *XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode, const UserData *userData)
 {
-    QByteArray responseByte;
-    responseByte = Network::getGlobalNetworkManager()->getData(
-                       XinjiaoyuNetwork::setRequest(
-                           QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_homework/"
-                                          "homework/template/question/list?templateCode=%0&studentId=%1&isEncrypted=true").arg(templateCode, userData->getStudentId())));
-
-    const auto stateCode{responseByte.mid(8, 3)};
-
-    if (stateCode == QByteArrayLiteral("200"))
-    {
-        //解密
-        auto funcDecryption{[](const QJsonObject & object)
-        {
-            QJsonObject question{ object.value(QStringLiteral("question")).toObject() };
-
-            auto answerContent{question.value(QStringLiteral("answer")).toString()};
-            auto answerExplanation{ question.value(QStringLiteral("answerExplanation")).toString() };
-
-            if(!answerContent.isEmpty())
-            {
-                answerContent = XinjiaoyuEncryptioner::xinjiaoyuDecryption(answerContent.toUtf8());
-                question.insert(QStringLiteral("answer"), answerContent);
-            }
-            if(!answerExplanation.isEmpty())
-            {
-                answerExplanation = XinjiaoyuEncryptioner::xinjiaoyuDecryption(answerExplanation.toUtf8());
-                question.insert(QStringLiteral("answerExplanation"), answerExplanation);
-            }
-
-            return question;
-        }};
-
-        QJsonObject tempObject(QJsonDocument::fromJson(responseByte).object());
-
-        QJsonArray array{ tempObject.value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
-
-        QJsonArray newArray;
-        for (auto j{ 0 }; j < array.size(); ++j)
-        {
-            auto object{array[j].toObject()};
-            object.insert(QStringLiteral("question"), funcDecryption(object));
-
-            QJsonArray childQuestionList{ object.value(QStringLiteral("childQuestionList")).toArray() };
-            if (!childQuestionList.isEmpty())
-            {
-                QJsonArray childQuestionArray;
-                for (auto i{ 0 }; i < childQuestionList.size(); ++i)
-                {
-                    auto obj{childQuestionList[i].toObject()};
-                    obj.insert(QStringLiteral("question"), funcDecryption(childQuestionList[i].toObject()));
-                    childQuestionArray.append(obj);
-                }
-                object.insert(QStringLiteral("childQuestionList"), childQuestionArray);
-            }
-            newArray.append(object);
-        }
-
-        //md真的要一层一层叠上去?
-        auto obj2{tempObject.value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject()};
-        obj2.insert(QStringLiteral("questionsAnswers"), newArray);
-        QJsonArray arr3;
-        arr3.append(obj2);
-        auto obj4{tempObject.value(QStringLiteral("data")).toObject()};
-        obj4.insert(QStringLiteral("questions"), arr3);
-        tempObject.insert(QStringLiteral("data"), obj4);
-        //6
-
-        responseByte = QJsonDocument(tempObject).toJson(QJsonDocument::Compact);
-    }
-    return responseByte;
+    auto reply(
+        Network::getGlobalNetworkManager()->get(XinjiaoyuNetwork::setRequest(
+            QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_homework/"
+                           "homework/template/question/"
+                           "list?templateCode=%0&studentId=%1&isEncrypted=true")
+                .arg(templateCode, userData->getStudentId()))));
+    return reply;
 }
 
-QByteArray XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
+QNetworkReply *XinjiaoyuNetwork::getTemplateCodeData(const QString &templateCode)
 {
     return XinjiaoyuNetwork::getTemplateCodeData(templateCode, Settings::getSingletonSettings()->getAccountManager()->getCurrentUserData());
+}
+
+QByteArray XinjiaoyuNetwork::decodeTemplateReply(const QByteArray &rawdata)
+{
+    auto funcDecryption{[](const QJsonObject & object)
+    {
+        QJsonObject question{ object.value(QStringLiteral("question")).toObject() };
+
+        auto answerContent{question.value(QStringLiteral("answer")).toString()};
+        auto answerExplanation{ question.value(QStringLiteral("answerExplanation")).toString() };
+
+        if(!answerContent.isEmpty())
+        {
+            answerContent = XinjiaoyuEncryptioner::xinjiaoyuDecryption(answerContent.toUtf8());
+            question.insert(QStringLiteral("answer"), answerContent);
+        }
+        if(!answerExplanation.isEmpty())
+        {
+            answerExplanation = XinjiaoyuEncryptioner::xinjiaoyuDecryption(answerExplanation.toUtf8());
+            question.insert(QStringLiteral("answerExplanation"), answerExplanation);
+        }
+
+        return question;
+    }};
+
+    QJsonObject tempObject(QJsonDocument::fromJson(rawdata).object());
+
+    QJsonArray array{ tempObject.value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
+
+    QJsonArray newArray;
+    for (auto j{ 0 }; j < array.size(); ++j)
+    {
+        auto object{array[j].toObject()};
+        object.insert(QStringLiteral("question"), funcDecryption(object));
+
+        QJsonArray childQuestionList{ object.value(QStringLiteral("childQuestionList")).toArray() };
+        if (!childQuestionList.isEmpty())
+        {
+            QJsonArray childQuestionArray;
+            for (auto i{ 0 }; i < childQuestionList.size(); ++i)
+            {
+                auto obj{childQuestionList[i].toObject()};
+                obj.insert(QStringLiteral("question"), funcDecryption(childQuestionList[i].toObject()));
+                childQuestionArray.append(obj);
+            }
+            object.insert(QStringLiteral("childQuestionList"), childQuestionArray);
+        }
+        newArray.append(object);
+    }
+
+    //md真的要一层一层叠上去?
+    auto obj2{tempObject.value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject()};
+    obj2.insert(QStringLiteral("questionsAnswers"), newArray);
+    QJsonArray arr3;
+    arr3.append(obj2);
+    auto obj4{tempObject.value(QStringLiteral("data")).toObject()};
+    obj4.insert(QStringLiteral("questions"), arr3);
+    tempObject.insert(QStringLiteral("data"), obj4);
+    //6
+
+    return QJsonDocument(tempObject).toJson(QJsonDocument::Compact);
 }
 
 QString XinjiaoyuNetwork::uploadFile(const QByteArray &fileData, const QString &fileName)

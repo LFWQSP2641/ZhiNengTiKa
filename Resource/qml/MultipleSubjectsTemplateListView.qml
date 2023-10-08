@@ -5,36 +5,11 @@ import MultipleSubjectsTemplateListModelList
 
 Item {
     id: multipleSubjectsTemplateListView
-    signal multipleSubjectsTemplateNameClicked(string templateCode)
+    signal multipleSubjectsTemplateNameClicked(var templateSummary)
     FontMetrics {
         id: fm
         font: Qt.application.font
     }
-//    ColumnLayout {
-//        id: mainColumnLayout
-//        width: parent.width
-//        height: parent.height
-//        spacing: 0
-//        TabBar {
-//            id: subjectsTabBar
-//            Layout.fillWidth: true
-//            Repeater {
-//                model: ["语文", "数学", "英语", "物理", "化学", "生物", "用户"]
-
-//                TabButton {
-//                    text: modelData
-//                    width: Math.max(fm.maximumCharacterWidth * 2, mainColumnLayout.width / 7)
-//                }
-//            }
-//        }
-//        TemplateListView {
-//            model: MultipleSubjectsTemplateListModelList.at(subjectsTabBar.currentIndex > 0 ? subjectsTabBar.currentIndex : 0)
-//            Layout.fillWidth: true
-//            Layout.fillHeight: true
-//            onTemplateNameClicked: function(templateCode){ multipleSubjectsTemplateNameClicked(templateCode) }
-//        }
-//    }
-
     TabBar {
         id: subjectsTabBar
         anchors.top: parent.top
@@ -55,11 +30,11 @@ Item {
         anchors.right: parent.right
         anchors.left: parent.left
         model: MultipleSubjectsTemplateListModelList.at(subjectsTabBar.currentIndex > 0 ? subjectsTabBar.currentIndex : 0)
-        onTemplateNameClicked: function(templateCode){ multipleSubjectsTemplateNameClicked(templateCode) }
+        onTemplateNameClicked: function(templateSummary){ multipleSubjectsTemplateNameClicked(templateSummary) }
     }
 
-    function addNewTemplate(templateRawDataQML) {
-        MultipleSubjectsTemplateListModelList.addNewTemplate(templateRawDataQML)
+    function addNewTemplate(templateSummary) {
+        MultipleSubjectsTemplateListModelList.addNewTemplate(templateSummary)
         subjectsTabBar.currentIndex = 6
     }
 }

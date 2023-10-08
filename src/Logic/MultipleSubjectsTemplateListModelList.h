@@ -3,8 +3,6 @@
 
 #include "TemplateListModel.h"
 
-class TemplateRawDataQML;
-
 class MultipleSubjectsTemplateListModelList : public QObject
 {
     Q_OBJECT
@@ -26,11 +24,10 @@ public:
         return templateListModelList.at(index);
     }
 public slots:
-    void addNewTemplate(const TemplateSummary &templateSummary);
-    void addNewTemplate(TemplateRawDataQML *templateRawDataQML);
+    void addNewTemplate(TemplateSummary *templateSummary);
     void addNewTemplate(const QString &templateName, const QString &templateCode);
 
-    void addTemplateList(const TemplateSummary &templateSummary);
+    void addTemplateList(TemplateSummary *templateSummary);
     void addTemplateList(const QString &templateName, const QString &templateCode);
 
 protected:

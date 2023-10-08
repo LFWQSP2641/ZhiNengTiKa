@@ -12,9 +12,9 @@ ListView {
             templateListView.currentIndex = index
         }
     }
-    signal templateNameClicked(string templateCode)
+    signal templateNameClicked(var templateSummary)
     onCurrentItemChanged: {
-        templateNameClicked(model.getTemplateCode(templateListView.currentIndex))
-        console.log(model.getTemplateCode(templateListView.currentIndex))
+        templateNameClicked(model.getTemplateSummary(templateListView.currentIndex))
+        console.log(model.getTemplateSummary(templateListView.currentIndex))
     }
 }

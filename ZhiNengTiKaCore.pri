@@ -75,8 +75,8 @@ HEADERS += \
     $$PWD/src/Logic/QRCodeReader.h \
     $$PWD/src/Logic/QRCodeScanner.h \
     $$PWD/src/Logic/TemplateAnalysis.h \
+    $$PWD/src/Logic/TemplateFetcher.h \
     $$PWD/src/Logic/TemplateListModel.h \
-    $$PWD/src/Logic/TemplateRawData.h \
     $$PWD/src/Logic/TemplateSearcher.h \
     $$PWD/src/Logic/TemplateSummary.h \
     $$PWD/src/Logic/UpdateChecker.h \
@@ -98,8 +98,8 @@ SOURCES += \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.cpp \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.cpp \
     $$PWD/src/Logic/TemplateAnalysis.cpp \
+    $$PWD/src/Logic/TemplateFetcher.cpp \
     $$PWD/src/Logic/TemplateListModel.cpp \
-    $$PWD/src/Logic/TemplateRawData.cpp \
     $$PWD/src/Logic/TemplateSearcher.cpp \
     $$PWD/src/Logic/TemplateSummary.cpp \
     $$PWD/src/Logic/UpdateChecker.cpp \

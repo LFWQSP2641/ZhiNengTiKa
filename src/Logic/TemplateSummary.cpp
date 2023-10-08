@@ -1,11 +1,5 @@
 #include "TemplateSummary.h"
 
-TemplateSummary::TemplateSummary(const QString &templateName,
-                                 const QString &templateCode,
-                                 const QString &volume, const QString &subject)
-    : templateName(templateName), templateCode(templateCode), volume(volume),
-      subject(subject) {}
-
 QString TemplateSummary::getTemplateName() const
 {
     return templateName;
@@ -13,7 +7,10 @@ QString TemplateSummary::getTemplateName() const
 
 void TemplateSummary::setTemplateName(const QString &newTemplateName)
 {
+    if (templateName == newTemplateName)
+        return;
     templateName = newTemplateName;
+    emit templateNameChanged();
 }
 
 QString TemplateSummary::getTemplateCode() const
@@ -23,7 +20,10 @@ QString TemplateSummary::getTemplateCode() const
 
 void TemplateSummary::setTemplateCode(const QString &newTemplateCode)
 {
+    if (templateCode == newTemplateCode)
+        return;
     templateCode = newTemplateCode;
+    emit templateCodeChanged();
 }
 
 QString TemplateSummary::getVolume() const
@@ -33,7 +33,10 @@ QString TemplateSummary::getVolume() const
 
 void TemplateSummary::setVolume(const QString &newVolume)
 {
+    if (volume == newVolume)
+        return;
     volume = newVolume;
+    emit volumeChanged();
 }
 
 QString TemplateSummary::getSubject() const
@@ -43,5 +46,8 @@ QString TemplateSummary::getSubject() const
 
 void TemplateSummary::setSubject(const QString &newSubject)
 {
+    if (subject == newSubject)
+        return;
     subject = newSubject;
+    emit subjectChanged();
 }

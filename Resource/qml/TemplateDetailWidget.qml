@@ -3,15 +3,11 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtWebView
 //import ImageProvider
-import TemplateAnalysisQML
 
 Item {
-    property var templateRawDataQMLPointer: null
+    property var templateAnalysisPointer: null
     property bool initFinish: false
 
-    TemplateAnalysisQML {
-        id: templateAnalysisQML
-    }
 //    ImageProvider {
 //        id: imageProvider
 //        cacheMode: true
@@ -58,17 +54,17 @@ Item {
                 clip: true
                 delegate: ItemDelegate {
                     height: questionsCountsListView.height
-                    text: model.display
+                    text: modelData
                     highlighted: ListView.isCurrentItem
                     onClicked: {
                         questionsCountsListView.currentIndex = index
                     }
                 }
-                FontMetrics {
-                    id: fm
-                    font: Qt.application.font
-                }
                 onCurrentItemChanged: getHtml()
+            }
+            FontMetrics {
+                id: fm
+                font: Qt.application.font
             }
         }
 
@@ -104,16 +100,19 @@ Item {
     }
 
     Component.onCompleted: {
-        if(templateRawDataQMLPointer !== null)
+        if(templateAnalysisPointer !== null)
         {
-            setTemplateRawDataQML(templateRawDataQMLPointer)
+            setTemplateRawDataQML(templateAnalysisPointer)
+        }
+        else
+        {
+            templateDetailWebView.loadHtml("<h1>error</h1>")
         }
     }
 
-    function setTemplateRawDataQML(newTemplateAnalysisQML){
+    function setTemplateRawDataQML(newTemplateAnalysisPointer){
         initFinish = false
-        templateAnalysisQML.setValue(newTemplateAnalysisQML)
-        questionsCountsListView.model = templateAnalysisQML.getQuestionsCountsStrListModel()
+        questionsCountsListView.model = newTemplateAnalysisPointer.getQuestionsCountsStrListModel()
         initFinish = true
         questionsCountsListView.currentIndex = -1
     }
@@ -125,15 +124,15 @@ Item {
 
         if(tabBar.currentIndex === 0)
         {
-            templateDetailWebView.loadHtml(templateAnalysisQML.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
+            templateDetailWebView.loadHtml(templateAnalysisPointer.getAnswerAndAnalysisHtml(questionsCountsListView.currentIndex))
         }
         else if(tabBar.currentIndex === 1)
         {
-            templateDetailWebView.loadHtml(templateAnalysisQML.getAnswerHtml(questionsCountsListView.currentIndex))
+            templateDetailWebView.loadHtml(templateAnalysisPointer.getAnswerHtml(questionsCountsListView.currentIndex))
         }
         else if(tabBar.currentIndex === 2)
         {
-            templateDetailWebView.loadHtml(templateAnalysisQML.getQuestionHtml(questionsCountsListView.currentIndex))
+            templateDetailWebView.loadHtml(templateAnalysisPointer.getQuestionHtml(questionsCountsListView.currentIndex))
         }
     }
 }

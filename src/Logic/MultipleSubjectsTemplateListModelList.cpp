@@ -1,7 +1,6 @@
 #include "MultipleSubjectsTemplateListModelList.h"
 #include "../Singleton/Settings.h"
 #include "../StaticClass/Global.h"
-#include "../QMLIntermediary/TemplateRawDataQML.h"
 
 MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QObject *parent)
     : QObject{parent}
@@ -11,7 +10,7 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
         QFile file { filePath };
         if(file.exists())
         {
-            QList<TemplateSummary> tempTemplateList;
+            QList<TemplateSummary *> tempTemplateList;
             file.open(QFile::ReadOnly);
             while (!file.atEnd())
             {
@@ -44,13 +43,15 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
                     }
 
 
-                    tempTemplateList.append(TemplateSummary(
+                    tempTemplateList.append(new TemplateSummary(
                                                 tempTemplateNameData.at(2), tempTemplateCode,
-                                                tempTemplateNameData.at(0), tempTemplateNameData.at(1)));
+                                                tempTemplateNameData.at(0), tempTemplateNameData.at(1),
+                                                this));
                 }
                 else
                 {
-                    tempTemplateList.append(TemplateSummary(tempTemplateName, tempTemplateCode));
+                    tempTemplateList.append(new TemplateSummary(tempTemplateName, tempTemplateCode,
+                                            QString(), QString(), this));
                 }
             }
             file.close();
@@ -58,7 +59,7 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
         }
         else
         {
-            templateListModelList.append(new TemplateListModel());
+            templateListModelList.append(new TemplateListModel(this));
         }
     }};
 
@@ -102,26 +103,20 @@ MultipleSubjectsTemplateListModelList::~MultipleSubjectsTemplateListModelList()
 //    }
 }
 
-void MultipleSubjectsTemplateListModelList::addNewTemplate(const TemplateSummary &templateSummary)
+void MultipleSubjectsTemplateListModelList::addNewTemplate(TemplateSummary *templateSummary)
 {
     templateListModelList[Subjects::Undefined]->addNewTemplate(templateSummary);
     this->addTemplateList(templateSummary);
 }
 
-void MultipleSubjectsTemplateListModelList::addNewTemplate(TemplateRawDataQML *templateRawDataQML)
-{
-    const auto templateSummary{templateRawDataQML->getTemplateRawData()};
-    this->addNewTemplate(templateSummary);
-}
-
 void MultipleSubjectsTemplateListModelList::addNewTemplate(const QString &templateName, const QString &templateCode)
 {
-    this->addNewTemplate(TemplateSummary(templateName, templateCode));
+    this->addNewTemplate(new TemplateSummary(templateName, templateCode, QString(), QString(), this));
 }
 
-void MultipleSubjectsTemplateListModelList::addTemplateList(const TemplateSummary &templateSummary)
+void MultipleSubjectsTemplateListModelList::addTemplateList(TemplateSummary *templateSummary)
 {
-    this->addTemplateList(templateSummary.getTemplateName(), templateSummary.getTemplateCode());
+    this->addTemplateList(templateSummary->getTemplateName(), templateSummary->getTemplateCode());
 }
 
 void MultipleSubjectsTemplateListModelList::addTemplateList(const QString &templateName, const QString &templateCode)

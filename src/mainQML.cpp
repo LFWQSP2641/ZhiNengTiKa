@@ -6,15 +6,15 @@
 #include "Logic/ImageProvider.h"
 #include "Logic/QRCodeScanner.h"
 #include "Logic/UpdateChecker.h"
+#include "Logic/TemplateSummary.h"
+#include "Logic/TemplateAnalysis.h"
+#include "Logic/TemplateFetcher.h"
 #include "Logic/TemplateSearcher.h"
 #include "Logic/TemplateListModel.h"
 #include "QMLIntermediary/AnimeImageProvider.h"
 #include "QMLIntermediary/MultipleSubjectsTemplateListModelListSingleton.h"
 #include "QMLIntermediary/QMLUtils.h"
 #include "QMLIntermediary/ZAccelerationToOpacityConverter.h"
-#include "QMLIntermediary/TemplateSummaryQML.h"
-#include "QMLIntermediary/TemplateRawDataQML.h"
-#include "QMLIntermediary/TemplateAnalysisQML.h"
 #include "QMLIntermediary/SettingOperator.h"
 
 int main(int argc, char *argv[])
@@ -75,9 +75,9 @@ int main(int argc, char *argv[])
     qmlRegisterSingletonInstance("Settings", 1, 0, "Settings", settings);
     qmlRegisterSingletonInstance("AccountManager", 1, 0, "AccountManager", settings->getAccountManager());
     qmlRegisterSingletonInstance("QMLUtils", 1, 0, "QMLUtils", new QMLUtils);
-    qmlRegisterType<TemplateSummaryQML>("TemplateSummaryQML", 1, 0, "TemplateSummaryQML");
-    qmlRegisterType<TemplateRawDataQML>("TemplateRawDataQML", 1, 0, "TemplateRawDataQML");
-    qmlRegisterType<TemplateAnalysisQML>("TemplateAnalysisQML", 1, 0, "TemplateAnalysisQML");
+    qmlRegisterType<TemplateSummary>("TemplateSummary", 1, 0, "TemplateSummary");
+    qmlRegisterType<TemplateAnalysis>("TemplateAnalysis", 1, 0, "TemplateAnalysis");
+    qmlRegisterType<TemplateFetcher>("TemplateFetcher", 1, 0, "TemplateFetcher");
     qmlRegisterType<TemplateSearcher>("TemplateSearcher", 1, 0, "TemplateSearcher");
     qmlRegisterType<TemplateListModel>("TemplateListModel", 1, 0, "TemplateListModel");
     qmlRegisterType<SettingOperator>("SettingOperator", 1, 0, "SettingOperator");
