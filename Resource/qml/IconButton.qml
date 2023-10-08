@@ -26,6 +26,7 @@ Rectangle {
             id: icon
             fillMode: Image.PreserveAspectFit
             clip: true
+            mipmap: true
             Layout.fillHeight: true
             Layout.fillWidth: true
         }
