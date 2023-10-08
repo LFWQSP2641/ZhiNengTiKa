@@ -137,7 +137,7 @@ void AnnouncementManager::analysisRawData(const QByteArray &data)
 
     if(!announcementModel->titleList.isEmpty())
     {
-        announcementModel->beginRemoveRows(QModelIndex(), 0, announcementModel->titleList.size());
+        announcementModel->beginRemoveRows(QModelIndex(), 0, announcementModel->titleList.size() - 1);
         announcementModel->titleList.clear();
         announcementModel->detailList.clear();
         announcementModel->readList.clear();
@@ -145,7 +145,7 @@ void AnnouncementManager::analysisRawData(const QByteArray &data)
     }
     if(!titleList.isEmpty())
     {
-        announcementModel->beginInsertRows(QModelIndex(), 0, titleList.size());
+        announcementModel->beginInsertRows(QModelIndex(), 0, titleList.size() - 1);
         announcementModel->titleList = std::move(titleList);
         announcementModel->detailList = std::move(detailList);
         announcementModel->readList = std::move(readList);
