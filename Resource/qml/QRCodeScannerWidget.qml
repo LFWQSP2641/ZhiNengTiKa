@@ -27,22 +27,6 @@ Item {
     VideoOutput {
         id: videoOutput
         anchors.fill: parent
-        Rectangle {
-            id: flashRectangle
-            anchors.fill: parent
-            color: "black"
-            opacity: 0
-            function flash() {
-                flashAnimation.start()
-            }
-            SequentialAnimation {
-                id: flashAnimation
-
-                // 使矩形透明度变为1，然后再变回0，从而实现 "闪一下" 的效果
-                PropertyAnimation { target: flashRectangle; property: "opacity"; to: 1; duration: 0 }
-                PropertyAnimation { target: flashRectangle; property: "opacity"; to: 0; duration: 200 }
-            }
-        }
     }
     CaptureSession {
         camera: camera
@@ -66,13 +50,8 @@ Item {
             console.log(text)
             if(succeeded)
             {
-                stateText.text = text
                 templateCode = text
                 delayCameraClose.start()
-            }
-            else
-            {
-                stateText.text = "未检测到二维码, 请重试"
             }
         }
         onError: function(msg){
@@ -89,99 +68,32 @@ Item {
         }
     }
 
-    Rectangle {
-        anchors {left: parent.left; right: parent.right; bottom: parent.bottom}
-        height: Math.max(parent.height / 4, 100)
-        color: "black"
-        Text {
-            id: stateText
-            anchors {top: parent.top; horizontalCenter: parent.horizontalCenter; margins: 10}
-            color: "white"
-            wrapMode: Text.WordWrap
-        }
-        Rectangle {
-            id: whiteRing
-            anchors {top: stateText.bottom; bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; margins: 10}
-            width: height
-            z: parent.z + 1
-            radius: 90
-            color: "white"
-        }
-        Rectangle {
-            id: blackRing
-            anchors.centerIn: whiteRing
-            height: whiteRing.height - 10
-            width: height
-            z: whiteRing.z + 1
-            radius: 90
-            color: parent.color
-        }
-        Rectangle {
-            id: blueRoundButton
-            anchors.centerIn: whiteRing
-            height: blackRing.height - 10
-            width: height
-            z: blackRing.z + 1
-            radius: 90
-            color: "#3d94ff"
-            Rectangle {
-                anchors.fill: parent
-                z: parent.z + 1
-                radius: parent.radius
-                color: "black"
-                opacity: 0
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    //按下
-                    onPressed: {
-                        parent.opacity = 0.4
-                    }
-                    //释放
-                    onReleased: {
-                        parent.opacity = 0.2
-                    }
-                    //指针进入
-                    onEntered: {
-                        parent.opacity = 0.2
-                    }
-                    //指针退出
-                    onExited: {
-                        parent.opacity = 0
-                    }
-                    onClicked: {
-                        qrCodeScanner.scan()
-                        flashRectangle.flash()
-                    }
-                }
-            }
-        }
-        RoundButton {
-            id: selectFileRoundButton
-            icon.source: "qrc:/svg/icon/picture.svg"
-            anchors {right: parent.right; bottom: parent.bottom; rightMargin: 10; bottomMargin: 10}
-            z: parent.z + 1
-            onClicked: {
-                camera.stop()
-                fileDialog.open()
-            }
-        }
-        RoundButton {
-            id: switchCameraDevice
-            property int currentDeviceIndex: 0
-            icon.source: "qrc:/svg/icon/refresh.svg"
-            anchors {left: parent.left; bottom: parent.bottom; leftMargin: 10; bottomMargin: 10}
-            z: parent.z + 1
-            onClicked: {
-                switchCameraDevice.currentDeviceIndex += 1
-                if(switchCameraDevice.currentDeviceIndex > (mediaDevices.videoInputs.length - 1))
-                    switchCameraDevice.currentDeviceIndex = 0
-                camera.cameraDevice = mediaDevices.videoInputs[switchCameraDevice.currentDeviceIndex]
-                camera.stop()
-                camera.start()
-            }
+    RoundButton {
+        id: selectFileRoundButton
+        icon.source: "qrc:/svg/icon/picture.svg"
+        anchors {right: parent.right; bottom: parent.bottom; rightMargin: 10; bottomMargin: 10}
+        z: parent.z + 1
+        onClicked: {
+            camera.stop()
+            fileDialog.open()
         }
     }
+    RoundButton {
+        id: switchCameraDevice
+        property int currentDeviceIndex: 0
+        icon.source: "qrc:/svg/icon/refresh.svg"
+        anchors {left: parent.left; bottom: parent.bottom; leftMargin: 10; bottomMargin: 10}
+        z: parent.z + 1
+        onClicked: {
+            switchCameraDevice.currentDeviceIndex += 1
+            if(switchCameraDevice.currentDeviceIndex > (mediaDevices.videoInputs.length - 1))
+                switchCameraDevice.currentDeviceIndex = 0
+            camera.cameraDevice = mediaDevices.videoInputs[switchCameraDevice.currentDeviceIndex]
+            camera.stop()
+            camera.start()
+        }
+    }
+
     FileDialog {
         id: fileDialog
         fileMode: FileDialog.OpenFile
@@ -192,7 +104,7 @@ Item {
         nameFilters:["Images (*.jpg *.jpeg *.png *.gif)"]
 
         onAccepted: {
-            qrCodeScanner.decodeImageByPath(currentFile)
+            qrCodeScanner.qrCodeReader.decodeImageByPath(currentFile)
             camera.start()
         }
         onRejected: {
@@ -200,10 +112,92 @@ Item {
         }
     }
 
+    // 扫码线动画
+    Rectangle {
+        id: scannerRectangle
+        width: parent.width / 3 * 2
+        height: width
+        z: videoOutput.z + 1
+        anchors.centerIn: parent
+        color: Qt.rgba(1, 1, 1, 0)
+        Rectangle {
+            id: scannerLine
+            width: scannerRectangle.width
+            height: 2
+            color: "#297b6c"
+            radius: 1
+
+            SequentialAnimation {
+                id: scanLineAnimation
+                loops: Animation.Infinite
+                running: true
+                NumberAnimation {
+                    id: scanAnimation
+                    target: scannerLine
+                    property: "y"
+                    from: 0
+                    to: scannerRectangle.height - scannerLine.height
+                    duration: 1000
+                    easing.type: Easing.Linear
+                    onFinished: {
+                        pauseTimer.start()
+                    }
+                }
+                PauseAnimation {
+                    duration: 500
+                }
+            }
+        }
+    }
+    // 遮盖
+    // 上
+    Rectangle {
+        id: topRectangle
+        z: videoOutput.z + 1
+        color: Qt.rgba(0, 0, 0, 0.5)
+        anchors.top: videoOutput.top
+        anchors.left: videoOutput.left
+        anchors.right: videoOutput.right
+        anchors.bottom: scannerRectangle.top
+    }
+    // 下
+    Rectangle {
+        id: bottomRectangle
+        z: videoOutput.z + 1
+        color: Qt.rgba(0, 0, 0, 0.5)
+        anchors.top: scannerRectangle.bottom
+        anchors.left: videoOutput.left
+        anchors.right: videoOutput.right
+        anchors.bottom: videoOutput.bottom
+    }
+    // 左
+    Rectangle {
+        id: leftRectangle
+        z: videoOutput.z + 1
+        color: Qt.rgba(0, 0, 0, 0.5)
+        anchors.top: topRectangle.bottom
+        anchors.left: videoOutput.left
+        anchors.right: scannerRectangle.left
+        anchors.bottom: bottomRectangle.top
+    }
+    // 右
+    Rectangle {
+        id: rightRectangle
+        z: videoOutput.z + 1
+        color: Qt.rgba(0, 0, 0, 0.5)
+        anchors.top: topRectangle.bottom
+        anchors.left: scannerRectangle.right
+        anchors.right: videoOutput.right
+        anchors.bottom: bottomRectangle.top
+    }
+
     Component.onCompleted: {
         camera.start()
+        qrCodeScanner.startThread()
     }
     Component.onDestruction: {
+        qrCodeScanner.stopThread()
         camera.stop()
+        qrCodeScanner.waitForThreadFinish()
     }
 }

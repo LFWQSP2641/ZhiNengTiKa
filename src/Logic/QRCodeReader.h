@@ -29,9 +29,13 @@ protected:
     int maxHeight = -1;
     bool smoothTransformation = false;
 
+    void warning(const QString &errMsg);
+    void frameErrorWarning(const QString &errMsg);
+
 signals:
     void decodingFinished(bool succeeded, const QString &data);
     void error(const QString &msg);
+    void frameError(const QString &msg);
     void maxWidthChanged();
     void maxHeightChanged();
 

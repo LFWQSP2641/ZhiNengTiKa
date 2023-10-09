@@ -8,12 +8,6 @@ QRCodeReader::QRCodeReader(QObject *parent)
 
 QString QRCodeReader::decodeImage(const QImage &image)
 {
-    auto warning([this](const QString & errMsg)
-    {
-        qWarning() << errMsg;
-        emit error(errMsg);
-        emit decodingFinished(false, {});
-    });
     if(image.isNull())
     {
         warning(QStringLiteral("图片为空"));
@@ -40,15 +34,9 @@ QString QRCodeReader::decodeImage(const QImage &image)
 
 QString QRCodeReader::decodeFrame(const QVideoFrame &frame)
 {
-    auto warning([this](const QString & errMsg)
-    {
-        qWarning() << errMsg;
-        emit error(errMsg);
-        emit decodingFinished(false, {});
-    });
     if(!frame.isValid())
     {
-        warning(QStringLiteral("帧不可用"));
+        frameErrorWarning(QStringLiteral("帧不可用"));
         return {};
     }
     try
@@ -60,14 +48,28 @@ QString QRCodeReader::decodeFrame(const QVideoFrame &frame)
     }
     catch(const std::exception& e)
     {
-        warning(QString::fromStdString(e.what()));
+        frameErrorWarning(QString::fromStdString(e.what()));
         return {};
     }
     catch(...)
     {
-        warning(QStringLiteral("未知错误"));
+        frameErrorWarning(QStringLiteral("未知错误"));
         return {};
     }
+}
+
+void QRCodeReader::warning(const QString &errMsg)
+{
+    qWarning() << errMsg;
+    emit error(errMsg);
+    emit decodingFinished(false, {});
+}
+
+void QRCodeReader::frameErrorWarning(const QString &errMsg)
+{
+    qWarning() << errMsg;
+    emit frameError(errMsg);
+    emit decodingFinished(false, {});
 }
 
 bool QRCodeReader::getSmoothTransformation() const
