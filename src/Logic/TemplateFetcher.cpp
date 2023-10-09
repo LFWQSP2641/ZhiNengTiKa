@@ -51,7 +51,7 @@ void TemplateFetcher::handleTemplateRequest(TemplateSummary *templateSummary)
 
 void TemplateFetcher::handleTemplateRequestByCode(const QString &templateCode)
 {
-    TemplateSummary templateSummary(QString(), templateCode);
+    TemplateSummary templateSummary(QString(), templateCode.trimmed());
     handleTemplateRequest(&templateSummary);
 }
 
