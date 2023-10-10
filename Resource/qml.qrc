@@ -11,6 +11,7 @@
         <file>qml/QRCodeScannerWidget.qml</file>
         <file>qml/IconButton.qml</file>
         <file>qml/AnnouncementWidget.qml</file>
+        <file>qml/BouncingMessageDialog.qml</file>
     </qresource>
     <qresource prefix="/svg">
         <file>icon/barcode-scan.svg</file>
