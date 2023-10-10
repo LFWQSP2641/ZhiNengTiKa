@@ -16,6 +16,7 @@ protected:
 protected slots:
     void onHandleTemplateReplyFinished();
 signals:
+    void obtainTemplateFromNetwork();
     void templateAnalysisReady(const TemplateAnalysis *templateAnalysis);
     void error(const QString &msg);
 };

@@ -206,9 +206,14 @@ ApplicationWindow {
         }
         onTemplateAnalysisReady: function(object) {
             if(object.network)
+            {
                 MultipleSubjectsTemplateListModelList.addNewTemplate(object)
+                messageDialog.close()
+            }
             stackView.push(templateDetailWidgetComponent, {templateAnalysisPointer: object})
-            messageDialog.close()
+        }
+        onObtainTemplateFromNetwork: {
+            messageDialog.show("获取中...")
         }
     }
 
@@ -276,7 +281,6 @@ ApplicationWindow {
             Component.onDestruction: {
             }
             onScanFinished: function(templateCode){
-                messageDialog.show("获取中...")
                 stackView.pop()
                 templateFetcher.handleTemplateRequestByCode(templateCode)
             }

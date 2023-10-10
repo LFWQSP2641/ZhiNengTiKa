@@ -42,6 +42,7 @@ void TemplateFetcher::handleTemplateRequest(TemplateSummary *templateSummary)
     }
     else
     {
+        emit obtainTemplateFromNetwork();
         this->templateAnalysisfromNetwork = templateAnalysis;
         templateAnalysis->network = true;
         auto reply(XinjiaoyuNetwork::getTemplateCodeData(templateCode));
