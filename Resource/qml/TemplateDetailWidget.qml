@@ -109,6 +109,10 @@ Item {
             templateDetailWebView.loadHtml("<h1>error</h1>")
         }
     }
+    Component.onDestruction: {
+        if(templateAnalysisPointer != null)
+            templateAnalysisPointer.deleteLater()
+    }
 
     function setTemplateRawDataQML(newTemplateAnalysisPointer){
         initFinish = false

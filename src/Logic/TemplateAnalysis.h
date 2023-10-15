@@ -37,6 +37,7 @@ public:
 
 public slots:
     void analyze(const QByteArray &rawData);
+    void deleteLater();
 
 signals:
 
