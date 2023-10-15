@@ -115,21 +115,77 @@ Item {
     // 扫码线动画
     Rectangle {
         id: scannerRectangle
-        anchors.fill: parent
+        width: Math.floor(parent.width > parent.height ? parent.height * 4 / 5 : parent.width * 4 / 5)
+        height: width
         z: videoOutput.z + 1
         anchors.centerIn: parent
         color: Qt.rgba(1, 1, 1, 0)
+
+        // 左上角
+        Rectangle {
+            anchors {top: parent.top; left: parent.left}
+            width: Math.floor(parent.width / 10)
+            height: 2
+            color: "white"
+        }
+        Rectangle {
+            anchors {top: parent.top; left: parent.left}
+            width: 2
+            height: Math.floor(parent.height / 10)
+            color: "white"
+        }
+
+        // 右上角
+        Rectangle {
+            anchors {top: parent.top; right: parent.right}
+            width: Math.floor(parent.width / 10)
+            height: 2
+            color: "white"
+        }
+        Rectangle {
+            anchors {top: parent.top; right: parent.right}
+            width: 2
+            height: Math.floor(parent.height / 10)
+            color: "white"
+        }
+
+        // 左下角
+        Rectangle {
+            anchors {bottom: parent.bottom; left: parent.left}
+            width: Math.floor(parent.width / 10)
+            height: 2
+            color: "white"
+        }
+        Rectangle {
+            anchors {bottom: parent.bottom; left: parent.left}
+            width: 2
+            height: Math.floor(parent.height / 10)
+            color: "white"
+        }
+
+        // 右下角
+        Rectangle {
+            anchors {bottom: parent.bottom; right: parent.right}
+            width: Math.floor(parent.width / 10)
+            height: 2
+            color: "white"
+        }
+        Rectangle {
+            anchors {bottom: parent.bottom; right: parent.right}
+            width: 2
+            height: Math.floor(parent.height / 10)
+            color: "white"
+        }
+
         Rectangle {
             id: scannerLine
             width: scannerRectangle.width
             height: 2
             color: "#297b6c"
-            radius: 1
             ParallelAnimation {
                 running: true
+                loops: Animation.Infinite
                 SequentialAnimation {
-                    id: scanLineAnimation
-                    loops: Animation.Infinite
                     NumberAnimation {
                         target: scannerLine
                         property: "y"
@@ -141,20 +197,8 @@ Item {
                     PauseAnimation {
                         duration: 500
                     }
-                    NumberAnimation {
-                        target: scannerLine
-                        property: "y"
-                        to: 0
-                        duration: 1000
-                        easing.type: Easing.Linear
-                    }
-                    PauseAnimation {
-                        duration: 500
-                    }
                 }
                 SequentialAnimation {
-                    id: fadeAnimation
-                    loops: Animation.Infinite
                     PropertyAnimation {
                         target: scannerLine
                         property: "opacity"
