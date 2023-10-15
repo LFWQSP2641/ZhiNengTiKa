@@ -38,6 +38,19 @@ ApplicationWindow {
             id: navigateBackButton
             action: navigateBackAction
             anchors.left: parent.left
+            anchors {top: parent.top; left: parent.left; bottom: parent.bottom}
+        }
+        Text {
+            id: pageDescription
+            anchors {left: navigateBackButton.right; right: parent.right}
+            anchors.verticalCenter: parent.verticalCenter
+        }
+        Component.onCompleted: {
+            console.log(background.color.hslLightness)
+            if(background.color.hslLightness > 0.5)
+                pageDescription.color = "black"
+            else
+                pageDescription.color = "white"
         }
     }
 
@@ -269,6 +282,13 @@ ApplicationWindow {
     Component {
         id: templateDetailWidgetComponent
         TemplateDetailWidget {
+            Component.onCompleted: {
+                if(templateAnalysisPointer !== null)
+                    pageDescription.text = templateAnalysisPointer.templateName
+            }
+            Component.onDestruction: {
+                pageDescription.text = ""
+            }
         }
     }
 
