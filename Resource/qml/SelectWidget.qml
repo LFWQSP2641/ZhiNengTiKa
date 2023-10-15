@@ -30,7 +30,7 @@ Item {
             }
             onTextEdited: {
                 console.log("templateCodeTextField textEdited")
-                if(templateCodeTextField.text != previousText)
+                if(templateCodeTextField.text !== previousText)
                 {
                     console.log("templateCodeTextField text changed")
                     templateSummaryObject = null

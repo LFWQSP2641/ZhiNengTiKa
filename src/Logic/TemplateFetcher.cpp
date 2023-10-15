@@ -81,9 +81,5 @@ void TemplateFetcher::onHandleTemplateReplyFinished()
     fileTemp.write(templateData);
     fileTemp.close();
     templateAnalysisfromNetwork->analyze(templateData);
-    if(templateAnalysisfromNetwork->templateName.isEmpty())
-    {
-        templateAnalysisfromNetwork->templateName = QJsonDocument::fromJson(templateData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("templateName")).toString();
-    }
     emit templateAnalysisReady(templateAnalysisfromNetwork);
 }

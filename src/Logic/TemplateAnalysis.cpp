@@ -178,7 +178,12 @@ void TemplateAnalysis::analyze(const QByteArray &rawData)
         return outputObject;
     }};
 
-    QJsonArray array{ QJsonDocument::fromJson(rawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
+    QJsonObject object(QJsonDocument::fromJson(rawData).object().value(QStringLiteral("data")).toObject());
+    if(this->templateName.isEmpty())
+    {
+        this->templateName = object.value(QStringLiteral("templateName")).toString();
+    }
+    QJsonArray array{ object.value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
     for (auto i{ 0 }; i < array.size(); ++i)
     {
         auto jsonObject{ array.at(i) };
