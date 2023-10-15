@@ -115,8 +115,7 @@ Item {
     // 扫码线动画
     Rectangle {
         id: scannerRectangle
-        width: parent.width / 3 * 2
-        height: width
+        anchors.fill: parent
         z: videoOutput.z + 1
         anchors.centerIn: parent
         color: Qt.rgba(1, 1, 1, 0)
@@ -126,69 +125,62 @@ Item {
             height: 2
             color: "#297b6c"
             radius: 1
-
-            SequentialAnimation {
-                id: scanLineAnimation
-                loops: Animation.Infinite
+            ParallelAnimation {
                 running: true
-                NumberAnimation {
-                    id: scanAnimation
-                    target: scannerLine
-                    property: "y"
-                    from: 0
-                    to: scannerRectangle.height - scannerLine.height
-                    duration: 1000
-                    easing.type: Easing.Linear
-                    onFinished: {
-                        pauseTimer.start()
+                SequentialAnimation {
+                    id: scanLineAnimation
+                    loops: Animation.Infinite
+                    NumberAnimation {
+                        target: scannerLine
+                        property: "y"
+                        from: 0
+                        to: scannerRectangle.height - scannerLine.height
+                        duration: 1000
+                        easing.type: Easing.Linear
+                    }
+                    PauseAnimation {
+                        duration: 500
+                    }
+                    NumberAnimation {
+                        target: scannerLine
+                        property: "y"
+                        to: 0
+                        duration: 1000
+                        easing.type: Easing.Linear
+                    }
+                    PauseAnimation {
+                        duration: 500
                     }
                 }
-                PauseAnimation {
-                    duration: 500
+                SequentialAnimation {
+                    id: fadeAnimation
+                    loops: Animation.Infinite
+                    PropertyAnimation {
+                        target: scannerLine
+                        property: "opacity"
+                        from: 0
+                        to: 1 // 设置为1以进行淡入
+                        duration: 500
+                        easing.type: Easing.Linear
+                    }
+                    PropertyAnimation {
+                        target: scannerLine
+                        property: "opacity"
+                        from: 1
+                        to: 0 // 设置为0以进行淡出
+                        duration: 500
+                        easing.type: Easing.Linear
+                    }
+                    PauseAnimation {
+                        duration: 500
+                    }
                 }
             }
         }
     }
-    // 遮盖
-    // 上
-    Rectangle {
-        id: topRectangle
-        z: videoOutput.z + 1
-        color: Qt.rgba(0, 0, 0, 0.5)
-        anchors.top: videoOutput.top
-        anchors.left: videoOutput.left
-        anchors.right: videoOutput.right
-        anchors.bottom: scannerRectangle.top
-    }
-    // 下
-    Rectangle {
-        id: bottomRectangle
-        z: videoOutput.z + 1
-        color: Qt.rgba(0, 0, 0, 0.5)
-        anchors.top: scannerRectangle.bottom
-        anchors.left: videoOutput.left
-        anchors.right: videoOutput.right
-        anchors.bottom: videoOutput.bottom
-    }
-    // 左
-    Rectangle {
-        id: leftRectangle
-        z: videoOutput.z + 1
-        color: Qt.rgba(0, 0, 0, 0.5)
-        anchors.top: topRectangle.bottom
-        anchors.left: videoOutput.left
-        anchors.right: scannerRectangle.left
-        anchors.bottom: bottomRectangle.top
-    }
-    // 右
-    Rectangle {
-        id: rightRectangle
-        z: videoOutput.z + 1
-        color: Qt.rgba(0, 0, 0, 0.5)
-        anchors.top: topRectangle.bottom
-        anchors.left: scannerRectangle.right
-        anchors.right: videoOutput.right
-        anchors.bottom: bottomRectangle.top
+
+    BlinkingDots {
+        anchors.fill: parent
     }
 
     Component.onCompleted: {

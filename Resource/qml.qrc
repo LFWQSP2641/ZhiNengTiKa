@@ -12,6 +12,8 @@
         <file>qml/IconButton.qml</file>
         <file>qml/AnnouncementWidget.qml</file>
         <file>qml/BouncingMessageDialog.qml</file>
+        <file>qml/BlinkingDots.qml</file>
+        <file>qml/SingleBlinkingDot.qml</file>
     </qresource>
     <qresource prefix="/svg">
         <file>icon/barcode-scan.svg</file>
