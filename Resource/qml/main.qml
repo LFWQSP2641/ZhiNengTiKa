@@ -58,13 +58,18 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
 
-        initialItem: Image {
-            id: backgroundImage
-            asynchronous: true
-            cache: false
-            mipmap: true
-            fillMode: Image.PreserveAspectFit
-            source: "image://AnimeImageProvider/image"
+        initialItem: Item {
+            Image {
+                id: backgroundImage
+                anchors.fill: parent
+                z: parent.z - 1
+                rotation: ((height > width && paintedHeight < paintedWidth) || (height < width && paintedHeight > paintedWidth)) ? 90 : 0
+                asynchronous: true
+                cache: false
+                mipmap: true
+                fillMode: Image.PreserveAspectFit
+                source: "image://AnimeImageProvider/image"
+            }
             Item {
                 id: buttonsItem
                 anchors.fill: parent
