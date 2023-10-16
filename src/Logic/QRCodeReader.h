@@ -1,6 +1,8 @@
 #ifndef QRCODEREADER_H
 #define QRCODEREADER_H
 
+#include "LibZXingCpp/ZXingResult.h"
+
 class QRCodeReader : public QObject
 {
     Q_OBJECT
@@ -20,9 +22,9 @@ public:
     void resetSmoothTransformation();
 
 public slots:
-    QString decodeImageByPath(const QUrl &imagePath);
-    QString decodeImage(const QImage &image);
-    QString decodeFrame(const QVideoFrame &frame);
+    ZXingResult *decodeImageByPath(const QUrl &imagePath);
+    ZXingResult *decodeImage(const QImage &image);
+    ZXingResult *decodeFrame(const QVideoFrame &frame);
 
 protected:
     int maxWidth = -1;
@@ -33,7 +35,7 @@ protected:
     void frameErrorWarning(const QString &errMsg);
 
 signals:
-    void decodingFinished(bool succeeded, const QString &data);
+    void decodingFinished(bool succeeded, ZXingResult *result);
     void error(const QString &msg);
     void frameError(const QString &msg);
     void maxWidthChanged();

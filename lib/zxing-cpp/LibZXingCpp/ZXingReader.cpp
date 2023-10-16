@@ -7,12 +7,12 @@ ZXingReader::ZXingReader()
 {
 }
 
-QString ZXingReader::decodeImage(const QImage &image, int maxWidth, int maxHeight, bool smoothTransformation)
+ZXingResult *ZXingReader::decodeImage(const QImage &image, int maxWidth, int maxHeight, bool smoothTransformation)
 {
     if(image.isNull())
     {
         qWarning() << Q_FUNC_INFO << "image is null";
-        return {};
+        return nullptr;
     }
     QImage qrCodeImage;
     if (((maxWidth > 0) || (maxHeight > 0)) &&
@@ -59,11 +59,22 @@ QString ZXingReader::decodeImage(const QImage &image, int maxWidth, int maxHeigh
     const auto result(ZXing::ReadBarcode(ZXing::ImageView(
             qrCodeImage.constBits(), qrCodeImage.width(), qrCodeImage.height(),
             fmt), hints));
-    const auto resultData(QString::fromStdString(result.text()));
-    return resultData;
+    const auto position(result.position());
+    const auto topLeft(position.topLeft());
+    const auto topRight(position.topRight());
+    const auto bottomRight(position.bottomRight());
+    const auto bottomLeft(position.bottomLeft());
+    auto zxingResult(new ZXingResult);
+    zxingResult->setText(QString::fromStdString(result.text()));
+    auto zxingPosition(zxingResult->getPosition());
+    zxingPosition->setTopLeft(QPoint(topLeft.x, topLeft.y));
+    zxingPosition->setTopRight(QPoint(topRight.x, topRight.y));
+    zxingPosition->setBottomRight(QPoint(bottomRight.x, bottomRight.y));
+    zxingPosition->setBottomLeft(QPoint(bottomLeft.x, bottomLeft.y));
+    return zxingResult;
 }
 
-QString ZXingReader::decodeFrame(const QVideoFrame &frame, int maxWidth, int maxHeight, bool smoothTransformation)
+ZXingResult *ZXingReader::decodeFrame(const QVideoFrame &frame, int maxWidth, int maxHeight, bool smoothTransformation)
 {
     ZXing::ImageFormat fmt = ZXing::ImageFormat::None;
     int pixStride = 0;
@@ -152,7 +163,7 @@ QString ZXingReader::decodeFrame(const QVideoFrame &frame, int maxWidth, int max
         if (!img.isValid() || !img.map(QVideoFrame::ReadOnly))
         {
             qWarning() << "invalid QVideoFrame: could not map memory";
-            return {};
+            return nullptr;
         }
         QScopeGuard unmap([&] { img.unmap(); });
 
@@ -161,8 +172,19 @@ QString ZXingReader::decodeFrame(const QVideoFrame &frame, int maxWidth, int max
             img.bits(0) + pixOffset, img.width(), img.height(), fmt,
             img.bytesPerLine(0), pixStride},
         hints));
-        const auto resultData(QString::fromStdString(result.text()));
-        return resultData;
+        const auto position(result.position());
+        const auto topLeft(position.topLeft());
+        const auto topRight(position.topRight());
+        const auto bottomRight(position.bottomRight());
+        const auto bottomLeft(position.bottomLeft());
+        auto zxingResult(new ZXingResult);
+        zxingResult->setText(QString::fromStdString(result.text()));
+        auto zxingPosition(zxingResult->getPosition());
+        zxingPosition->setTopLeft(QPoint(topLeft.x, topLeft.y));
+        zxingPosition->setTopRight(QPoint(topRight.x, topRight.y));
+        zxingPosition->setBottomRight(QPoint(bottomRight.x, bottomRight.y));
+        zxingPosition->setBottomLeft(QPoint(bottomLeft.x, bottomLeft.y));
+        return zxingResult;
     }
     else
     {
@@ -170,6 +192,6 @@ QString ZXingReader::decodeFrame(const QVideoFrame &frame, int maxWidth, int max
         if (qimg.format() != QImage::Format_Invalid)
             return decodeImage(qimg, maxWidth, maxHeight, smoothTransformation);
         qWarning() << "failed to convert QVideoFrame to QImage";
-        return {};
+        return nullptr;
     }
 }

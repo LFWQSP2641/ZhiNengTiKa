@@ -28,7 +28,7 @@ protected:
     volatile bool canRun = false;
     void run() override;
 signals:
-    void decodingFinished(bool succeeded, const QString &data);
+    void decodingFinished(bool succeeded, ZXingResult *result);
     void error(const QString &msg);
     void videoSinkChanged();
     void autoStopOnSuccessChanged();

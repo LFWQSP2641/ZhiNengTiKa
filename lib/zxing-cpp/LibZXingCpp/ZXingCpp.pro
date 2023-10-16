@@ -13,11 +13,15 @@ INCLUDEPATH += $$PWD/../zxing-cpp/core/src
 include($$PWD/../zxing-cpp/core/ZxingInclude.pri)
 
 SOURCES += \
-    ZXingReader.cpp
+    ZXingPosition.cpp \
+    ZXingReader.cpp \
+    ZXingResult.cpp
 
 HEADERS += \
     ZXingCpp_global.h \
-    ZXingReader.h
+    ZXingPosition.h \
+    ZXingReader.h \
+    ZXingResult.h
 
 # Default rules for deployment.
 unix {

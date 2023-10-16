@@ -6,7 +6,7 @@ QRCodeReader::QRCodeReader(QObject *parent)
 {
 }
 
-QString QRCodeReader::decodeImage(const QImage &image)
+ZXingResult *QRCodeReader::decodeImage(const QImage &image)
 {
     if(image.isNull())
     {
@@ -16,8 +16,8 @@ QString QRCodeReader::decodeImage(const QImage &image)
     try
     {
         const auto result(ZXingReader::decodeImage(image, maxWidth, maxHeight, smoothTransformation));
-        qDebug() << Q_FUNC_INFO << "result:" << result;
-        emit decodingFinished(!result.isEmpty(), result);
+        qDebug() << Q_FUNC_INFO << "result:" << result->getText();
+        emit decodingFinished(!result->getText().isEmpty(), result);
         return result;
     }
     catch(const std::exception& e)
@@ -32,7 +32,7 @@ QString QRCodeReader::decodeImage(const QImage &image)
     }
 }
 
-QString QRCodeReader::decodeFrame(const QVideoFrame &frame)
+ZXingResult *QRCodeReader::decodeFrame(const QVideoFrame &frame)
 {
     if(!frame.isValid())
     {
@@ -42,8 +42,8 @@ QString QRCodeReader::decodeFrame(const QVideoFrame &frame)
     try
     {
         const auto result(ZXingReader::decodeFrame(frame, maxWidth, maxHeight, smoothTransformation));
-        qDebug() << Q_FUNC_INFO << "result:" << result;
-        emit decodingFinished(!result.isEmpty(), result);
+        qDebug() << Q_FUNC_INFO << "result:" << result->getText();
+        emit decodingFinished(!result->getText().isEmpty(), result);
         return result;
     }
     catch(const std::exception& e)
@@ -90,7 +90,7 @@ void QRCodeReader::resetSmoothTransformation()
     setSmoothTransformation(false);
 }
 
-QString QRCodeReader::decodeImageByPath(const QUrl &imagePath)
+ZXingResult *QRCodeReader::decodeImageByPath(const QUrl &imagePath)
 {
     auto readablePath(imagePath.toString());
     if(readablePath.startsWith(QStringLiteral("file:///")))

@@ -45,14 +45,19 @@ Item {
     QRCodeScanner {
         id: qrCodeScanner
         videoSink: videoOutput.videoSink
-        onDecodingFinished: function(succeeded, text){
+        onDecodingFinished: function(succeeded, result){
             console.log(succeeded)
-            console.log(text)
+            console.log(result.text)
+            console.log(result.position.topLeft)
+            console.log(result.position.topRight)
+            console.log(result.position.bottomRight)
+            console.log(result.position.bottomLeft)
             if(succeeded)
             {
-                templateCode = text
+                templateCode = result.text
                 delayCameraClose.start()
             }
+            result.deleteLater()
         }
         onError: function(msg){
             console.log(msg)
