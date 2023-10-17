@@ -46,9 +46,18 @@ void AnimeImageProvider::fillCache(int index)
     // 无论是copy还是啥的, 都无法避免
 #if 1
     const auto url(replaceRandomNumbers(Settings::getSingletonSettings()->getAnimeImageUrl()));
-    auto reply(Network::getGlobalNetworkManager()->getByStrUrl(url));
-    fillCacheHash.insert(reply, index);
-    connect(reply, &QNetworkReply::finished, this, &AnimeImageProvider::onFillCacheReplyFinished, Qt::QueuedConnection);
+    if(url == QStringLiteral("^SpecialRule-kkloli^"))
+    {
+        auto reply(Network::getGlobalNetworkManager()->getByStrUrl(QStringLiteral("https://www.ttloli.com/2nd-love.html")));
+        fillCacheHash.insert(reply, index);
+        connect(reply, &QNetworkReply::finished, this, &AnimeImageProvider::onttloliPageReplyFinished, Qt::QueuedConnection);
+    }
+    else
+    {
+        auto reply(Network::getGlobalNetworkManager()->getByStrUrl(url));
+        fillCacheHash.insert(reply, index);
+        connect(reply, &QNetworkReply::finished, this, &AnimeImageProvider::onFillCacheReplyFinished, Qt::QueuedConnection);
+    }
 #else
     cacheList[index].first = QImage("D:/Downloads/736f354a405b251541368b560cd1f665.jpg");
     cacheList[index].second = true;
@@ -69,6 +78,7 @@ void AnimeImageProvider::onFillCacheReplyFinished()
 {
     auto reply(qobject_cast<QNetworkReply *>(sender()));
     auto index(fillCacheHash.value(reply));
+    fillCacheHash.remove(reply);
     if(reply->error() != QNetworkReply::NoError)
     {
         qWarning() << Q_FUNC_INFO << QStringLiteral("reply->error() != QNetworkReply::NoError") << reply->errorString() << reply->readAll();
@@ -79,6 +89,24 @@ void AnimeImageProvider::onFillCacheReplyFinished()
     cacheList[index].first = QImage::fromData(reply->readAll());
     cacheList[index].second = true;
     reply->deleteLater();
+}
+
+void AnimeImageProvider::onttloliPageReplyFinished()
+{
+    auto reply(qobject_cast<QNetworkReply *>(sender()));
+    const auto resultData(reply->readAll());
+    reply->deleteLater();
+
+    auto index(fillCacheHash.value(reply));
+    fillCacheHash.remove(reply);
+
+    const auto beginIndex(resultData.indexOf(QByteArrayLiteral("background:url('https://cdn2.ttloli.com/pic3/")) + 16);
+    const auto endIndex(resultData.indexOf(QByteArrayLiteral("'"), beginIndex));
+    auto imageUrl(resultData.mid(beginIndex, endIndex - beginIndex));
+
+    auto imageReply(Network::getGlobalNetworkManager()->getByStrUrl(imageUrl));
+    fillCacheHash.insert(imageReply, index);
+    connect(imageReply, &QNetworkReply::finished, this, &AnimeImageProvider::onFillCacheReplyFinished, Qt::QueuedConnection);
 }
 
 QString AnimeImageProvider::replaceRandomNumbers(const QString &input)

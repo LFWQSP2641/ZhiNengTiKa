@@ -12,6 +12,7 @@ public:
     void fillCacheList();
 protected slots:
     void onFillCacheReplyFinished();
+    void onttloliPageReplyFinished();
 protected:
     QList<QPair<QImage, bool>> cacheList;
     QHash<QNetworkReply *, int> fillCacheHash;
