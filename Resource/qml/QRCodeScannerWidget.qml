@@ -120,10 +120,10 @@ Item {
     // 扫码线动画
     Rectangle {
         id: scannerRectangle
-        width: Math.floor(parent.width > parent.height ? parent.height * 4 / 5 : parent.width * 4 / 5)
+        width: Math.floor(videoOutput.width > videoOutput.height ? videoOutput.height * 4 / 5 : videoOutput.width * 4 / 5)
         height: width
         z: videoOutput.z + 1
-        anchors.centerIn: parent
+        anchors.centerIn: videoOutput
         color: Qt.rgba(1, 1, 1, 0)
 
         // 左上角
@@ -229,7 +229,7 @@ Item {
     }
 
     BlinkingDots {
-        anchors.fill: parent
+        anchors.fill: videoOutput
     }
 
     Component.onCompleted: {
