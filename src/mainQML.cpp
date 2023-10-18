@@ -72,12 +72,15 @@ int main(int argc, char *argv[])
 #else
 #endif // Q_OS_ANDROID
 
+    auto animeImageProvider(new AnimeImageProvider);
+
     qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0,
                                  "MultipleSubjectsTemplateListModelList",
                                  MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList());
     qmlRegisterSingletonInstance("Settings", 1, 0, "Settings", settings);
     qmlRegisterSingletonInstance("AccountManager", 1, 0, "AccountManager", settings->getAccountManager());
     qmlRegisterSingletonInstance("QMLUtils", 1, 0, "QMLUtils", new QMLUtils);
+    qmlRegisterSingletonInstance("AnimeImageProvider", 1, 0, "AnimeImageProvider", animeImageProvider);
     qmlRegisterType<TemplateSummary>("TemplateSummary", 1, 0, "TemplateSummary");
     qmlRegisterType<TemplateAnalysis>("TemplateAnalysis", 1, 0, "TemplateAnalysis");
     qmlRegisterType<TemplateFetcher>("TemplateFetcher", 1, 0, "TemplateFetcher");
@@ -90,7 +93,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<ZAccelerationToOpacityConverter>("ZAccelerationToOpacityConverter", 1, 0, "ZAccelerationToOpacityConverter");
     qmlRegisterType<AnnouncementManager>("AnnouncementManager", 1, 0, "AnnouncementManager");
     QQmlApplicationEngine engine;
-    engine.addImageProvider(QStringLiteral("AnimeImageProvider"), new AnimeImageProvider);
+    engine.addImageProvider(QStringLiteral("AnimeImageProvider"), animeImageProvider);
 
     QStringList builtInStyles = { QStringLiteral("Basic"), QStringLiteral("Fusion"),
                                   QStringLiteral("Imagine"), QStringLiteral("Material"), QStringLiteral("Universal")

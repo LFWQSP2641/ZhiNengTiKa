@@ -6,6 +6,7 @@ import TemplateFetcher
 import MultipleSubjectsTemplateListModelList
 import QMLUtils
 import ZAccelerationToOpacityConverter
+import AnimeImageProvider
 
 ApplicationWindow {
     id: applicationWindow
@@ -61,14 +62,23 @@ ApplicationWindow {
         initialItem: Item {
             Image {
                 id: backgroundImage
-                anchors.fill: parent
+                property bool rotated: false
+                anchors.centerIn: parent
+                height: rotated ? parent.width : parent.height
+                width: rotated ? parent.height : parent.width
                 z: parent.z - 1
-                rotation: ((height > width && paintedHeight < paintedWidth) || (height < width && paintedHeight > paintedWidth)) ? 90 : 0
+                rotation: rotated ? 90 : 0
                 asynchronous: true
                 cache: false
                 mipmap: true
                 fillMode: Image.PreserveAspectFit
                 source: "image://AnimeImageProvider/image"
+                onStatusChanged: {
+                    if (backgroundImage.status === Image.Ready)
+                    {
+                        rotated = (parent.height > parent.width && paintedHeight < paintedWidth) || (parent.height < parent.width && paintedHeight > paintedWidth)
+                    }
+                }
             }
             Item {
                 id: buttonsItem
@@ -177,7 +187,7 @@ ApplicationWindow {
     Timer {
         id: imageRefreshTimer
         property bool needToRefresh: false
-        running: true
+        triggeredOnStart: true
         repeat: true
         interval: 5000
         onTriggered: {
@@ -189,6 +199,18 @@ ApplicationWindow {
             {
                 imageRefreshTimer.needToRefresh = true
             }
+        }
+    }
+
+    Connections {
+        target: AnimeImageProvider
+        function onFirstImageCached() { imageRefreshTimer.start() }
+    }
+
+    Connections {
+        target: AnimeImageProvider
+        function onCacheProgress(current, total) {
+            console.log("AnimeImageProvider:" + current + "/" + total)
         }
     }
 

@@ -4,8 +4,9 @@
 
 AnimeImageProvider::AnimeImageProvider()
     : QQuickImageProvider(QQuickImageProvider::Image),
-      cacheList(8, QPair<QImage, bool>(QImage(), false))
+      cacheList(totalCacheSize, QPair<QImage, bool>(QImage(), false))
 {
+    connect(this, &AnimeImageProvider::cacheProgress, this, &AnimeImageProvider::firstImageCached, Qt::SingleShotConnection);
     fillCacheList();
 }
 
@@ -17,6 +18,8 @@ QImage AnimeImageProvider::requestImage(const QString &id, QSize *size, const QS
     {
         if(cacheList.at(i).second)
         {
+            --currentCacheSize;
+            emit cacheProgress(currentCacheSize, totalCacheSize);
             image = cacheList.at(i).first;
             cacheList[i].second = false;
             fillCache(i);
@@ -89,6 +92,8 @@ void AnimeImageProvider::onFillCacheReplyFinished()
     cacheList[index].first = QImage::fromData(reply->readAll());
     cacheList[index].second = true;
     reply->deleteLater();
+    ++currentCacheSize;
+    emit cacheProgress(currentCacheSize, totalCacheSize);
 }
 
 void AnimeImageProvider::onttloliPageReplyFinished()
@@ -107,6 +112,24 @@ void AnimeImageProvider::onttloliPageReplyFinished()
     auto imageReply(Network::getGlobalNetworkManager()->getByStrUrl(imageUrl));
     fillCacheHash.insert(imageReply, index);
     connect(imageReply, &QNetworkReply::finished, this, &AnimeImageProvider::onFillCacheReplyFinished, Qt::QueuedConnection);
+}
+
+int AnimeImageProvider::getCurrentCacheSize() const
+{
+    return currentCacheSize;
+}
+
+int AnimeImageProvider::getTotalCacheSize() const
+{
+    return totalCacheSize;
+}
+
+void AnimeImageProvider::setTotalCacheSize(int newTotalCacheSize)
+{
+    if (totalCacheSize == newTotalCacheSize)
+        return;
+    totalCacheSize = newTotalCacheSize;
+    emit totalCacheSizeChanged();
 }
 
 QString AnimeImageProvider::replaceRandomNumbers(const QString &input)
