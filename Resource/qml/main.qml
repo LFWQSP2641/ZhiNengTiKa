@@ -16,6 +16,7 @@ ApplicationWindow {
     title: "智能题卡"
 
     required property var builtInStyles
+    property bool waitingForTemplateDetailWidget: false
 
     Shortcut {
         sequences: ["Esc", "Back"]
@@ -179,8 +180,11 @@ ApplicationWindow {
         onDepthChanged: {
             if(stackView.depth === 1)
             {
-                if(imageRefreshTimer.needToRefresh)
+                if((!waitingForTemplateDetailWidget) && imageRefreshTimer.needToRefresh)
+                {
                     refreshImage()
+                    imageRefreshTimer.start()
+                }
                 converter.start()
             }
             else
@@ -193,7 +197,6 @@ ApplicationWindow {
     Timer {
         id: imageRefreshTimer
         property bool needToRefresh: false
-        triggeredOnStart: true
         repeat: true
         interval: 5000
         onTriggered: {
@@ -204,13 +207,24 @@ ApplicationWindow {
             else
             {
                 imageRefreshTimer.needToRefresh = true
+                imageRefreshTimer.stop()
             }
         }
     }
 
     Connections {
         target: AnimeImageProvider
-        function onFirstImageCached() { imageRefreshTimer.start() }
+        function onFirstImageCached() {
+            if(stackView.depth === 1)
+            {
+                refreshImage()
+            }
+            else
+            {
+                imageRefreshTimer.needToRefresh = true
+            }
+            imageRefreshTimer.start()
+        }
     }
 
     Connections {
@@ -318,6 +332,7 @@ ApplicationWindow {
             Component.onCompleted: {
                 if(templateAnalysisPointer !== null)
                     pageDescription.text = templateAnalysisPointer.templateName
+                waitingForTemplateDetailWidget = false
             }
             Component.onDestruction: {
                 pageDescription.text = ""
@@ -334,6 +349,7 @@ ApplicationWindow {
             Component.onDestruction: {
             }
             onScanFinished: function(templateCode){
+                waitingForTemplateDetailWidget = true
                 stackView.pop()
                 templateFetcher.handleTemplateRequestByCode(templateCode)
             }
