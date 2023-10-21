@@ -31,10 +31,6 @@ public:
     void setQmlStyle(const QString &newQmlStyle);
     void resetQmlStyle();
 
-    QJsonObject getJsonObjectApiQRCodeScanner() const;
-    void setJsonObjectApiQRCodeScanner(const QJsonObject &newJsonObjectApiQRCodeScanner);
-    void resetJsonObjectApiQRCodeScanner();
-
     QString getUuid() const;
     void setUuid(const QString &newUuid);
     void resetUuid();
@@ -91,8 +87,6 @@ protected:
 
     AccountManager *accountManager;
 
-    QJsonObject jsonObjectApiQRCodeScanner;
-
     QString uuid;
 
     QString animeImageUrl;
@@ -108,8 +102,6 @@ signals:
 
     void qmlStyleChanged();
 
-    void jsonObjectApiQRCodeScannerChanged();
-
     void uuidChanged();
 
     void animeImageUrlChanged();
@@ -120,7 +112,6 @@ private:
     Q_PROPERTY(int fontPointSize READ getFontPointSize WRITE setFontPointSize RESET resetFontPointSize NOTIFY fontPointSizeChanged)
     Q_PROPERTY(QString font READ getFont WRITE setFont RESET resetFont NOTIFY fontChanged)
     Q_PROPERTY(QString qmlStyle READ getQmlStyle WRITE setQmlStyle RESET resetQmlStyle NOTIFY qmlStyleChanged)
-    Q_PROPERTY(QJsonObject jsonObjectApiQRCodeScanner READ getJsonObjectApiQRCodeScanner WRITE setJsonObjectApiQRCodeScanner RESET resetJsonObjectApiQRCodeScanner NOTIFY jsonObjectApiQRCodeScannerChanged)
     Q_PROPERTY(QString uuid READ getUuid WRITE setUuid RESET resetUuid NOTIFY uuidChanged)
     Q_PROPERTY(QString animeImageUrl READ getAnimeImageUrl WRITE setAnimeImageUrl RESET resetAnimeImageUrl NOTIFY animeImageUrlChanged FINAL)
     Q_PROPERTY(AccountManager *accountManager READ getAccountManager CONSTANT FINAL)

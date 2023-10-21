@@ -53,8 +53,6 @@ Settings::Settings(QObject *parent)
     font = settingJsonObject.value(QStringLiteral("font")).toString();
     qmlStyle = settingJsonObject.value(QStringLiteral("qmlStyle")).toString();
 
-    jsonObjectApiQRCodeScanner = settingJsonObject.value(QStringLiteral("apiQRCodeScanner")).toObject();
-
     uuid = settingJsonObject.value(QStringLiteral("uuid")).toString();
     if(uuid.isEmpty())
     {
@@ -198,24 +196,6 @@ void Settings::resetQmlStyle()
     setQmlStyle(QString{});
 }
 
-QJsonObject Settings::getJsonObjectApiQRCodeScanner() const
-{
-    return jsonObjectApiQRCodeScanner;
-}
-
-void Settings::setJsonObjectApiQRCodeScanner(const QJsonObject &newJsonObjectApiQRCodeScanner)
-{
-    if (jsonObjectApiQRCodeScanner == newJsonObjectApiQRCodeScanner)
-        return;
-    jsonObjectApiQRCodeScanner = newJsonObjectApiQRCodeScanner;
-    emit jsonObjectApiQRCodeScannerChanged();
-}
-
-void Settings::resetJsonObjectApiQRCodeScanner()
-{
-    setJsonObjectApiQRCodeScanner(QJsonObject{});
-}
-
 QString Settings::getUuid() const
 {
     return uuid;
@@ -284,7 +264,7 @@ void Settings::saveToFile() const
     settingJsonObject.insert(QStringLiteral("font"), font);
 
     settingJsonObject.insert(QStringLiteral("qmlStyle"), qmlStyle);
-    settingJsonObject.insert(QStringLiteral("apiQRCodeScanner"), jsonObjectApiQRCodeScanner);
+
     settingJsonObject.insert(QStringLiteral("uuid"), uuid);
 
     settingJsonObject.insert(QStringLiteral("animeImageUrl"), animeImageUrl);
