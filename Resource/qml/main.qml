@@ -169,6 +169,12 @@ ApplicationWindow {
                     }
                 }
             }
+            onHeightChanged: {
+                backgroundImage.rotated = (height > width && backgroundImage.paintedHeight < backgroundImage.paintedWidth) || (height < width && backgroundImage.paintedHeight > backgroundImage.paintedWidth)
+            }
+            onWidthChanged: {
+                backgroundImage.rotated = (height > width && backgroundImage.paintedHeight < backgroundImage.paintedWidth) || (height < width && backgroundImage.paintedHeight > backgroundImage.paintedWidth)
+            }
         }
         onDepthChanged: {
             if(stackView.depth === 1)
