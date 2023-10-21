@@ -6,7 +6,6 @@ import QRCodeScanner
 
 Item {
     id: qrCodeScannerWidget
-    property string templateCode: ""
     signal scanFinished(string templateCode)
 
     Text {
@@ -54,22 +53,14 @@ Item {
             console.log(result.position.bottomLeft)
             if(succeeded)
             {
-                templateCode = result.text
-                delayCameraClose.start()
+                camera.stop()
+                scanFinished(result.text)
             }
             result.deleteLater()
         }
         onError: function(msg){
             console.log(msg)
             scanFailedDialog.show("error 发生:\n" + msg)
-        }
-    }
-    Timer {
-        id: delayCameraClose
-        interval: 500
-        onTriggered: {
-            camera.stop()
-            scanFinished(templateCode)
         }
     }
 
