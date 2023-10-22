@@ -5,6 +5,7 @@
 #include "Logic/AnnouncementManager.h"
 #include "Logic/ImageProvider.h"
 #include "Logic/QRCodeScanner.h"
+#include "Logic/ResourceFileFetcher.h"
 #include "Logic/UpdateChecker.h"
 #include "Logic/TemplateSummary.h"
 #include "Logic/TemplateAnalysis.h"
@@ -92,6 +93,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<ImageProvider>("ImageProvider", 1, 0, "ImageProvider");
     qmlRegisterType<ZAccelerationToOpacityConverter>("ZAccelerationToOpacityConverter", 1, 0, "ZAccelerationToOpacityConverter");
     qmlRegisterType<AnnouncementManager>("AnnouncementManager", 1, 0, "AnnouncementManager");
+    qmlRegisterType<ResourceFileFetcher>("ResourceFileFetcher", 1, 0, "ResourceFileFetcher");
     QQmlApplicationEngine engine;
     engine.addImageProvider(QStringLiteral("AnimeImageProvider"), animeImageProvider);
 

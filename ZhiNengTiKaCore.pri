@@ -74,6 +74,8 @@ HEADERS += \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.h \
     $$PWD/src/Logic/QRCodeReader.h \
     $$PWD/src/Logic/QRCodeScanner.h \
+    $$PWD/src/Logic/ResourceFileFetcher.h \
+    $$PWD/src/Logic/ResourceFileModel.h \
     $$PWD/src/Logic/TemplateAnalysis.h \
     $$PWD/src/Logic/TemplateFetcher.h \
     $$PWD/src/Logic/TemplateListModel.h \
@@ -97,6 +99,8 @@ SOURCES += \
     $$PWD/src/Logic/QRCodeScanner.cpp \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.cpp \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.cpp \
+    $$PWD/src/Logic/ResourceFileFetcher.cpp \
+    $$PWD/src/Logic/ResourceFileModel.cpp \
     $$PWD/src/Logic/TemplateAnalysis.cpp \
     $$PWD/src/Logic/TemplateFetcher.cpp \
     $$PWD/src/Logic/TemplateListModel.cpp \

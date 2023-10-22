@@ -121,7 +121,16 @@ ApplicationWindow {
                             backgroundColor: QMLUtils.generateRandomBrightColor()
                             onClickedLeft: stackView.push(selectWidgetComponent)
                         }
-
+                        IconButton {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            radius: 45
+                            widgetSizeRatio: 0.5
+                            iconSource: "qrc:/svg/icon/document.svg"
+                            buttonText: "列表"
+                            backgroundColor: QMLUtils.generateRandomBrightColor()
+                            onClickedLeft: stackView.push(resourceFileWidgetComponent)
+                        }
                         IconButton {
                             Layout.fillHeight: true
                             Layout.fillWidth: true
@@ -323,6 +332,12 @@ ApplicationWindow {
             onTemplateSummaryObtainFinished: function(templateSummary){
                 templateFetcher.handleTemplateRequest(templateSummary)
             }
+        }
+    }
+    Component {
+        id: resourceFileWidgetComponent
+        ResourceFileWidget {
+
         }
     }
 
