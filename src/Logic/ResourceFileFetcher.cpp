@@ -23,9 +23,9 @@ void ResourceFileFetcher::continueLoadModel()
         emit continueLoadModelFinished();
         return;
     }
+    ++currentPage;
     auto reply(Network::getGlobalNetworkManager()->get(setRequest(QStringLiteral("https://www.xinjiaoyu.com/api/v3/server_resource/homework/resource?bookCatalogId=%0&current=%1&size=10").arg(currentBookCatalogId, QString::number(currentPage)))));
     connect(reply, &QNetworkReply::finished, this, &ResourceFileFetcher::onContinueLoadResourceReplyFinished);
-    ++currentPage;
 }
 
 void ResourceFileFetcher::resetModel(const QString &subject, const QString &edition, const QString &module)
