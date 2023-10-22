@@ -11,11 +11,6 @@ TemplateFetcher::TemplateFetcher(QObject *parent)
 void TemplateFetcher::handleTemplateRequest(TemplateSummary *templateSummary)
 {
     const auto templateCode(templateSummary->getTemplateCode());
-    auto *templateAnalysis(new TemplateAnalysis(this));
-    templateAnalysis->setTemplateCode(templateCode);
-    templateAnalysis->setTemplateName(templateSummary->getTemplateName());
-    templateAnalysis->setVolume(templateSummary->getVolume());
-    templateAnalysis->setSubject(templateSummary->getSubject());
 #ifdef Q_OS_ANDROID
     QFile file(QStringLiteral("assets:/templateData/").append(templateCode));
 #else
@@ -24,29 +19,35 @@ void TemplateFetcher::handleTemplateRequest(TemplateSummary *templateSummary)
     QFile fileTemp { Global::dataPath().append(QStringLiteral("/TemplateFile/")).append(templateCode) };
     if (file.exists())
     {
+        auto *templateAnalysis(new TemplateAnalysis(this));
+        templateAnalysis->setTemplateCode(templateCode);
+        templateAnalysis->setTemplateName(templateSummary->getTemplateName());
+        templateAnalysis->setVolume(templateSummary->getVolume());
+        templateAnalysis->setSubject(templateSummary->getSubject());
         templateAnalysis->internal = true;
         file.open(QFile::ReadOnly);
         QByteArray rawData(file.readAll());
         file.close();
         templateAnalysis->analyze(rawData);
-        emit templateAnalysisReady(templateAnalysis);
+        emit templateAnalysisReady(templateAnalysis, rawData);
     }
     else if (fileTemp.exists())
     {
+        auto *templateAnalysis(new TemplateAnalysis(this));
+        templateAnalysis->setTemplateCode(templateCode);
+        templateAnalysis->setTemplateName(templateSummary->getTemplateName());
+        templateAnalysis->setVolume(templateSummary->getVolume());
+        templateAnalysis->setSubject(templateSummary->getSubject());
         templateAnalysis->external = true;
         fileTemp.open(QFile::ReadOnly);
         QByteArray rawData(fileTemp.readAll());
         fileTemp.close();
         templateAnalysis->analyze(rawData);
-        emit templateAnalysisReady(templateAnalysis);
+        emit templateAnalysisReady(templateAnalysis, rawData);
     }
     else
     {
-        emit obtainTemplateFromNetwork();
-        this->templateAnalysisfromNetwork = templateAnalysis;
-        templateAnalysis->network = true;
-        auto reply(XinjiaoyuNetwork::getTemplateCodeData(templateCode));
-        connect(reply, &QNetworkReply::finished, this, &TemplateFetcher::onHandleTemplateReplyFinished);
+        handleTemplateRequestNetwork(templateSummary);
     }
 }
 
@@ -54,6 +55,27 @@ void TemplateFetcher::handleTemplateRequestByCode(const QString &templateCode)
 {
     TemplateSummary templateSummary(QString(), templateCode.trimmed());
     handleTemplateRequest(&templateSummary);
+}
+
+void TemplateFetcher::handleTemplateRequestNetwork(TemplateSummary *templateSummary)
+{
+    emit obtainTemplateFromNetwork();
+    const auto templateCode(templateSummary->getTemplateCode());
+    auto *templateAnalysis(new TemplateAnalysis(this));
+    templateAnalysis->setTemplateCode(templateCode);
+    templateAnalysis->setTemplateName(templateSummary->getTemplateName());
+    templateAnalysis->setVolume(templateSummary->getVolume());
+    templateAnalysis->setSubject(templateSummary->getSubject());
+    this->templateAnalysisfromNetwork = templateAnalysis;
+    templateAnalysis->network = true;
+    auto reply(XinjiaoyuNetwork::getTemplateCodeData(templateCode));
+    connect(reply, &QNetworkReply::finished, this, &TemplateFetcher::onHandleTemplateReplyFinished);
+}
+
+void TemplateFetcher::handleTemplateRequestByCodeNetwork(const QString &templateCode)
+{
+    TemplateSummary templateSummary(QString(), templateCode.trimmed());
+    handleTemplateRequestNetwork(&templateSummary);
 }
 
 void TemplateFetcher::onHandleTemplateReplyFinished()
@@ -81,5 +103,5 @@ void TemplateFetcher::onHandleTemplateReplyFinished()
     fileTemp.write(templateData);
     fileTemp.close();
     templateAnalysisfromNetwork->analyze(templateData);
-    emit templateAnalysisReady(templateAnalysisfromNetwork);
+    emit templateAnalysisReady(templateAnalysisfromNetwork, templateData);
 }

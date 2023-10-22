@@ -33,10 +33,10 @@ protected slots:
     void templateSearcherSearchStop();
     void templateSearcherSearchFinish(bool success);
     void OKButtonPush();
-    void addToSearchResultListWidget(const TemplateSummary &templateSummary);
+    void addToSearchResultListWidget(TemplateSummary *templateSummary);
 
 signals:
-    void searchFinished(const TemplateSummary &templateSummary);
+    void searchFinished(TemplateSummary *templateSummary);
 };
 
 #endif // SEARCHWIDGET_H

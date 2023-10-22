@@ -23,6 +23,14 @@ git submodule update --init --recursive
 ```
 
 使用 Qt Creator 打开 `ZhiNengTiKa.pro` 或 `ZhiNengTiKaQML.pro`
+
+## 致谢
+
+### 开源库
+
+- 二维码扫描: [ZXing-C++](https://github.com/zxing-cpp/zxing-cpp)
+- AES加解密: [Qt-AES](https://github.com/bricke/Qt-AES)
+
 ## ⚡ Visitor count
 
 ![](https://profile-counter.glitch.me/LFWQSP2641-ZhiNengTiKa/count.svg)

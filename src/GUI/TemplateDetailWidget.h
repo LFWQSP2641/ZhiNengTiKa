@@ -12,7 +12,7 @@ class TemplateDetailWidget : public NavigationBarTabWidget
 {
     Q_OBJECT
 public:
-    explicit TemplateDetailWidget(QSharedPointer<TemplateAnalysis> templateAnalysis = QSharedPointer<TemplateAnalysis>(new TemplateAnalysis), QWidget *parent = nullptr);
+    explicit TemplateDetailWidget(TemplateAnalysis *templateAnalysis, QWidget *parent = nullptr);
 
     enum TabIndex
     {
@@ -22,7 +22,7 @@ public:
     };
 
 public slots:
-    void setTemplateAnalysis(QSharedPointer<TemplateAnalysis> templateAnalysis);
+    void setTemplateAnalysis(TemplateAnalysis *templateAnalysis);
 
 protected:
 

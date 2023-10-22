@@ -98,7 +98,7 @@ void SearchWidget::OKButtonPush()
     emit searchFinished(this->searchResultTemplateListView->getCurrentTemplateSummary());
 }
 
-void SearchWidget::addToSearchResultListWidget(const TemplateSummary &templateSummary)
+void SearchWidget::addToSearchResultListWidget(TemplateSummary *templateSummary)
 {
     this->searchResultTemplateListView->addNewTemplate(templateSummary);
 }

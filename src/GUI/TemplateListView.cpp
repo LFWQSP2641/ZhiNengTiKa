@@ -10,12 +10,12 @@ TemplateListView::TemplateListView(QWidget *parent)
     connect(this, &QListView::clicked, this, &TemplateListView::emitTemplateSummary);
 }
 
-TemplateSummary TemplateListView::getCurrentTemplateSummary()
+TemplateSummary *TemplateListView::getCurrentTemplateSummary()
 {
     return getTemplateSummary(this->currentIndex());
 }
 
-TemplateSummary TemplateListView::getTemplateSummary(const QModelIndex &templateNameIndex) const
+TemplateSummary *TemplateListView::getTemplateSummary(const QModelIndex &templateNameIndex)
 {
     const auto templateSummary{this->templateListModel->getTemplateSummary(templateNameIndex)};
     return templateSummary;
@@ -36,7 +36,7 @@ void TemplateListView::clear()
     }
 }
 
-void TemplateListView::addNewTemplate(const TemplateSummary &templateSummary)
+void TemplateListView::addNewTemplate(TemplateSummary *templateSummary)
 {
     if(this->templateListModel != nullptr)
     {

@@ -98,7 +98,7 @@ SettingWidget::SettingWidget(QWidget *parent)
     {
         if(index > 0)
         {
-            settings->getUserDataListReference().toFirst(index);
+            settings->getAccountManager()->toFirst(index);
             setUserList();
         }
     });
@@ -144,32 +144,8 @@ SettingWidget::SettingWidget(QWidget *parent)
             }
             else
             {
-                UserData newUserData;
-                newUserData = UserData::login(username.toUtf8(), password.toUtf8());
-                if(!newUserData.isValid())
-                {
-                    const QString whatStr{newUserData.getErrorStr()};
-                    if(whatStr.contains(QStringLiteral("锁定")))
-                    {
-                        QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("不用管那个锁定, 大概率误报"));
-                    }
-                    QMessageBox::warning(this, QStringLiteral("warning"), whatStr);
-                    OKButton.setEnabled(true);
-                    return;
-                }
-                if(newUserData.getDetailDataJsonObject().isEmpty())
-                {
-                    auto ret{QMessageBox::question(this, QStringLiteral("question"), QStringLiteral("账号部分信息为空,是否继续使用此账号"))};
-                    if(ret == QMessageBox::No)
-                    {
-                        dialog.close();
-                        return;
-                    }
-                }
-                settings->getUserDataListReference().prepend(newUserData);
-                setUserList();
-                this->logoutButton->setEnabled(true);
-                QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登录成功\n当前账号:").append(newUserData.getDetailDataJsonObject().value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(newUserData.getUsername())));
+                loginButton->setEnabled(false);
+                settings->getAccountManager()->login(username, password);
                 dialog.close();
             }
         });
@@ -180,7 +156,7 @@ SettingWidget::SettingWidget(QWidget *parent)
 
     connect(this->logoutButton, &QPushButton::clicked, [this]
     {
-        settings->getUserDataListReference().removeFirst();
+        settings->getAccountManager()->removeFirst();
         QMessageBox::information(this, QStringLiteral("information"), QStringLiteral("登出成功"));
         setUserList();
     });
@@ -245,12 +221,16 @@ SettingWidget::SettingWidget(QWidget *parent)
                                "<p>Qt ( <a href=\"%0\">%0</a> )</p>"
                                "<p><small>GNU (Lesser) General Public License v3.0</small></p>"
                                "<br/>"
-                               "<p>android_openssl ( <a href=\"%1\">%1</a> )</p>"
+                               "<p>ZXing-C++ ( <a href=\"%1\">%1</a> )</p>"
                                "<p><small>Apache License 2.0</small></p>"
                                "<br/>"
-                               "<p>Qt-AES ( <a href=\"%2\">%2</a> )</p>"
+                               "<p>android_openssl ( <a href=\"%2\">%2</a> )</p>"
+                               "<p><small>Apache License 2.0</small></p>"
+                               "<br/>"
+                               "<p>Qt-AES ( <a href=\"%3\">%3</a> )</p>"
                                "<p><small>The Unlicense</small></p>"
                            ).arg(QStringLiteral("https://www.qt.io"),
+                                 QStringLiteral("https://github.com/zxing-cpp/zxing-cpp"),
                                  QStringLiteral("https://github.com/KDAB/android_openssl"),
                                  QStringLiteral("https://github.com/bricke/Qt-AES")));
     });
@@ -288,16 +268,42 @@ SettingWidget::SettingWidget(QWidget *parent)
 //        checkNewVersionButton->setText(QStringLiteral("检查更新"));
 //        checkNewVersionButton->setEnabled(true);
 //    });
+    connect(settings->getAccountManager(), &AccountManager::loginFinished, this, [this](bool success, UserData * object)
+    {
+        if(success)
+        {
+            QMessageBox::information(
+                this, QStringLiteral("information"),
+                QStringLiteral("登录成功\n当前账号:")
+                .append(object->getDetailDataJsonObject()
+                        .value(QStringLiteral("realName"))
+                        .toString()
+                        .append(QStringLiteral("  "))
+                        .append(object->getUsername())));
+            setUserList();
+        }
+        loginButton->setEnabled(true);
+    });
+    connect(settings->getAccountManager(), &AccountManager::reloginFinished, this, [this](bool success)
+    {
+        if(success)
+            QMessageBox::information(this, {}, QStringLiteral("重新登录成功"));
+        setUserList();
+    });
+    connect(settings->getAccountManager(), &AccountManager::error, this, [this](const QString & msg)
+    {
+        QMessageBox::warning(this, {}, msg);
+    });
 }
 
 void SettingWidget::setUserList()
 {
     userListComboBox->clear();
-    if(settings->isLogin())
+    if(settings->getAccountManager()->isLoggedin())
     {
-        for(const auto &i : settings->getUserDataList())
+        for(const auto &i : *settings->getAccountManager())
         {
-            userListComboBox->addItem(i.getDetailDataJsonObject().value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(i.getUsername()));
+            userListComboBox->addItem(i->getDescription());
         }
     }
     else

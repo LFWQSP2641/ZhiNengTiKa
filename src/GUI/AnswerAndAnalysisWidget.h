@@ -7,7 +7,7 @@ class AnswerAndAnalysisWidget : public WebViewWidget
 {
     Q_OBJECT
 public:
-    explicit AnswerAndAnalysisWidget(QSharedPointer<TemplateAnalysis> templateAnalysis = QSharedPointer<TemplateAnalysis>(new TemplateAnalysis), QWidget *parent = nullptr);
+    explicit AnswerAndAnalysisWidget(TemplateAnalysis *templateAnalysis, QWidget *parent = nullptr);
 
 private:
     QCheckBox *onlyAnswerCheckBox;

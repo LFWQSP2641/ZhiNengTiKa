@@ -4,9 +4,14 @@
 #include "UploadWidget.h"
 #include "../Singleton/Settings.h"
 
-TemplateDetailWidget::TemplateDetailWidget(QSharedPointer<TemplateAnalysis> templateAnalysis, QWidget *parent)
+TemplateDetailWidget::TemplateDetailWidget(TemplateAnalysis *templateAnalysis, QWidget *parent)
     : NavigationBarTabWidget{parent}
 {
+    if(templateAnalysis != nullptr)
+    {
+        templateAnalysis->setParent(this);
+    }
+
     answerAndAnalysisWidget = new AnswerAndAnalysisWidget(templateAnalysis);
     questionWidget = new QuestionWidget(templateAnalysis);
     uploadWidget = new UploadWidget(templateAnalysis);
@@ -16,7 +21,7 @@ TemplateDetailWidget::TemplateDetailWidget(QSharedPointer<TemplateAnalysis> temp
     this->addTabWithScrollArea(uploadWidget, "上传");
 }
 
-void TemplateDetailWidget::setTemplateAnalysis(QSharedPointer<TemplateAnalysis> templateAnalysis)
+void TemplateDetailWidget::setTemplateAnalysis(TemplateAnalysis *templateAnalysis)
 {
     answerAndAnalysisWidget->setTemplateAnalysis(templateAnalysis);
     questionWidget->setTemplateAnalysis(templateAnalysis);
@@ -26,6 +31,6 @@ void TemplateDetailWidget::setTemplateAnalysis(QSharedPointer<TemplateAnalysis> 
 void TemplateDetailWidget::showEvent(QShowEvent *event)
 {
     NavigationBarTabWidget::showEvent(event);
-    this->setTabVisible(TabIndex::UploadWidgetIndex, Settings::getSingletonSettings()->isLogin());
+    this->setTabVisible(TabIndex::UploadWidgetIndex, Settings::getSingletonSettings()->getAccountManager()->isLoggedin());
     event->accept();
 }

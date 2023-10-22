@@ -62,6 +62,4 @@ private:
     Q_PROPERTY(bool valid READ getValid CONSTANT FINAL)
 };
 
-Q_DECLARE_METATYPE(TemplateAnalysis)
-
 #endif // TEMPLATEANALYSIS_H

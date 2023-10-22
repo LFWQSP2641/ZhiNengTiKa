@@ -11,13 +11,15 @@ public:
 public slots:
     void handleTemplateRequest(TemplateSummary *templateSummary);
     void handleTemplateRequestByCode(const QString &templateCode);
+    void handleTemplateRequestNetwork(TemplateSummary *templateSummary);
+    void handleTemplateRequestByCodeNetwork(const QString &templateCode);
 protected:
     TemplateAnalysis *templateAnalysisfromNetwork = nullptr;
 protected slots:
     void onHandleTemplateReplyFinished();
 signals:
     void obtainTemplateFromNetwork();
-    void templateAnalysisReady(const TemplateAnalysis *templateAnalysis);
+    void templateAnalysisReady(TemplateAnalysis *templateAnalysis, const QByteArray &rawData = QByteArray());
     void error(const QString &msg);
 };
 

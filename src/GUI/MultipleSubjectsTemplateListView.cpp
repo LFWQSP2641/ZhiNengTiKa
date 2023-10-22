@@ -35,7 +35,7 @@ MultipleSubjectsTemplateListView::MultipleSubjectsTemplateListView(QWidget *pare
     connect(templateListView, &TemplateListView::templateNameClicked, this, &MultipleSubjectsTemplateListView::templateNameClicked);
 }
 
-void MultipleSubjectsTemplateListView::addNewTemplate(const TemplateSummary &templateSummary)
+void MultipleSubjectsTemplateListView::addNewTemplate(TemplateSummary *templateSummary)
 {
     this->multipleSubjectsTemplateListModelList.addNewTemplate(templateSummary);
     this->multipleSubjectsTabBar->setCurrentIndex(MultipleSubjectsTemplateListModelList::Subjects::Undefined);
@@ -53,7 +53,7 @@ MultipleSubjectsTemplateListModelList &MultipleSubjectsTemplateListView::getMult
     return multipleSubjectsTemplateListModelList;
 }
 
-TemplateSummary MultipleSubjectsTemplateListView::getCurrentTemplateSummary()
+TemplateSummary *MultipleSubjectsTemplateListView::getCurrentTemplateSummary()
 {
     return this->templateListView->getCurrentTemplateSummary();
 }

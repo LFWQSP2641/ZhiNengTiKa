@@ -2,6 +2,7 @@
 #define QRCODESCANNERWIDGET_H
 
 class QRCodeScanner;
+class ZXingResult;
 
 class QRCodeScannerWidget : public QWidget
 {
@@ -16,15 +17,13 @@ protected:
     QMediaCaptureSession *mediaCaptureSession;
     QVideoWidget *videoWidget;
     QRCodeScanner *scanner;
-    QPushButton *scanningButton;
     QPushButton *selectingFileButton;
 
 protected slots:
-    void onScanningButtonPushed();
     void onSelectingFileButtonPushed();
 
 signals:
-    void scanningFinished(bool success, const QString &result);
+    void scanningFinished(bool succeeded, ZXingResult *result);
 };
 
 #endif // QRCODESCANNERWIDGET_H

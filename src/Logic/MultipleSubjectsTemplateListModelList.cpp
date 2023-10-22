@@ -105,6 +105,7 @@ MultipleSubjectsTemplateListModelList::~MultipleSubjectsTemplateListModelList()
 
 void MultipleSubjectsTemplateListModelList::addNewTemplate(TemplateSummary *templateSummary)
 {
+    templateSummary->setParent(this);
     templateListModelList[Subjects::Undefined]->addNewTemplate(templateSummary);
     this->addTemplateList(templateSummary);
 }

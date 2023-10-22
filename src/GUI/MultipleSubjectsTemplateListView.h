@@ -11,10 +11,10 @@ class MultipleSubjectsTemplateListView : public QWidget
     Q_OBJECT
 public:
     explicit MultipleSubjectsTemplateListView(QWidget *parent = nullptr);
-    void addNewTemplate(const TemplateSummary &templateSummary);
+    void addNewTemplate(TemplateSummary *templateSummary);
 
     MultipleSubjectsTemplateListModelList &getMultipleSubjectsTemplateListModelList();
-    TemplateSummary getCurrentTemplateSummary();
+    TemplateSummary *getCurrentTemplateSummary();
 
 protected:
     QVBoxLayout *mainLayout;
@@ -23,7 +23,7 @@ protected:
     MultipleSubjectsTemplateListModelList multipleSubjectsTemplateListModelList;
 
 signals:
-    void templateNameClicked(const TemplateSummary &templateSummary);
+    void templateNameClicked(TemplateSummary *templateSummary);
 };
 
 #endif // MULTIPLESUBJECTSTEMPLATELISTVIEW_H

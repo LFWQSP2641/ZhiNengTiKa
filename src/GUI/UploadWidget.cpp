@@ -1,13 +1,17 @@
 #include "UploadWidget.h"
 #include "UploadChildWidget.h"
 #include "../Logic/TemplateAnalysis.h"
+#include "../Logic/TemplateFetcher.h"
 #include "../Singleton/Settings.h"
 #include "../Singleton/Network.h"
 #include "../StaticClass/XinjiaoyuNetwork.h"
 
-UploadWidget::UploadWidget(QSharedPointer<TemplateAnalysis> templateAnalysis, QWidget *parent)
-    : QWidget{parent}, templateAnalysisPointer(templateAnalysis)
+UploadWidget::UploadWidget(TemplateAnalysis *templateAnalysis, QWidget *parent)
+    : QWidget{parent}, templateAnalysis(templateAnalysis)
 {
+    fetcher = new TemplateFetcher(this);
+    handleTemplateRequestMessageBox = new QMessageBox(this);
+    handleTemplateRequestMessageBox->setText("获取中...");
     mainLayout = new QVBoxLayout(this);
     uploadChildWidgetLayout = new QVBoxLayout;
     rightAnswerPrecedenceCheckBox = new QRadioButton(QStringLiteral("正确答案优先"), this);
@@ -31,6 +35,12 @@ UploadWidget::UploadWidget(QSharedPointer<TemplateAnalysis> templateAnalysis, QW
     connect(editRawDataButton, &QPushButton::clicked, this, &UploadWidget::editRawData);
     connect(rightAnswerPrecedenceCheckBox, &QRadioButton::clicked, this, &UploadWidget::switchRightAnswerPrecedence);
     connect(uploadAnswerPrecedenceCheckBox, &QRadioButton::clicked, this, &UploadWidget::switchUploadAnswerPrecedence);
+    connect(fetcher, &TemplateFetcher::templateAnalysisReady, this, &UploadWidget::analysisUserAnswer);
+    connect(fetcher, &TemplateFetcher::error, this, [this](const QString & msg)
+    {
+        handleTemplateRequestMessageBox->close();
+        QMessageBox::warning(this, QStringLiteral("获取题卡信息错误"), msg);
+    });
 
     this->templateAnalysisStateChanged = true;
 }
@@ -69,13 +79,13 @@ bool UploadWidget::upload()
 
 bool UploadWidget::uploadData(const QByteArray &data)
 {
-    auto currentUserData(Settings::getSingletonSettings()->currentUserData());
-    auto currentUserDataDetailData(currentUserData.getDetailDataJsonObject());
+    auto currentUserData(Settings::getSingletonSettings()->getAccountManager()->getCurrentUserData());
+    auto currentUserDataDetailData(currentUserData->getDetailDataJsonObject());
     auto ret{ QMessageBox::question(this,
                                     QStringLiteral(""),
                                     QStringLiteral("将提交到 %0 的账号\n"
                                             "且此操作不可撤回\n"
-                                            "是否继续?").arg(currentUserDataDetailData.value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(currentUserData.getUsername()))) };
+                                            "是否继续?").arg(currentUserDataDetailData.value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(currentUserData->getUsername()))) };
     if(ret == QMessageBox::No)
     {
         return false;
@@ -106,45 +116,8 @@ bool UploadWidget::uploadData(const QByteArray &data)
 
 void UploadWidget::getUserAnswer()
 {
-    auto templateCode{ templateAnalysisPointer->getTemplateCode() };
-    if(templateCode.isEmpty())
-    {
-        return;
-    }
-
-    auto funCreateAnswerData{[](const QJsonObject & object)
-    {
-        QJsonObject outputObject;
-        outputObject.insert(QStringLiteral("userAnswer"), object.value("answer"));
-        outputObject.insert(QStringLiteral("rawScan"), object.value("rawScan"));
-        return outputObject;
-    }};
-
-    TemplateRawData templateRawData(templateCode);
-    if(!templateRawData.isValid())
-    {
-        QMessageBox::critical(Q_NULLPTR, QStringLiteral("critical"), templateRawData.getErrorStr());
-        return;
-    }
-
-    QJsonArray array{ QJsonDocument::fromJson(templateRawData.getRawData()).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
-    for (const auto &j : array)
-    {
-        auto jObject{j.toObject()};
-        QJsonArray childQuestionList{ jObject.value(QStringLiteral("childQuestionList")).toArray() };
-
-        if (childQuestionList.isEmpty())
-        {
-            userAnswerList.append(funCreateAnswerData(jObject.value(QStringLiteral("answer")).toObject()));
-        }
-        else
-        {
-            for (auto i{ 0 }; i < childQuestionList.size(); ++i)
-            {
-                userAnswerList.append(funCreateAnswerData(childQuestionList.at(i).toObject().value(QStringLiteral("answer")).toObject()));
-            }
-        }
-    }
+    handleTemplateRequestMessageBox->show();
+    fetcher->handleTemplateRequestNetwork(templateAnalysis);
 }
 
 void UploadWidget::switchRightAnswerPrecedence()
@@ -154,19 +127,11 @@ void UploadWidget::switchRightAnswerPrecedence()
     {
         getUserAnswer();
     }
-    for(auto i{0}; i < uploadChildWidgetList.count(); ++i)
+    else
     {
-        if(!uploadChildWidgetList.at(i)->isChoiceQuestions())
-        {
-            uploadChildWidgetList.at(i)->setChecked(rightAnswer.at(i));
-            const auto rawScan{userAnswerList.at(i).toObject().value(QStringLiteral("rawScan")).toString()};
-            if(rawScan.isEmpty())
-            {
-                continue;
-            }
-            uploadChildWidgetList.at(i)->setPixmapFromNetwork(rawScan);
-        }
+        setRightAnswer();
     }
+
     this->setEnabled(true);
 }
 
@@ -177,31 +142,11 @@ void UploadWidget::switchUploadAnswerPrecedence()
     {
         getUserAnswer();
     }
-    for(auto i{0}; i < uploadChildWidgetList.count(); ++i)
+    else
     {
-        if(uploadChildWidgetList.at(i)->isChoiceQuestions())
-        {
-            const auto userAnswer{userAnswerList.at(i).toObject().value(QStringLiteral("userAnswer")).toString()};
-            QBitArray answer(rightAnswer.at(i).size());
-            if(!userAnswer.isEmpty())
-            {
-                for(auto j{0}; j < rightAnswer.at(i).size(); ++j)
-                {
-                    auto option{ QString(QByteArray::fromHex(QString::number(41 + j).toUtf8())) };
-                    answer.setBit(j, userAnswer.contains(option));
-                }
-                uploadChildWidgetList.at(i)->setChecked(answer);
-            }
-        }
-        else
-        {
-            const auto rawScan{userAnswerList.at(i).toObject().value(QStringLiteral("rawScan")).toString()};
-            if(!rawScan.isEmpty())
-            {
-                uploadChildWidgetList.at(i)->setPixmapFromNetwork(rawScan);
-            }
-        }
+        setUploadAnswer();
     }
+
     this->setEnabled(true);
 }
 
@@ -237,6 +182,51 @@ void UploadWidget::editRawData()
     tWidget->show();
 }
 
+void UploadWidget::setRightAnswer()
+{
+    for(auto i{0}; i < uploadChildWidgetList.count(); ++i)
+    {
+        if(!uploadChildWidgetList.at(i)->isChoiceQuestions())
+        {
+            uploadChildWidgetList.at(i)->setChecked(rightAnswer.at(i));
+            const auto rawScan{userAnswerList.at(i).toObject().value(QStringLiteral("rawScan")).toString()};
+            if(!rawScan.isEmpty())
+            {
+                uploadChildWidgetList.at(i)->setPixmapFromNetwork(rawScan);
+            }
+        }
+    }
+}
+
+void UploadWidget::setUploadAnswer()
+{
+    for(auto i{0}; i < uploadChildWidgetList.count(); ++i)
+    {
+        if(uploadChildWidgetList.at(i)->isChoiceQuestions())
+        {
+            const auto userAnswer{userAnswerList.at(i).toObject().value(QStringLiteral("userAnswer")).toString()};
+            QBitArray answer(rightAnswer.at(i).size());
+            if(!userAnswer.isEmpty())
+            {
+                for(auto j{0}; j < rightAnswer.at(i).size(); ++j)
+                {
+                    auto option{ QString(QByteArray::fromHex(QString::number(41 + j).toUtf8())) };
+                    answer.setBit(j, userAnswer.contains(option));
+                }
+                uploadChildWidgetList.at(i)->setChecked(answer);
+            }
+        }
+        else
+        {
+            const auto rawScan{userAnswerList.at(i).toObject().value(QStringLiteral("rawScan")).toString()};
+            if(!rawScan.isEmpty())
+            {
+                uploadChildWidgetList.at(i)->setPixmapFromNetwork(rawScan);
+            }
+        }
+    }
+}
+
 void UploadWidget::showEvent(QShowEvent *event)
 {
     if(templateAnalysisStateChanged)
@@ -244,13 +234,13 @@ void UploadWidget::showEvent(QShowEvent *event)
         templateAnalysisStateChanged = false;
         analysis();
     }
-    this->setEnabled(analysised && Settings::getSingletonSettings()->isLogin());
+    this->setEnabled(analysised && Settings::getSingletonSettings()->getAccountManager()->isLoggedin());
     event->accept();
 }
 
 QJsonObject UploadWidget::getAnswerJsonObject()
 {
-    return getAnswerJsonObject(Settings::getSingletonSettings()->currentUserData());
+    return getAnswerJsonObject(Settings::getSingletonSettings()->getAccountManager()->getCurrentUserData());
 }
 
 QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)
@@ -258,7 +248,7 @@ QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)
     QJsonObject rootObject;
     rootObject.insert(QStringLiteral("schoolId"), QString(userData.getSchoolId()));
     rootObject.insert(QStringLiteral("studentId"), QString(userData.getStudentId()));
-    rootObject.insert(QStringLiteral("templateCode"), templateAnalysisPointer->getTemplateCode());
+    rootObject.insert(QStringLiteral("templateCode"), templateAnalysis->getTemplateCode());
     QJsonArray array;
     for(auto &i : uploadChildWidgetList)
     {
@@ -269,15 +259,15 @@ QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)
     return rootObject;
 }
 
-void UploadWidget::setTemplateAnalysis(QSharedPointer<TemplateAnalysis> templateAnalysis)
+void UploadWidget::setTemplateAnalysis(TemplateAnalysis *templateAnalysis)
 {
     this->templateAnalysisStateChanged = true;
-    this->templateAnalysisPointer = templateAnalysis;
+    this->templateAnalysis = templateAnalysis;
 }
 
 void UploadWidget::analysis()
 {
-    if(!this->templateAnalysisPointer->isValid())
+    if(!this->templateAnalysis->getValid())
     {
         return;
     }
@@ -298,7 +288,7 @@ void UploadWidget::analysis()
     }
 
     uploadChildWidgetList.clear();
-    const auto questionList{templateAnalysisPointer->getCountAndAnswer()};
+    const auto questionList{templateAnalysis->getCountAndAnswer()};
 
     for(const auto &i : questionList)
     {
@@ -308,4 +298,47 @@ void UploadWidget::analysis()
         uploadChildWidgetLayout->addWidget(uploadChildWidget);
     }
     analysised = true;
+}
+
+void UploadWidget::analysisUserAnswer(TemplateAnalysis *templateAnalysis, const QByteArray &rawData)
+{
+    Q_UNUSED(templateAnalysis);
+    auto funCreateAnswerData{[](const QJsonObject & object)
+    {
+        QJsonObject outputObject;
+        outputObject.insert(QStringLiteral("userAnswer"), object.value("answer"));
+        outputObject.insert(QStringLiteral("rawScan"), object.value("rawScan"));
+        return outputObject;
+    }};
+
+    QJsonArray array{ QJsonDocument::fromJson(rawData).object().value(QStringLiteral("data")).toObject().value(QStringLiteral("questions")).toArray().at(0).toObject().value(QStringLiteral("questionsAnswers")).toArray() };
+    for (const auto &j : array)
+    {
+        auto jObject{j.toObject()};
+        QJsonArray childQuestionList{ jObject.value(QStringLiteral("childQuestionList")).toArray() };
+
+        if (childQuestionList.isEmpty())
+        {
+            userAnswerList.append(funCreateAnswerData(jObject.value(QStringLiteral("answer")).toObject()));
+        }
+        else
+        {
+            for (auto i{ 0 }; i < childQuestionList.size(); ++i)
+            {
+                userAnswerList.append(funCreateAnswerData(childQuestionList.at(i).toObject().value(QStringLiteral("answer")).toObject()));
+            }
+        }
+    }
+
+    if(rightAnswerPrecedenceCheckBox->isChecked())
+    {
+        setRightAnswer();
+    }
+    else if(uploadAnswerPrecedenceCheckBox->isChecked())
+    {
+        setUploadAnswer();
+    }
+
+    handleTemplateRequestMessageBox->close();
+    this->setEnabled(true);
 }

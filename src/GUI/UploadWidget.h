@@ -10,7 +10,7 @@ class UploadWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit UploadWidget(QSharedPointer<TemplateAnalysis> templateAnalysis = QSharedPointer<TemplateAnalysis>(new TemplateAnalysis), QWidget *parent = nullptr);
+    explicit UploadWidget(TemplateAnalysis *templateAnalysis, QWidget *parent = nullptr);
 
 protected:
     QVBoxLayout *mainLayout;
@@ -21,8 +21,10 @@ protected:
     QButtonGroup *buttonGroup;
     QPushButton *uploadButton;
     QPushButton *editRawDataButton;
+    TemplateFetcher *fetcher;
+    QMessageBox *handleTemplateRequestMessageBox;
 
-    QSharedPointer<TemplateAnalysis> templateAnalysisPointer;
+    TemplateAnalysis *templateAnalysis;
     QList<UploadChildWidget*> uploadChildWidgetList;
     QList<QBitArray> rightAnswer;
 
@@ -37,16 +39,19 @@ protected:
     QJsonObject getAnswerJsonObject(const UserData &userData);
 
 public slots:
-    void setTemplateAnalysis(QSharedPointer<TemplateAnalysis> templateAnalysis);
+    void setTemplateAnalysis(TemplateAnalysis *templateAnalysis);
 
 protected slots:
     void analysis();
+    void analysisUserAnswer(TemplateAnalysis *templateAnalysis, const QByteArray &rawData);
     bool upload();
     bool uploadData(const QByteArray &data);
     void getUserAnswer();
     void switchRightAnswerPrecedence();
     void switchUploadAnswerPrecedence();
     void editRawData();
+    void setRightAnswer();
+    void setUploadAnswer();
 };
 
 #endif // UPLOADWIDGET_H

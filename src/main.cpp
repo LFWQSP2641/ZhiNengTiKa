@@ -18,7 +18,6 @@ int main(int argc, char *argv[])
 
     Settings::initOnce();
     auto settings(Settings::getSingletonSettings());
-    UserData::initPublicUserData();
 
     QFont appFont;
     if(settings->getFontPointSize() < 1 || settings->getFont().isEmpty())
