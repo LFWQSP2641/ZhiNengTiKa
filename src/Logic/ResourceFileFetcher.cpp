@@ -109,6 +109,31 @@ void ResourceFileFetcher::resetModel(const QString &subject, const QString &edit
     connect(reply, &QNetworkReply::finished, this, &ResourceFileFetcher::onCatalogReplyFinished);
 }
 
+void ResourceFileFetcher::downloadResourceFile(int index)
+{
+    qDebug() << Q_FUNC_INFO;
+    const auto object(model->records.at(index).toObject());
+    const auto url(object.value(QStringLiteral("resourceUrl")).toString());
+    auto reply(Network::getGlobalNetworkManager()->get(QNetworkRequest(url)));
+    connect(reply, &QNetworkReply::finished, this, &ResourceFileFetcher::onDownloadFinished);
+    auto fileName(object.value(QStringLiteral("homeworkResourceName")).toString());
+    auto fileSuffix(object.value(QStringLiteral("fileSuffix")).toString());
+    if(!fileSuffix.isEmpty())
+        fileName.append(QStringLiteral(".")).append(fileSuffix);
+    fileNameHash.insert(reply, fileName);
+}
+
+void ResourceFileFetcher::saveToFile(const QUrl &filePath)
+{
+    auto readablePath(filePath.toString());
+    if(readablePath.startsWith(QStringLiteral("file:///")))
+        readablePath = readablePath.right(readablePath.size() - 8);
+    QFile file(readablePath);
+    file.open(QFile::WriteOnly);
+    file.write(fileData);
+    file.close();
+}
+
 QNetworkRequest ResourceFileFetcher::setRequest(const QUrl &url)
 {
     QNetworkRequest requestInfo;
@@ -238,6 +263,8 @@ void ResourceFileFetcher::onCatalogArrayReplyFinished()
     if(jsonObject.value(QStringLiteral("code")).toInt() != 200)
     {
         emit error(reply->request().url().toString().append(rawData));
+        reply->deleteLater();
+        return;
     }
     reply->deleteLater();
 
@@ -257,6 +284,8 @@ void ResourceFileFetcher::onCatalogDetailReplyFinished()
     if(catalogDetail.value(QStringLiteral("code")).toInt() != 200)
     {
         emit error(reply->request().url().toString().append(rawData));
+        reply->deleteLater();
+        return;
     }
     reply->deleteLater();
     emit initFinished();
@@ -266,6 +295,12 @@ void ResourceFileFetcher::onCatalogReplyFinished()
 {
     auto reply(qobject_cast<QNetworkReply *>(sender()));
     auto rawData(reply->readAll());
+    if(reply->error() != QNetworkReply::NoError)
+    {
+        emit error(reply->request().url().toString().append(rawData));
+        reply->deleteLater();
+        return;
+    }
     reply->deleteLater();
 
     const auto schoolIdIndex(rawData.indexOf(QByteArrayLiteral("100117")));
@@ -288,6 +323,8 @@ void ResourceFileFetcher::onResourceReplyFinished()
     if(jsonObject.value(QStringLiteral("code")).toInt() != 200)
     {
         emit error(reply->request().url().toString().append(rawData));
+        reply->deleteLater();
+        return;
     }
     reply->deleteLater();
     maxPage = jsonObject.value(QStringLiteral("data")).toObject().value(QStringLiteral("pages")).toString().toInt();
@@ -319,6 +356,8 @@ void ResourceFileFetcher::onContinueLoadResourceReplyFinished()
     if(jsonObject.value(QStringLiteral("code")).toInt() != 200)
     {
         emit error(reply->request().url().toString().append(rawData));
+        reply->deleteLater();
+        return;
     }
     reply->deleteLater();
 
@@ -330,4 +369,22 @@ void ResourceFileFetcher::onContinueLoadResourceReplyFinished()
     model->endInsertRows();
 
     emit continueLoadModelFinished();
+}
+
+void ResourceFileFetcher::onDownloadFinished()
+{
+    qDebug() << Q_FUNC_INFO;
+    auto reply(qobject_cast<QNetworkReply *>(sender()));
+    auto rawData(reply->readAll());
+    if(reply->error() != QNetworkReply::NoError)
+    {
+        emit error(reply->request().url().toString().append(rawData));
+        fileNameHash.remove(reply);
+        reply->deleteLater();
+        return;
+    }
+    reply->deleteLater();
+    fileData = std::move(rawData);
+    emit downloadResourceFileFinished(fileNameHash.value(reply));
+    fileNameHash.remove(reply);
 }

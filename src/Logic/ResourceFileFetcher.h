@@ -20,6 +20,8 @@ public slots:
     void init();
     void continueLoadModel();
     void resetModel(const QString &subject, const QString &edition, const QString &module);
+    void downloadResourceFile(int index);
+    void saveToFile(const QUrl &filePath);
 
 protected:
     static QNetworkRequest setRequest(const QUrl &url);
@@ -33,18 +35,23 @@ protected:
     int currentPage = 1;
     int maxPage = 1;
 
+    QHash<QNetworkReply *, QString> fileNameHash;
+    QByteArray fileData;
+
 protected slots:
     void onCatalogArrayReplyFinished();
     void onCatalogDetailReplyFinished();
     void onCatalogReplyFinished();
     void onResourceReplyFinished();
     void onContinueLoadResourceReplyFinished();
+    void onDownloadFinished();
 
 signals:
     void error(const QString &msg);
     void initFinished();
     void resetModelFinished();
     void continueLoadModelFinished();
+    void downloadResourceFileFinished(const QString &fileName);
 private:
     Q_PROPERTY(ResourceFileModel *model READ getModel CONSTANT FINAL)
 };

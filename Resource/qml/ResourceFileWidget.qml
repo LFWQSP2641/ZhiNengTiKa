@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt.labs.platform
 import ResourceFileFetcher
 
 Item {
@@ -25,12 +26,30 @@ Item {
         onError: function(msg) {
             console.log("error 发生:\n" + msg)
         }
+
+        onDownloadResourceFileFinished: function(fileName) {
+            busyIndicator.running = false
+            settingItemsLayout.enabled = true
+            fileDialog.currentFile = fileName
+            fileDialog.open()
+        }
     }
 
     BusyIndicator {
         id: busyIndicator
         running: true
         anchors.centerIn: parent
+    }
+
+    FileDialog {
+        id: fileDialog
+        fileMode: FileDialog.SaveFile
+        title: "保存文件"
+        folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
+
+        onAccepted: {
+            resourceFileFetcher.saveToFile(file)
+        }
     }
 
     ColumnLayout {
@@ -101,7 +120,11 @@ Item {
                 highlighted: ListView.isCurrentItem
                 onClicked: {
                     if(index === resourceFileListView.currentIndex)
-                        console.log("active")
+                    {
+                        settingItemsLayout.enabled = false
+                        busyIndicator.running = true
+                        resourceFileFetcher.downloadResourceFile(index)
+                    }
                     resourceFileListView.currentIndex = index
                 }
             }

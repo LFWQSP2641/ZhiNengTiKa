@@ -1,6 +1,6 @@
 VERSION = 2.6.4
 
-QT       += core network multimedia
+QT       += core network multimedia gui-private
 
 android{
 QT       += core-private

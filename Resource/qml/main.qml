@@ -127,7 +127,7 @@ ApplicationWindow {
                             radius: 45
                             widgetSizeRatio: 0.5
                             iconSource: "qrc:/svg/icon/document.svg"
-                            buttonText: "列表"
+                            buttonText: "资源"
                             backgroundColor: QMLUtils.generateRandomBrightColor()
                             onClickedLeft: stackView.push(resourceFileWidgetComponent)
                         }
