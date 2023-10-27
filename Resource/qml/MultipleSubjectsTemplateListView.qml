@@ -6,10 +6,6 @@ import MultipleSubjectsTemplateListModelList
 Item {
     id: multipleSubjectsTemplateListView
     signal multipleSubjectsTemplateNameClicked(var templateSummary)
-    FontMetrics {
-        id: fm
-        font: Qt.application.font
-    }
     TabBar {
         id: subjectsTabBar
         anchors.top: parent.top
@@ -20,7 +16,7 @@ Item {
 
             TabButton {
                 text: modelData
-                width: Math.max(fm.maximumCharacterWidth * 2, multipleSubjectsTemplateListView.width / 7)
+                width: Math.max(implicitWidth, multipleSubjectsTemplateListView.width / 7)
             }
         }
     }

@@ -28,7 +28,6 @@
 #include <QVideoFrame>
 #include <QtWebView>
 #include <QAccelerometer>
-#include <QtGui/private/qzipreader_p.h>
 #ifdef Q_OS_ANDROID
 #include <QtCore/private/qandroidextras_p.h>
 #include <QJniEnvironment>

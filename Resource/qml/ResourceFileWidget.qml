@@ -17,6 +17,7 @@ Item {
         onResetModelFinished: {
             resourceFileListView.footerItem.visible = resourceFileFetcher.haveNextPage()
             settingItemsLayout.enabled = true
+            resourceFileListView.positionViewAtBeginning()
         }
 
         onContinueLoadModelFinished: {
@@ -63,6 +64,7 @@ Item {
                 id: subjectsTabBarModel
                 TabButton {
                     text: modelData
+                    width: Math.max(implicitWidth, subjectsTabBar.width / subjectsTabBar.count)
                 }
             }
             onCurrentItemChanged: {
@@ -80,6 +82,7 @@ Item {
                 id: editionTabBarModel
                 TabButton {
                     text: modelData
+                    width: Math.max(implicitWidth, editionTabBar.width / editionTabBar.count)
                 }
             }
             onCurrentItemChanged: {
@@ -97,6 +100,7 @@ Item {
                 id: moduleTabBarModel
                 TabButton {
                     text: modelData
+                    width: Math.max(implicitWidth, moduleTabBar.width / moduleTabBar.count)
                 }
             }
             onCurrentItemChanged: {
