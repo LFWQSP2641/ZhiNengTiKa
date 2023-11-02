@@ -393,5 +393,6 @@ ApplicationWindow {
     function refreshImage() {
         backgroundImage.source = ""
         backgroundImage.source = "image://AnimeImageProvider/image"
+        imageRefreshTimer.needToRefresh = false
     }
 }
