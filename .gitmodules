@@ -7,3 +7,9 @@
 [submodule "lib/zxing-cpp/zxing-cpp"]
 	path = lib/zxing-cpp/zxing-cpp
 	url = git@github.com:LFWQSP2641/zxing-cpp.git
+[submodule "lib/unzip/quazip"]
+	path = lib/unzip/quazip
+	url = git@github.com:stachenov/quazip.git
+[submodule "lib/unzip/zlib"]
+	path = lib/unzip/zlib
+	url = git@github.com:madler/zlib.git
