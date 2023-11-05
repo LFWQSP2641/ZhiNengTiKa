@@ -8,7 +8,7 @@ class AnnouncementModel : public QAbstractListModel
     Q_OBJECT
 public:
     explicit AnnouncementModel(QObject *parent = nullptr);
-    enum Dataroles
+    enum DataRoles
     {
         TitleRole = Qt::UserRole + 1,
         DetailRole,

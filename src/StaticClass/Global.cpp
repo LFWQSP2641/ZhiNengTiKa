@@ -18,10 +18,11 @@ void Global::initOnce()
 #endif // Q_OS_ANDROID
 
     QDir dir;
-    dir.mkdir(Global::configPath());
-    dir.mkdir(Global::dataPath());
-    dir.mkdir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
-    dir.mkdir(Global::tempPath());
+    dir.mkpath(Global::configPath());
+    dir.mkpath(Global::dataPath());
+    dir.mkpath(Global::dataPath().append(QStringLiteral("/TemplateFile")));
+    dir.mkpath(Global::dataPath().append(QStringLiteral("/Resource")));
+    dir.mkpath(Global::tempPath());
 
 }
 

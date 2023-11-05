@@ -5,6 +5,7 @@ import Qt.labs.platform
 import ResourceFileFetcher
 
 Item {
+    signal downloadFinished(string path)
     ResourceFileFetcher {
         id: resourceFileFetcher
         onInitFinished: {
@@ -28,11 +29,10 @@ Item {
             console.log("error 发生:\n" + msg)
         }
 
-        onDownloadResourceFileFinished: function(fileName) {
+        onDownloadResourceFileFinished: function(path) {
             busyIndicator.running = false
             settingItemsLayout.enabled = true
-            fileDialog.currentFile = fileName
-            fileDialog.open()
+            downloadFinished(path)
         }
     }
 
@@ -127,7 +127,7 @@ Item {
                     {
                         settingItemsLayout.enabled = false
                         busyIndicator.running = true
-                        resourceFileFetcher.downloadResourceFile(index)
+                        resourceFileFetcher.downloadResourceFile(index, subjectsTabBar.currentItem.text, editionTabBar.currentItem.text, moduleTabBar.currentItem.text)
                     }
                     resourceFileListView.currentIndex = index
                 }
@@ -143,6 +143,7 @@ Item {
                 }
                 MouseArea {
                     anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         continueLoadModelRectangle.visible = false
                         resourceFileFetcher.continueLoadModel()

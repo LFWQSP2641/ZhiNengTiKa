@@ -1,9 +1,9 @@
 VERSION = 2.6.4
 
-QT       += core network multimedia core5compat
+QT += core network multimedia core5compat
 
 android{
-QT       += core-private
+QT += core-private
 
 ANDROID_VERSION_NAME = $$VERSION
 
@@ -14,6 +14,7 @@ ANDROID_PACKAGE_SOURCE_DIR = \
 
 }
 win32{
+QT += pdf
 
 RC_ICONS = Resource/img/xinjiaoyuico.ico
 
@@ -75,6 +76,8 @@ HEADERS += \
     $$PWD/src/Logic/AnnouncementManager.h \
     $$PWD/src/Logic/AnnouncementModel.h \
     $$PWD/src/Logic/AnswerDetailData.hpp \
+    $$PWD/src/Logic/FileTreeItem.h \
+    $$PWD/src/Logic/FileTreeModel.h \
     $$PWD/src/Logic/ImageProvider.h \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.h \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.h \
@@ -100,6 +103,8 @@ SOURCES += \
     $$PWD/src/Logic/AccountManager.cpp \
     $$PWD/src/Logic/AnnouncementManager.cpp \
     $$PWD/src/Logic/AnnouncementModel.cpp \
+    $$PWD/src/Logic/FileTreeItem.cpp \
+    $$PWD/src/Logic/FileTreeModel.cpp \
     $$PWD/src/Logic/ImageProvider.cpp \
     $$PWD/src/Logic/QRCodeReader.cpp \
     $$PWD/src/Logic/QRCodeScanner.cpp \

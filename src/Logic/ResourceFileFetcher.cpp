@@ -1,6 +1,9 @@
 #include "ResourceFileFetcher.h"
 #include "../StaticClass/XinjiaoyuEncryptioner.h"
 #include "../Singleton/Network.h"
+#include "../StaticClass/Global.h"
+#include "quazip.h"
+#include "JlCompress.h"
 
 ResourceFileFetcher::ResourceFileFetcher(QObject *parent)
     : QObject{parent},
@@ -109,29 +112,14 @@ void ResourceFileFetcher::resetModel(const QString &subject, const QString &edit
     connect(reply, &QNetworkReply::finished, this, &ResourceFileFetcher::onCatalogReplyFinished);
 }
 
-void ResourceFileFetcher::downloadResourceFile(int index)
+void ResourceFileFetcher::downloadResourceFile(int index, const QString &subject, const QString &edition, const QString &module)
 {
     qDebug() << Q_FUNC_INFO;
     const auto object(model->records.at(index).toObject());
     const auto url(object.value(QStringLiteral("resourceUrl")).toString());
     auto reply(Network::getGlobalNetworkManager()->get(QNetworkRequest(url)));
     connect(reply, &QNetworkReply::finished, this, &ResourceFileFetcher::onDownloadFinished);
-    auto fileName(object.value(QStringLiteral("homeworkResourceName")).toString());
-    auto fileSuffix(object.value(QStringLiteral("fileSuffix")).toString());
-    if(!fileSuffix.isEmpty())
-        fileName.append(QStringLiteral(".")).append(fileSuffix);
-    fileNameHash.insert(reply, fileName);
-}
-
-void ResourceFileFetcher::saveToFile(const QUrl &filePath)
-{
-    auto readablePath(filePath.toString());
-    if(readablePath.startsWith(QStringLiteral("file:///")))
-        readablePath = readablePath.right(readablePath.size() - 8);
-    QFile file(readablePath);
-    file.open(QFile::WriteOnly);
-    file.write(fileData);
-    file.close();
+    fileNameHash.insert(reply, QStringList() << subject << edition << module);
 }
 
 QNetworkRequest ResourceFileFetcher::setRequest(const QUrl &url)
@@ -383,8 +371,22 @@ void ResourceFileFetcher::onDownloadFinished()
         reply->deleteLater();
         return;
     }
+    const auto zipFilePath(Global::tempPath().append(QStringLiteral("/temp.zip")));
+    QFile file(zipFilePath);
+    file.open(QFile::WriteOnly);
+    file.write(rawData);
+    file.close();
+    auto savePath(Global::dataPath().append(QStringLiteral("/Resource")));
+    for(const auto &i : fileNameHash.value(reply))
+    {
+        if(!i.isEmpty())
+        {
+            savePath.append(QStringLiteral("/"));
+            savePath.append(i);
+        }
+    }
+    JlCompress::extractDir(zipFilePath, QTextCodec::codecForName("gbk"), savePath);
+    file.remove();
+    emit downloadResourceFileFinished(savePath);
     reply->deleteLater();
-    fileData = std::move(rawData);
-    emit downloadResourceFileFinished(fileNameHash.value(reply));
-    fileNameHash.remove(reply);
 }

@@ -49,12 +49,14 @@ Item {
                 left: parent.left
             }
             z: parent.z + 1
+            cursorShape: Qt.PointingHandCursor
             onClicked: {
                 hide() // 点击按钮后隐藏消息提示框
             }
         }
         MouseArea {
             anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
         }
     }
 

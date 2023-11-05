@@ -1,6 +1,6 @@
 include(./ZhiNengTiKaCore.pri)
 
-QT       += widgets gui quick quickcontrols2 webview sensors
+QT += widgets gui quick quickcontrols2 webview sensors
 
 PRECOMPILED_HEADER = src/pchQML.h
 

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Qt.labs.platform
+import QtQuick.Pdf
 import TemplateFetcher
 import MultipleSubjectsTemplateListModelList
 import QMLUtils
@@ -334,10 +335,60 @@ ApplicationWindow {
             }
         }
     }
+
     Component {
         id: resourceFileWidgetComponent
-        ResourceFileWidget {
+        Item {
+            ColumnLayout {
+                anchors.fill: parent
+                IconButton {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    widgetSizeRatio: 0.5
+                    iconSource: "qrc:/svg/icon/disk.svg"
+                    buttonText: "本地"
+                    onClickedLeft: stackView.push(fileTreeListComponent, {"rootPath": QMLUtils.getResourceFilePath()})
+                }
+                IconButton {
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    widgetSizeRatio: 0.5
+                    iconSource: "qrc:/svg/icon/download.svg"
+                    buttonText: "下载"
+                    onClickedLeft: stackView.push(downloadResourceFileWidget)
+                }
+            }
+        }
+    }
 
+    Component {
+        id: downloadResourceFileWidget
+        DownloadResourceFileWidget {
+            onDownloadFinished: function(path) {
+                stackView.push(fileTreeListComponent, {"rootPath": path})
+            }
+        }
+    }
+
+    Component {
+        id: fileTreeListComponent
+        FileTreeList {
+            onFileClicked: function(filePath) {
+                console.log(filePath)
+                if(filePath.endsWith("pdf"))
+                {
+                    stackView.push(pdfReader, {"source": "file:///" + filePath})
+                }
+            }
+        }
+    }
+
+    Component {
+        id: pdfReader
+        PdfMultiPageView {
+            id: pdfView
+            property alias source: pdfDocument.source
+            document: PdfDocument { id: pdfDocument }
         }
     }
 

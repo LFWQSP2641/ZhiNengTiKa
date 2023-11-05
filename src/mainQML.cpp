@@ -19,6 +19,8 @@
 #include "QMLIntermediary/ZAccelerationToOpacityConverter.h"
 #include "QMLIntermediary/SettingOperator.h"
 
+#include "Logic/FileTreeModel.h"
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
@@ -94,6 +96,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<ZAccelerationToOpacityConverter>("ZAccelerationToOpacityConverter", 1, 0, "ZAccelerationToOpacityConverter");
     qmlRegisterType<AnnouncementManager>("AnnouncementManager", 1, 0, "AnnouncementManager");
     qmlRegisterType<ResourceFileFetcher>("ResourceFileFetcher", 1, 0, "ResourceFileFetcher");
+    qmlRegisterType<FileTreeModel>("FileTreeModel", 1, 0, "FileTreeModel");
     QQmlApplicationEngine engine;
     engine.addImageProvider(QStringLiteral("AnimeImageProvider"), animeImageProvider);
 
