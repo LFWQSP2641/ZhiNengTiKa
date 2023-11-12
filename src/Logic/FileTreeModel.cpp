@@ -97,7 +97,16 @@ void FileTreeModel::setupModelData()
     rootItem->fileInfo = QFileInfo(rootPath);
     rootItem->name = rootItem->fileInfo.fileName();
     QDir dir(rootPath);
-    appendChildItem(rootItem, dir);
+    const auto fileInfoList(dir.entryInfoList(QDir::Filter::Files | QDir::Filter::Dirs | QDir::Filter::NoDotAndDotDot, static_cast<QDir::SortFlag>(sortFlag)));
+    for(const auto &i : fileInfoList)
+    {
+        auto newItem(new FileTreeItem(i, rootItem));
+        rootItem->childItemsList.append(newItem);
+        if(i.isDir())
+        {
+            appendChildItem(newItem, i.absoluteFilePath());
+        }
+    }
     endResetModel();
 }
 
