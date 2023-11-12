@@ -2,5 +2,6 @@
 debug/*
 release/*
 .qmake.stash
+android/assets
 ZhiNengTiKa.pro.user
 ZhiNengTiKaQML.pro.user

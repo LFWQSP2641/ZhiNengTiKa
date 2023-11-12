@@ -17,12 +17,13 @@
 
 #### 如何编译
 
-```bash
-cd ZhiNengTiKa
-git submodule update --init --recursive
-```
+- 必要条件:
 
-使用 Qt Creator 打开 `ZhiNengTiKa.pro` 或 `ZhiNengTiKaQML.pro`
+> Qt本体, git, Powershell 7
+
+1. 运行 `configuration.bat` 文件
+
+2. 使用 Qt Creator 打开 `ZhiNengTiKa.pro` 或 `ZhiNengTiKaQML.pro`
 
 ## 致谢
 
