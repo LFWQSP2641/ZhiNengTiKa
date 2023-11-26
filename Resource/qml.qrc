@@ -16,6 +16,7 @@
         <file>qml/SingleBlinkingDot.qml</file>
         <file>qml/DownloadResourceFileWidget.qml</file>
         <file>qml/FileTreeList.qml</file>
+        <file>qml/NormalMessageDialog.qml</file>
     </qresource>
     <qresource prefix="/svg">
         <file>icon/barcode-scan.svg</file>

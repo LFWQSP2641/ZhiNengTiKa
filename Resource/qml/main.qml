@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Qt.labs.platform
 import QtQuick.Pdf
+import QtQuick.Dialogs
 import TemplateFetcher
 import MultipleSubjectsTemplateListModelList
 import QMLUtils
@@ -252,20 +252,13 @@ ApplicationWindow {
         }
     }
 
-    MessageDialog {
+    NormalMessageDialog {
         id: messageDialog
-
-        function show(caption) {
-            messageDialog.text = caption;
-            messageDialog.open();
-        }
     }
 
-    MessageDialog {
+    NormalMessageDialog {
         id: applicationWindowQuitDialog
-        buttons: MessageDialog.Ok
-        text: "请更新版本或检查网络连接"
-        onOkClicked: Qt.exit(1)
+        onAboutToHide: Qt.exit(1)
     }
 
     TemplateFetcher {

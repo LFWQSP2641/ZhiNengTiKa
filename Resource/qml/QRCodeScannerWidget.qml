@@ -32,15 +32,10 @@ Item {
         videoOutput: videoOutput
     }
 
-    MessageDialog {
+    NormalMessageDialog {
         id: scanFailedDialog
-        buttons: MessageDialog.Ok
-        function show(text)
-        {
-            scanFailedDialog.text = text
-            scanFailedDialog.open()
-        }
     }
+
     QRCodeScanner {
         id: qrCodeScanner
         videoSink: videoOutput.videoSink
