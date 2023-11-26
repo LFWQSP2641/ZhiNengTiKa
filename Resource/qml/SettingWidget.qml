@@ -82,7 +82,6 @@ Item {
         id: loginDialog
         width: parent.width
         anchors.centerIn: parent
-        modal: true
         focus: true
 
         standardButtons: Dialog.Ok | Dialog.Cancel
@@ -117,7 +116,6 @@ Item {
         id: setImageUrlDialog
         width: parent.width
         anchors.centerIn: parent
-        modal: true
         focus: true
 
         standardButtons: Dialog.Ok | Dialog.Cancel
@@ -496,7 +494,6 @@ Item {
     Dialog {
         id: messageDialog
         anchors.centerIn: parent
-        modal: true
         focus: true
 
         contentItem: Text {

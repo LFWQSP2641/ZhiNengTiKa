@@ -5,7 +5,6 @@ import UpdateChecker
 
 Dialog {
     id: updateDialog
-    modal: true
     focus: true
     property bool showQuestionDialog: false
     signal finished()
