@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import FileTreeModel
+import QMLUtils
 
 TreeView {
     signal fileClicked(string filePath)
@@ -16,7 +17,15 @@ TreeView {
         }
         TapHandler {
             acceptedButtons: Qt.RightButton
+            acceptedDevices: PointerDevice.Mouse
             onTapped: {
+                toBeRemoved = absoluteFilePath
+                menu.popup()
+            }
+        }
+        TapHandler {
+            acceptedDevices: PointerDevice.TouchScreen
+            onLongPressed: {
                 toBeRemoved = absoluteFilePath
                 menu.popup()
             }
@@ -37,6 +46,6 @@ TreeView {
 
     FileTreeModel {
         id: fileTreeModel
-        rootPath: "C:/Users/TARDIS2641/Documents/Qt/build-ZhiNengTiKaQML-Desktop_Qt_6_5_3_MSVC2019_64bit-Release/release"
+        rootPath: QMLUtils.getResourceFilePath()
     }
 }

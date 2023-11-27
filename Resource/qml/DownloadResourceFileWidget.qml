@@ -42,17 +42,6 @@ Item {
         anchors.centerIn: parent
     }
 
-    FileDialog {
-        id: fileDialog
-        fileMode: FileDialog.SaveFile
-        title: "保存文件"
-        folder: StandardPaths.writableLocation(StandardPaths.DocumentsLocation)
-
-        onAccepted: {
-            resourceFileFetcher.saveToFile(file)
-        }
-    }
-
     ColumnLayout {
         id: settingItemsLayout
         enabled: false
