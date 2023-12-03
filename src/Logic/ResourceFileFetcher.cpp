@@ -2,7 +2,6 @@
 #include "../StaticClass/XinjiaoyuEncryptioner.h"
 #include "../Singleton/Network.h"
 #include "../StaticClass/Global.h"
-#include "quazip.h"
 #include "JlCompress.h"
 
 ResourceFileFetcher::ResourceFileFetcher(QObject *parent)
@@ -371,11 +370,10 @@ void ResourceFileFetcher::onDownloadFinished()
         reply->deleteLater();
         return;
     }
-    const auto zipFilePath(Global::tempPath().append(QStringLiteral("/temp.zip")));
-    QFile file(zipFilePath);
-    file.open(QFile::WriteOnly);
-    file.write(rawData);
-    file.close();
+
+    QBuffer buffer(&rawData);
+    buffer.open(QBuffer::ReadOnly);
+
     auto savePath(Global::dataPath().append(QStringLiteral("/Resource")));
     for(const auto &i : fileNameHash.value(reply))
     {
@@ -385,8 +383,7 @@ void ResourceFileFetcher::onDownloadFinished()
             savePath.append(i);
         }
     }
-    JlCompress::extractDir(zipFilePath, QTextCodec::codecForName("gbk"), savePath);
-    file.remove();
+    JlCompress::extractDir(&buffer, QTextCodec::codecForName("gbk"), savePath);
     emit downloadResourceFileFinished(savePath);
     reply->deleteLater();
 }
