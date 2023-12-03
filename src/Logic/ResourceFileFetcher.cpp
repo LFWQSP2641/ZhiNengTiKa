@@ -176,9 +176,17 @@ QString ResourceFileFetcher::findCommonPath(const QStringList &pathList)
         // 如果路径列表为空，返回空字符串或其他适当的默认值
         return getResourcePath();
     }
+    const auto firstPath(pathList.first());
+    if(pathList.size() == 1)
+    {
+        const auto index(firstPath.lastIndexOf(QStringLiteral("/")));
+        if(index == -1)
+            return getResourcePath();
+        return firstPath.left(index);
+    }
 
     // 将第一个路径分割为部分
-    QStringList firstPathParts = pathList.first().split(QStringLiteral("/"), Qt::SkipEmptyParts);
+    QStringList firstPathParts = firstPath.split(QStringLiteral("/"), Qt::SkipEmptyParts);
 
     // 初始化最终路径
     QString commonPath;
@@ -186,14 +194,14 @@ QString ResourceFileFetcher::findCommonPath(const QStringList &pathList)
     // 遍历每个路径部分
     for (int i = 0; i < firstPathParts.size(); ++i)
     {
-        QString currentPart = firstPathParts[i];
+        QString currentPart = firstPathParts.at(i);
 
         // 检查其他路径是否具有相同的部分
         bool allHaveSamePart = true;
-        for (const QString& path : pathList)
+        for (int j = 1; j < pathList.size(); ++j)
         {
-            QStringList parts = path.split(QStringLiteral("/"), Qt::SkipEmptyParts);
-            if (i >= parts.size() || parts[i] != currentPart)
+            QStringList parts = pathList.at(j).split(QStringLiteral("/"), Qt::SkipEmptyParts);
+            if (i >= parts.size() || parts.at(i) != currentPart)
             {
                 allHaveSamePart = false;
                 break;
@@ -205,9 +213,9 @@ QString ResourceFileFetcher::findCommonPath(const QStringList &pathList)
             // 如果所有路径都有相同的部分，则更新最终路径
             if (!commonPath.isEmpty())
             {
-                commonPath += QStringLiteral("/");
+                commonPath.append(QStringLiteral("/"));
             }
-            commonPath += currentPart;
+            commonPath.append(currentPart);
         }
         else
         {
@@ -215,6 +223,9 @@ QString ResourceFileFetcher::findCommonPath(const QStringList &pathList)
             break;
         }
     }
+
+    if(firstPath.startsWith(QStringLiteral("/")))
+        commonPath.prepend(QStringLiteral("/"));
 
     return commonPath;
 }
