@@ -119,7 +119,10 @@ ApplicationWindow {
                             iconSource: "qrc:/svg/icon/list.svg"
                             buttonText: "列表"
                             backgroundColor: QMLUtils.generateRandomBrightColor()
-                            onClickedLeft: stackView.push(selectWidgetComponent)
+                            onClickedLeft: {
+                                messageDialog.show("存在空指针异常和对象树关系异常, 如非必要, 请勿使用")
+                                stackView.push(selectWidgetComponent)
+                            }
                         }
                         IconButton {
                             Layout.fillHeight: true
@@ -139,7 +142,10 @@ ApplicationWindow {
                             iconSource: "qrc:/svg/icon/search.svg"
                             buttonText: "搜素"
                             backgroundColor: QMLUtils.generateRandomBrightColor()
-                            onClickedLeft: stackView.push(searchWidgetComponent)
+                            onClickedLeft: {
+                                messageDialog.show("存在内存泄漏和对象树关系异常, 如非必要, 请勿使用")
+                                stackView.push(searchWidgetComponent)
+                            }
                         }
                         IconButton {
                             Rectangle {
