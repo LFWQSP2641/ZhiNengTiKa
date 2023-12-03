@@ -23,6 +23,9 @@ void Global::initOnce()
     dir.mkdir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
     dir.mkdir(Global::tempPath());
 
+    QFile fileUserHistory(Global::dataPath().append(QStringLiteral("/templateList_undefined")));
+    if(fileUserHistory.exists())
+        fileUserHistory.rename(QStringLiteral("templateList_UserHistory"));
 }
 
 QString Global::configPath()

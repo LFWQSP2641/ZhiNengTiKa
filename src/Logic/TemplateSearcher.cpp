@@ -21,14 +21,14 @@ void TemplateSearcher::run()
 {
     this->toStop = false;
 #ifdef Q_OS_ANDROID
-    const QString dirPath { QStringLiteral("assets:/templateList/all") };
+    const QString dirPath { QStringLiteral("assets:/templateList") };
 #else
-    const QString dirPath { QStringLiteral(":/templateList/all") };
+    const QString dirPath { QStringLiteral(":/templateList") };
 #endif
 
     QDir allDir { dirPath };
     auto list = allDir.entryInfoList(QDir::Files);
-    list.append(QFileInfo(Global::dataPath().append(QStringLiteral("/templateList_undefined"))));
+    list.append(QFileInfo(Global::dataPath().append(QStringLiteral("/templateList_UserHistory"))));
 
     for(const auto &i : list)
     {

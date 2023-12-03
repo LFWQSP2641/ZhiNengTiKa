@@ -70,43 +70,25 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
                                      QStringLiteral("templateList_chemistry"),
                                      QStringLiteral("templateList_biography")});
 #ifdef Q_OS_ANDROID
-    const QString dirPath { QStringLiteral("assets:/templateList/") };
+    const QString dirPath { QStringLiteral("assets:/templateList") };
 #else
-    const QString dirPath { QStringLiteral(":/templateList/") };
+    const QString dirPath { QStringLiteral(":/templateList") };
 #endif
-    const QDir allDir { QString(dirPath).append(QStringLiteral("all")) };
-    const QDir latestDir{ QString(dirPath).append(QStringLiteral("latest")) };
-
-    if(Settings::getSingletonSettings()->getListLatestTemplatePreferentially() && latestDir.exists())
+    for(const auto &fileName : fileListNames)
     {
-        for(const auto &fileName : fileListNames)
-        {
-            importTemplateList(QDir(latestDir).filePath(fileName));
-        }
+        importTemplateList(QDir(dirPath).filePath(fileName));
     }
-    else
-    {
-        for(const auto &fileName : fileListNames)
-        {
-            importTemplateList(QDir(allDir).filePath(fileName));
-        }
-    }
-    importTemplateList(Global::dataPath().append(QStringLiteral("/templateList_undefined")), false);
+    importTemplateList(Global::dataPath().append(QStringLiteral("/templateList_UserHistory")), false);
 }
 
 MultipleSubjectsTemplateListModelList::~MultipleSubjectsTemplateListModelList()
 {
-    //BUG 引发的异常: 0xC0000005: 读取位置 0xFFFFFFFFFFFFFFFF 时发生访问冲突.
-//    for(auto &i : templateListModelList)
-//    {
-//        i->deleteLater();
-//    }
 }
 
 void MultipleSubjectsTemplateListModelList::addNewTemplate(TemplateSummary *templateSummary)
 {
     templateSummary->setParent(this);
-    templateListModelList[Subjects::Undefined]->addNewTemplate(templateSummary);
+    templateListModelList[Subjects::UserHistory]->addNewTemplate(templateSummary);
     this->addTemplateList(templateSummary);
 }
 
@@ -123,7 +105,7 @@ void MultipleSubjectsTemplateListModelList::addTemplateList(TemplateSummary *tem
 void MultipleSubjectsTemplateListModelList::addTemplateList(const QString &templateName, const QString &templateCode)
 {
     const QString data(QString(templateName).append(QStringLiteral("\n")).append(templateCode).append(QStringLiteral("\n")));
-    QFile file(Global::dataPath().append(QStringLiteral("/templateList_undefined")));
+    QFile file(Global::dataPath().append(QStringLiteral("/templateList_UserHistory")));
     file.open(QFile::ReadWrite | QFile::Append);
     file.write(data.toUtf8());
     file.close();

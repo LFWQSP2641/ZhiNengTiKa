@@ -16,7 +16,7 @@ Item {
         anchors.right: parent.right
         anchors.left: parent.left
         Repeater {
-            model: ["语文", "数学", "英语", "物理", "化学", "生物", "用户"]
+            model: ["用户历史", "语文", "数学", "英语", "物理", "化学", "生物"]
 
             TabButton {
                 text: modelData

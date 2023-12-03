@@ -41,8 +41,8 @@ qsizetype SettingOperator::getCurrentAnimeImageNameIndex() const
 
 void SettingOperator::deleteTemplateFile()
 {
-    QFile::remove(Global::dataPath().append(QStringLiteral("/templateList_undefined")));
+    QFile::remove(Global::dataPath().append(QStringLiteral("/templateList_UserHistory")));
     Global::deleteDir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
     QDir().mkdir(Global::dataPath().append(QStringLiteral("/TemplateFile")));
-    MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList()->at(MultipleSubjectsTemplateListModelList::Undefined)->clear();
+    MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList()->at(MultipleSubjectsTemplateListModelList::UserHistory)->clear();
 }

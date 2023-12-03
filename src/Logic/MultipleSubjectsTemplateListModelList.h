@@ -11,13 +11,13 @@ public:
     ~MultipleSubjectsTemplateListModelList();
     enum Subjects
     {
-        Chinese = 0,
-        Mathematics = 1,
-        English = 2,
-        Physics = 3,
-        Chemistry = 4,
-        Biography = 5,
-        Undefined = 6
+        UserHistory = 0,
+        Chinese = 1,
+        Mathematics = 2,
+        English = 3,
+        Physics = 4,
+        Chemistry = 5,
+        Biography = 6
     };
     Q_INVOKABLE TemplateListModel *at(qsizetype index) const
     {
