@@ -11,10 +11,6 @@ public:
     static void resetSingletonSettings();
     static Settings *getSingletonSettings();
 
-    bool getCompressQRCodeImage() const;
-    void setCompressQRCodeImage(bool newCompressQRCodeImage);
-    void resetCompressQRCodeImage();
-
     int getFontPointSize() const;
     void setFontPointSize(int newFontPointSize);
     void resetFontPointSize();
@@ -73,8 +69,6 @@ protected:
     explicit Settings(QObject *parent = nullptr);
     static Settings *singletonSettings;
 
-    bool compressQRCodeImage;
-
     int fontPointSize;
     QString font;
     QString qmlStyle;
@@ -86,8 +80,6 @@ protected:
     QString animeImageUrl;
 
 signals:
-    void compressQRCodeImageChanged();
-
     void fontPointSizeChanged();
 
     void fontChanged();
@@ -99,7 +91,6 @@ signals:
     void animeImageUrlChanged();
 
 private:
-    Q_PROPERTY(bool compressQRCodeImage READ getCompressQRCodeImage WRITE setCompressQRCodeImage RESET resetCompressQRCodeImage NOTIFY compressQRCodeImageChanged)
     Q_PROPERTY(int fontPointSize READ getFontPointSize WRITE setFontPointSize RESET resetFontPointSize NOTIFY fontPointSizeChanged)
     Q_PROPERTY(QString font READ getFont WRITE setFont RESET resetFont NOTIFY fontChanged)
     Q_PROPERTY(QString qmlStyle READ getQmlStyle WRITE setQmlStyle RESET resetQmlStyle NOTIFY qmlStyleChanged)

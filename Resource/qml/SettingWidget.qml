@@ -395,17 +395,6 @@ Item {
             }
             GroupBox {
                 Layout.fillWidth: true
-                title: "扫码相关"
-                Switch {
-                    text: "压缩二维码图片"
-                    checked: Settings.compressQRCodeImage
-                    onCheckedChanged: {
-                        Settings.compressQRCodeImage = checked
-                    }
-                }
-            }
-            GroupBox {
-                Layout.fillWidth: true
                 title: "文件"
                 ColumnLayout {
                     width: parent.width

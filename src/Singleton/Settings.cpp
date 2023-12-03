@@ -45,8 +45,6 @@ Settings::Settings(QObject *parent)
                                    accountManager));
     }
 
-    compressQRCodeImage = settingJsonObject.value(QStringLiteral("compressQRCodeImage")).toBool(true);
-
     fontPointSize = settingJsonObject.value(QStringLiteral("fontPointSize")).toInt();
     font = settingJsonObject.value(QStringLiteral("font")).toString();
     qmlStyle = settingJsonObject.value(QStringLiteral("qmlStyle")).toString();
@@ -102,24 +100,6 @@ void Settings::resetSingletonSettings()
 Settings *Settings::getSingletonSettings()
 {
     return singletonSettings;
-}
-
-bool Settings::getCompressQRCodeImage() const
-{
-    return compressQRCodeImage;
-}
-
-void Settings::setCompressQRCodeImage(bool newCompressQRCodeImage)
-{
-    if (compressQRCodeImage == newCompressQRCodeImage)
-        return;
-    compressQRCodeImage = newCompressQRCodeImage;
-    emit compressQRCodeImageChanged();
-}
-
-void Settings::resetCompressQRCodeImage()
-{
-    setCompressQRCodeImage(true);
 }
 
 int Settings::getFontPointSize() const
@@ -235,8 +215,6 @@ void Settings::saveToFile() const
         accountsJsonArray.append(jsonObject);
     }
     settingJsonObject.insert(QStringLiteral("accounts"), accountsJsonArray);
-
-    settingJsonObject.insert(QStringLiteral("compressQRCodeImage"), compressQRCodeImage);
 
     settingJsonObject.insert(QStringLiteral("fontPointSize"), fontPointSize);
     settingJsonObject.insert(QStringLiteral("font"), font);
