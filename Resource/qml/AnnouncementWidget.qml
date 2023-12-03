@@ -32,6 +32,7 @@ ListView {
                 }
                 MouseArea {
                     anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         if(detailText.visible)
                         {

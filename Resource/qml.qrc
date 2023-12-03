@@ -14,6 +14,8 @@
         <file>qml/BouncingMessageDialog.qml</file>
         <file>qml/BlinkingDots.qml</file>
         <file>qml/SingleBlinkingDot.qml</file>
+        <file>qml/DownloadResourceFileWidget.qml</file>
+        <file>qml/FileTreeList.qml</file>
         <file>qml/NormalMessageDialog.qml</file>
     </qresource>
     <qresource prefix="/svg">
@@ -33,5 +35,7 @@
         <file>icon/refresh.svg</file>
         <file>icon/camera-viewfinder.svg</file>
         <file>icon/megaphone.svg</file>
+        <file>icon/document.svg</file>
+        <file>icon/disk.svg</file>
     </qresource>
 </RCC>

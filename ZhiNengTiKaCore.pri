@@ -1,9 +1,9 @@
 VERSION = 2.6.4
 
-QT       += core network multimedia
+QT += core network multimedia core5compat
 
 android{
-QT       += core-private
+QT += core-private
 
 ANDROID_VERSION_NAME = $$VERSION
 
@@ -50,30 +50,40 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 INCLUDEPATH += $$PWD/3rd
 include($$PWD/3rd/Qt-AES/QAESEncryption.pri)
 
-win32:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/windows-msvc2019-64bit -lZXingCpp
-android:ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/LibZXingCpp/android/libZXingCpp_arm64-v8a.so
-#android:ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/LibZXingCpp/android/libZXingCpp_armeabi-v7a.so
-#android:ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/LibZXingCpp/android/libZXingCpp_x86.so
-#android:ANDROID_EXTRA_LIBS += $$PWD/lib/zxing-cpp/LibZXingCpp/android/libZXingCpp_x86_64.so
+INCLUDEPATH += $$PWD/lib/zxing-cpp
+DEPENDPATH += $$PWD/lib/zxing-cpp
 
+win32:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/windows-msvc2019-64bit -lZXingCpp
 android:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/android/ -lZXingCpp_arm64-v8a
 #android:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/android/ -lZXingCpp_armeabi-v7a
 #android:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/android/ -lZXingCpp_x86
 #android:LIBS += -L$$PWD/lib/zxing-cpp/LibZXingCpp/android/ -lZXingCpp_x86_64
 
-INCLUDEPATH += $$PWD/lib/zxing-cpp
-DEPENDPATH += $$PWD/lib/zxing-cpp
+INCLUDEPATH += $$PWD/lib/unzip/quazip/quazip
+INCLUDEPATH += $$PWD/lib/unzip/zlib
+win32 {
+INCLUDEPATH += $$PWD/lib/unzip/windows-msvc2019-64bit
+LIBS += -L$$PWD/lib/unzip/windows-msvc2019-64bit -lquazip1-qt6
+}
+android {
+INCLUDEPATH += $$PWD/lib/unzip/android/arm64_v8a
+LIBS += -L$$PWD/lib/unzip/android/arm64_v8a -lquazip1-qt6
+}
 
 HEADERS += \
     $$PWD/src/Logic/AccountManager.h \
     $$PWD/src/Logic/AnnouncementManager.h \
     $$PWD/src/Logic/AnnouncementModel.h \
     $$PWD/src/Logic/AnswerDetailData.hpp \
+    $$PWD/src/Logic/FileTreeItem.h \
+    $$PWD/src/Logic/FileTreeModel.h \
     $$PWD/src/Logic/ImageProvider.h \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.h \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.h \
     $$PWD/src/Logic/QRCodeReader.h \
     $$PWD/src/Logic/QRCodeScanner.h \
+    $$PWD/src/Logic/ResourceFileFetcher.h \
+    $$PWD/src/Logic/ResourceFileModel.h \
     $$PWD/src/Logic/TemplateAnalysis.h \
     $$PWD/src/Logic/TemplateFetcher.h \
     $$PWD/src/Logic/TemplateListModel.h \
@@ -92,11 +102,15 @@ SOURCES += \
     $$PWD/src/Logic/AccountManager.cpp \
     $$PWD/src/Logic/AnnouncementManager.cpp \
     $$PWD/src/Logic/AnnouncementModel.cpp \
+    $$PWD/src/Logic/FileTreeItem.cpp \
+    $$PWD/src/Logic/FileTreeModel.cpp \
     $$PWD/src/Logic/ImageProvider.cpp \
     $$PWD/src/Logic/QRCodeReader.cpp \
     $$PWD/src/Logic/QRCodeScanner.cpp \
     $$PWD/src/Logic/MultipleSubjectsTemplateListModelList.cpp \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.cpp \
+    $$PWD/src/Logic/ResourceFileFetcher.cpp \
+    $$PWD/src/Logic/ResourceFileModel.cpp \
     $$PWD/src/Logic/TemplateAnalysis.cpp \
     $$PWD/src/Logic/TemplateFetcher.cpp \
     $$PWD/src/Logic/TemplateListModel.cpp \

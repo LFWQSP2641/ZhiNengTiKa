@@ -8,9 +8,9 @@
 ### 编译
 
 #### 编译环境
-> Windows: Qt 6.6.0 + MSVC2019
+>Windows: Qt 6.5.3 + MSVC2019
 
-> Android: Qt 6.6.0 + NDK 25.1.8937393 + JDK 17
+>Android: Qt 6.5.3 + NDK 25.1.8937393 + JDK 17
 
 如果使用Qt 6.5.2, 6.5.3, 6.6.0进行Android平台的编译, 需要将[Qt6AndroidMultimedia.jar](./Qt6AndroidMultimedia.jar)(根据提交 [Android-ffmpeg: handle maxImages acquired problem](https://codereview.qt-project.org/gitweb?p=qt/qtmultimedia.git;a=commit;h=c5e5d619107568050d9857d5149bd1b7558b904b) 进行的修改编译)替换Qt自带的文件
 
@@ -29,8 +29,10 @@
 
 ### 开源库
 
-- 二维码扫描: [ZXing-C++](https://github.com/zxing-cpp/zxing-cpp)
 - AES加解密: [Qt-AES](https://github.com/bricke/Qt-AES)
+- 二维码扫描: [ZXing-C++](https://github.com/zxing-cpp/zxing-cpp)
+- zip解压: [Quazip](https://github.com/stachenov/quazip)
+    - zip解压: [zlib](https://github.com/madler/zlib)
 
 ## ⚡ Visitor count
 

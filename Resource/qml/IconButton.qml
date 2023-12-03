@@ -51,6 +51,7 @@ Rectangle {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
 
         //接受左键和右键输入
         acceptedButtons: acceptedRightButtons ? (Qt.LeftButton | Qt.RightButton) : Qt.LeftButton

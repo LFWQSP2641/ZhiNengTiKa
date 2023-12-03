@@ -1,6 +1,7 @@
 QT += gui multimedia
 
 TEMPLATE = lib
+CONFIG += staticlib
 DEFINES += ZXINGCPP_LIBRARY
 
 CONFIG += c++17

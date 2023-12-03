@@ -42,6 +42,7 @@ Item {
                 text: "All"
                 MouseArea {
                     anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
                     onClicked: questionsCountsListView.currentIndex = -1
                 }
             }
