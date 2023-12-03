@@ -47,8 +47,6 @@ Settings::Settings(QObject *parent)
 
     compressQRCodeImage = settingJsonObject.value(QStringLiteral("compressQRCodeImage")).toBool(true);
 
-    listLatestTemplatePreferentially = settingJsonObject.value(QStringLiteral("listLatestTemplatePreferentially")).toBool(true);
-
     fontPointSize = settingJsonObject.value(QStringLiteral("fontPointSize")).toInt();
     font = settingJsonObject.value(QStringLiteral("font")).toString();
     qmlStyle = settingJsonObject.value(QStringLiteral("qmlStyle")).toString();
@@ -104,24 +102,6 @@ void Settings::resetSingletonSettings()
 Settings *Settings::getSingletonSettings()
 {
     return singletonSettings;
-}
-
-bool Settings::getListLatestTemplatePreferentially() const
-{
-    return listLatestTemplatePreferentially;
-}
-
-void Settings::setListLatestTemplatePreferentially(bool newListLatestTemplatePreferentially)
-{
-    if (listLatestTemplatePreferentially == newListLatestTemplatePreferentially)
-        return;
-    listLatestTemplatePreferentially = newListLatestTemplatePreferentially;
-    emit listLatestTemplatePreferentiallyChanged();
-}
-
-void Settings::resetListLatestTemplatePreferentially()
-{
-    setListLatestTemplatePreferentially(true);
 }
 
 bool Settings::getCompressQRCodeImage() const
@@ -257,8 +237,6 @@ void Settings::saveToFile() const
     settingJsonObject.insert(QStringLiteral("accounts"), accountsJsonArray);
 
     settingJsonObject.insert(QStringLiteral("compressQRCodeImage"), compressQRCodeImage);
-
-    settingJsonObject.insert(QStringLiteral("listLatestTemplatePreferentially"), listLatestTemplatePreferentially);
 
     settingJsonObject.insert(QStringLiteral("fontPointSize"), fontPointSize);
     settingJsonObject.insert(QStringLiteral("font"), font);

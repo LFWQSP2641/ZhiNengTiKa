@@ -391,13 +391,6 @@ Item {
                             model: ["2021级"]
                         }
                     }
-                    Switch {
-                        text: "优先显示最新题卡(重启生效)"
-                        checked: Settings.listLatestTemplatePreferentially
-                        onCheckedChanged: {
-                            Settings.listLatestTemplatePreferentially = checked
-                        }
-                    }
                 }
             }
             GroupBox {

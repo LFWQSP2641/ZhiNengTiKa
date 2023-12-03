@@ -11,10 +11,6 @@ public:
     static void resetSingletonSettings();
     static Settings *getSingletonSettings();
 
-    bool getListLatestTemplatePreferentially() const;
-    void setListLatestTemplatePreferentially(bool newListLatestTemplatePreferentially);
-    void resetListLatestTemplatePreferentially();
-
     bool getCompressQRCodeImage() const;
     void setCompressQRCodeImage(bool newCompressQRCodeImage);
     void resetCompressQRCodeImage();
@@ -77,8 +73,6 @@ protected:
     explicit Settings(QObject *parent = nullptr);
     static Settings *singletonSettings;
 
-    bool listLatestTemplatePreferentially;
-
     bool compressQRCodeImage;
 
     int fontPointSize;
@@ -92,8 +86,6 @@ protected:
     QString animeImageUrl;
 
 signals:
-    void listLatestTemplatePreferentiallyChanged();
-
     void compressQRCodeImageChanged();
 
     void fontPointSizeChanged();
@@ -107,7 +99,6 @@ signals:
     void animeImageUrlChanged();
 
 private:
-    Q_PROPERTY(bool listLatestTemplatePreferentially READ getListLatestTemplatePreferentially WRITE setListLatestTemplatePreferentially RESET resetListLatestTemplatePreferentially NOTIFY listLatestTemplatePreferentiallyChanged)
     Q_PROPERTY(bool compressQRCodeImage READ getCompressQRCodeImage WRITE setCompressQRCodeImage RESET resetCompressQRCodeImage NOTIFY compressQRCodeImageChanged)
     Q_PROPERTY(int fontPointSize READ getFontPointSize WRITE setFontPointSize RESET resetFontPointSize NOTIFY fontPointSizeChanged)
     Q_PROPERTY(QString font READ getFont WRITE setFont RESET resetFont NOTIFY fontChanged)
