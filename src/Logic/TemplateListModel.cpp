@@ -72,14 +72,14 @@ TemplateSummary *TemplateListModel::getTemplateSummary(int index)
 
 void TemplateListModel::addNewTemplate(TemplateSummary *templateSummary)
 {
-    beginInsertRows(QModelIndex(), this->templateList.size(), this->templateList.size());
+    beginInsertRows(QModelIndex(), 0, 0);
     this->templateList.append(templateSummary);
     endInsertRows();
 }
 
 void TemplateListModel::clear()
 {
-    if(this->templateList.size() < 1)
+    if(this->templateList.size() == 0)
     {
         return;
     }
