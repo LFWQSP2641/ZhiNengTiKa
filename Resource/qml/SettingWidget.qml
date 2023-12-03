@@ -145,16 +145,6 @@ Item {
         }
     }
 
-    UpdateWidget {
-        id: updateWidget
-        anchors.centerIn: parent
-        width: parent.width
-        showQuestionDialog: true
-        onFinished: {
-            checkUpdate.enabled = true
-        }
-    }
-
     Flickable {
         height: parent.height
         width: parent.width
@@ -418,22 +408,6 @@ Item {
                     height: parent.height
                     Label {
                         text: settingOperator.getVersion()
-                    }
-                    Button {
-                        id: checkUpdate
-                        text: "检查更新"
-                        Layout.fillWidth: true
-                        onClicked: {
-                            if(Qt.platform.os === "android")
-                            {
-                                checkUpdate.enabled = false
-                                updateWidget.checkUpdate()
-                            }
-                            else
-                            {
-                                messageDialog.show("不支持当前系统自动更新")
-                            }
-                        }
                     }
                 }
             }

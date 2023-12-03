@@ -285,13 +285,6 @@ ApplicationWindow {
         }
     }
 
-    UpdateWidget {
-        id: updateWidget
-        anchors.centerIn: parent
-        width: parent.width
-        showQuestionDialog: false
-    }
-
     AnnouncementWidget {
         id: announcementListView
         visible: false
@@ -425,11 +418,6 @@ ApplicationWindow {
 
     Component.onCompleted: {
         converter.start()
-        updateWidget.checkUpdate()
-        if(!updateWidget.checkMinimumVersion())
-        {
-            applicationWindowQuitDialog.open()
-        }
     }
     Component.onDestruction: {
         converter.stop()

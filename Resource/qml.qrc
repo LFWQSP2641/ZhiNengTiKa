@@ -7,7 +7,6 @@
         <file>qml/TemplateDetailWidget.qml</file>
         <file>qml/TemplateListView.qml</file>
         <file>qml/SearchWidget.qml</file>
-        <file>qml/UpdateWidget.qml</file>
         <file>qml/QRCodeScannerWidget.qml</file>
         <file>qml/IconButton.qml</file>
         <file>qml/AnnouncementWidget.qml</file>

@@ -2,7 +2,6 @@
 #include "AnnouncementModel.h"
 #include "../Singleton/Network.h"
 #include "../StaticClass/Global.h"
-#include "UpdateChecker.h"
 
 AnnouncementManager::AnnouncementManager(QObject *parent)
     : QObject{parent},
@@ -48,6 +47,26 @@ AnnouncementModel *AnnouncementManager::getAnnouncementModel() const
 
 void AnnouncementManager::analysisRawData(const QByteArray &data)
 {
+    auto compareVersion([](const QString & version1, const QString & version2)
+    {
+        QStringList list1 = version1.split(".");
+        QStringList list2 = version2.split(".");
+        if(list1.size() >= 3 && list2.size() >= 3)
+        {
+            qint32 ver1 = (list1.at(0).toInt() << 16) | (list1.at(1).toInt() << 8) | list1.at(2).toInt();
+            qint32 ver2 = (list2.at(0).toInt() << 16) | (list2.at(1).toInt() << 8) | list2.at(2).toInt();
+            if(ver1 > ver2)
+            {
+                return 1;
+            }
+            else if(ver1 < ver2)
+            {
+                return -1;
+            }
+        }
+        return 0;
+    });
+
     QJsonParseError ok;
     const auto jsonDocument(QJsonDocument::fromJson(data, &ok));
     if(ok.error != QJsonParseError::NoError)
@@ -74,7 +93,7 @@ void AnnouncementManager::analysisRawData(const QByteArray &data)
             continue;
         }
         const auto version(jsonObject.value(QStringLiteral("version")).toString().toLower());
-        const auto result(UpdateChecker::compareVersion(QStringLiteral(APP_VERSION), version));
+        const auto result(compareVersion(QStringLiteral(APP_VERSION), version));
         const auto versionComparisonMethod(jsonObject.value(QStringLiteral("versionComparisonMethod")).toString().toLower());
         bool pass((result == 0 && versionComparisonMethod.contains(QStringLiteral("="))) ||
                   (result < 0 && versionComparisonMethod.contains(QStringLiteral("<"))) ||
