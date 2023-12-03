@@ -74,11 +74,11 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
 #else
     const QString dirPath { QStringLiteral(":/templateList") };
 #endif
+    importTemplateList(Global::dataPath().append(QStringLiteral("/templateList_UserHistory")), false);
     for(const auto &fileName : fileListNames)
     {
         importTemplateList(QDir(dirPath).filePath(fileName));
     }
-    importTemplateList(Global::dataPath().append(QStringLiteral("/templateList_UserHistory")), false);
 }
 
 MultipleSubjectsTemplateListModelList::~MultipleSubjectsTemplateListModelList()
