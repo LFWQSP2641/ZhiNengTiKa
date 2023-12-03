@@ -14,7 +14,6 @@ ANDROID_PACKAGE_SOURCE_DIR = \
 
 }
 win32{
-QT += pdf
 
 RC_ICONS = Resource/img/xinjiaoyuico.ico
 

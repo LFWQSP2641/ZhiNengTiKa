@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Pdf
 import QtQuick.Dialogs
 import TemplateFetcher
 import MultipleSubjectsTemplateListModelList
@@ -378,10 +377,13 @@ ApplicationWindow {
 
     Component {
         id: pdfReader
-        PdfMultiPageView {
-            id: pdfView
-            property alias source: pdfDocument.source
-            document: PdfDocument { id: pdfDocument }
+        Item {
+            property string source: ""
+            Text {
+                anchors.centerIn: parent
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                text: "pdf显示暂未实现"
+            }
         }
     }
 
