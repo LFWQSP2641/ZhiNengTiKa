@@ -11,34 +11,15 @@ TemplateFetcher::TemplateFetcher(QObject *parent)
 void TemplateFetcher::handleTemplateRequest(TemplateSummary *templateSummary)
 {
     const auto templateCode(templateSummary->getTemplateCode());
-#ifdef Q_OS_ANDROID
-    QFile file(QStringLiteral("assets:/templateData/").append(templateCode));
-#else
-    QFile file(QStringLiteral(":/templateData/").append(templateCode));
-#endif
     QFile fileTemp { Global::dataPath().append(QStringLiteral("/TemplateFile/")).append(templateCode) };
-    if (file.exists())
+    if (fileTemp.exists())
     {
         auto *templateAnalysis(new TemplateAnalysis(this));
         templateAnalysis->setTemplateCode(templateCode);
         templateAnalysis->setTemplateName(templateSummary->getTemplateName());
         templateAnalysis->setVolume(templateSummary->getVolume());
         templateAnalysis->setSubject(templateSummary->getSubject());
-        templateAnalysis->internal = true;
-        file.open(QFile::ReadOnly);
-        QByteArray rawData(file.readAll());
-        file.close();
-        templateAnalysis->analyze(rawData);
-        emit templateAnalysisReady(templateAnalysis, rawData);
-    }
-    else if (fileTemp.exists())
-    {
-        auto *templateAnalysis(new TemplateAnalysis(this));
-        templateAnalysis->setTemplateCode(templateCode);
-        templateAnalysis->setTemplateName(templateSummary->getTemplateName());
-        templateAnalysis->setVolume(templateSummary->getVolume());
-        templateAnalysis->setSubject(templateSummary->getSubject());
-        templateAnalysis->external = true;
+        templateAnalysis->local = true;
         fileTemp.open(QFile::ReadOnly);
         QByteArray rawData(fileTemp.readAll());
         fileTemp.close();

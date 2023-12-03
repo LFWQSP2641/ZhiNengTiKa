@@ -20,12 +20,7 @@ void TemplateSearcher::stop()
 void TemplateSearcher::run()
 {
     this->toStop = false;
-#ifdef Q_OS_ANDROID
-    const QString dirPath { QStringLiteral("assets:/templateList") };
-#else
     const QString dirPath { QStringLiteral(":/templateList") };
-#endif
-
     QDir allDir { dirPath };
     auto list = allDir.entryInfoList(QDir::Files);
     list.append(QFileInfo(Global::dataPath().append(QStringLiteral("/templateList_UserHistory"))));

@@ -121,14 +121,9 @@ QList<AnswerDetailData> TemplateAnalysis::getCountAndAnswer(const qsizetype inde
     return data;
 }
 
-bool TemplateAnalysis::getInternal() const
+bool TemplateAnalysis::getLocal() const
 {
-    return internal;
-}
-
-bool TemplateAnalysis::getValid() const
-{
-    return valid;
+    return local;
 }
 
 bool TemplateAnalysis::getNetwork() const
@@ -136,9 +131,9 @@ bool TemplateAnalysis::getNetwork() const
     return network;
 }
 
-bool TemplateAnalysis::getExternal() const
+bool TemplateAnalysis::getValid() const
 {
-    return external;
+    return valid;
 }
 
 void TemplateAnalysis::analyze(const QByteArray &rawData)

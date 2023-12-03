@@ -269,9 +269,9 @@ ApplicationWindow {
         onTemplateAnalysisReady: function(object) {
             if(object.network)
             {
-                MultipleSubjectsTemplateListModelList.addNewTemplate(object)
                 messageDialog.close()
             }
+            MultipleSubjectsTemplateListModelList.addNewTemplate(object)
             stackView.push(templateDetailWidgetComponent, {templateAnalysisPointer: object})
         }
         onObtainTemplateFromNetwork: {

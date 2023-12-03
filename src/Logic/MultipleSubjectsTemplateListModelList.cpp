@@ -69,11 +69,7 @@ MultipleSubjectsTemplateListModelList::MultipleSubjectsTemplateListModelList(QOb
                                      QStringLiteral("templateList_physics"),
                                      QStringLiteral("templateList_chemistry"),
                                      QStringLiteral("templateList_biography")});
-#ifdef Q_OS_ANDROID
-    const QString dirPath { QStringLiteral("assets:/templateList") };
-#else
     const QString dirPath { QStringLiteral(":/templateList") };
-#endif
     importTemplateList(Global::dataPath().append(QStringLiteral("/templateList_UserHistory")), false);
     for(const auto &fileName : fileListNames)
     {

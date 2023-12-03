@@ -23,9 +23,6 @@ QMAKE_TARGET_COPYRIGHT = "Copyright © 2022 - 2023 LFWQSP2641.All Rights Reserve
 
 RC_LANG = 0x0004
 
-RESOURCES += \
-    $$PWD/Resource/Template.qrc
-
 }
 
 #DEFINES += LIMITED
@@ -125,7 +122,9 @@ SOURCES += \
     $$PWD/src/StaticClass/XinjiaoyuEncryptioner.cpp \
     $$PWD/src/StaticClass/XinjiaoyuNetwork.cpp
 
-RESOURCES += $$PWD/Resource/Resource.qrc
+RESOURCES += \
+    $$PWD/Resource/Resource.qrc \
+    $$PWD/Resource/Template.qrc
 
 android{
 DISTFILES += \

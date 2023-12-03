@@ -26,10 +26,7 @@ public:
     {
         return QVariant::fromValue(getQuestionsCountsStrList());
     }
-
-    bool getInternal() const;
-
-    bool getExternal() const;
+    bool getLocal() const;
 
     bool getNetwork() const;
 
@@ -45,8 +42,7 @@ protected:
     QStringList questionsCountsStrList;
     QJsonArray answerDataList;
 
-    bool internal = false;
-    bool external = false;
+    bool local = false;
     bool network = false;
     bool valid = false;
 
@@ -56,8 +52,7 @@ private:
 
     template<typename f1, typename f2>
     static void callFunc(const QJsonArray &jsonArray, const qsizetype index, f1 func1, f2 func2);
-    Q_PROPERTY(bool internal READ getInternal CONSTANT FINAL)
-    Q_PROPERTY(bool external READ getExternal CONSTANT FINAL)
+    Q_PROPERTY(bool local READ getLocal CONSTANT FINAL)
     Q_PROPERTY(bool network READ getNetwork CONSTANT FINAL)
     Q_PROPERTY(bool valid READ getValid CONSTANT FINAL)
 };
