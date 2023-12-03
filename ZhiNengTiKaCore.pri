@@ -1,4 +1,4 @@
-VERSION = 2.6.4
+VERSION = 3.0.0
 
 QT += core network multimedia core5compat
 
@@ -86,7 +86,6 @@ HEADERS += \
     $$PWD/src/Logic/TemplateListModel.h \
     $$PWD/src/Logic/TemplateSearcher.h \
     $$PWD/src/Logic/TemplateSummary.h \
-    $$PWD/src/Logic/UpdateChecker.h \
     $$PWD/src/Logic/UserData.h \
     $$PWD/src/Singleton/Network.h \
     $$PWD/src/Singleton/Settings.h \
@@ -113,7 +112,6 @@ SOURCES += \
     $$PWD/src/Logic/TemplateListModel.cpp \
     $$PWD/src/Logic/TemplateSearcher.cpp \
     $$PWD/src/Logic/TemplateSummary.cpp \
-    $$PWD/src/Logic/UpdateChecker.cpp \
     $$PWD/src/Logic/UserData.cpp \
     $$PWD/src/Singleton/Network.cpp \
     $$PWD/src/Singleton/Settings.cpp \

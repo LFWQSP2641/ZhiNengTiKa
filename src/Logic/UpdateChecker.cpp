@@ -107,6 +107,10 @@ void UpdateChecker::run()
 
     this->hasNewVersion = UpdateChecker::compareVersion(this->currentVersion, this->newestVersion) < 0;
 
+    qDebug() << Q_FUNC_INFO << "检查完成" << hasNewVersion;
+
     emit checkFinished(this->hasNewVersion);
+    if(this->hasNewVersion)
+        emit checkFinishedAndHasNewVersion();
 }
 

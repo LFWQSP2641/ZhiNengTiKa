@@ -6,7 +6,6 @@
 #include "Logic/ImageProvider.h"
 #include "Logic/QRCodeScanner.h"
 #include "Logic/ResourceFileFetcher.h"
-#include "Logic/UpdateChecker.h"
 #include "Logic/TemplateSummary.h"
 #include "Logic/TemplateAnalysis.h"
 #include "Logic/TemplateFetcher.h"
@@ -21,13 +20,14 @@
 
 #include "Logic/FileTreeModel.h"
 
-extern "C" Q_DECL_EXPORT int run(int argc, char *argv[])
+extern "C" Q_DECL_EXPORT const char *getVersion()
 {
-    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-    QtWebView::initialize();
-    QApplication a(argc, argv);
+    return APP_VERSION;
+}
 
-    AccelerometerSingleton::initOnce(&a);
+extern "C" Q_DECL_EXPORT int run(QApplication *a)
+{
+    AccelerometerSingleton::initOnce(a);
 
     Network::initOnce();
 
@@ -35,8 +35,8 @@ extern "C" Q_DECL_EXPORT int run(int argc, char *argv[])
     // 删除图片缓存
     Global::deleteDir(Global::dataPath().append(QStringLiteral("/Image")));
 
-    a.setWindowIcon(QIcon(QStringLiteral(":/ico/xinjiaoyuico.png")));
-    a.setApplicationDisplayName(QStringLiteral("智能题卡"));
+    a->setWindowIcon(QIcon(QStringLiteral(":/ico/xinjiaoyuico.png")));
+    a->setApplicationDisplayName(QStringLiteral("智能题卡"));
 
     Settings::initOnce();
     auto settings(Settings::getSingletonSettings());
@@ -45,15 +45,15 @@ extern "C" Q_DECL_EXPORT int run(int argc, char *argv[])
     QFont appFont;
     if(settings->getFontPointSize() < 1 || settings->getFont().isEmpty())
     {
-        settings->setFontPointSize(a.font().pointSize());
-        settings->setFont(a.font().family());
+        settings->setFontPointSize(a->font().pointSize());
+        settings->setFont(a->font().family());
         settings->saveToFile();
     }
     else
     {
         appFont.setFamily(settings->getFont());
         appFont.setPointSize(settings->getFontPointSize());
-        a.setFont(appFont);
+        a->setFont(appFont);
     }
 
     if (qEnvironmentVariableIsEmpty("QT_QUICK_CONTROLS_STYLE"))
@@ -90,7 +90,6 @@ extern "C" Q_DECL_EXPORT int run(int argc, char *argv[])
     qmlRegisterType<TemplateSearcher>("TemplateSearcher", 1, 0, "TemplateSearcher");
     qmlRegisterType<TemplateListModel>("TemplateListModel", 1, 0, "TemplateListModel");
     qmlRegisterType<SettingOperator>("SettingOperator", 1, 0, "SettingOperator");
-    qmlRegisterType<UpdateChecker>("UpdateChecker", 1, 0, "UpdateChecker");
     qmlRegisterType<QRCodeScanner>("QRCodeScanner", 1, 0, "QRCodeScanner");
     qmlRegisterType<ImageProvider>("ImageProvider", 1, 0, "ImageProvider");
     qmlRegisterType<ZAccelerationToOpacityConverter>("ZAccelerationToOpacityConverter", 1, 0, "ZAccelerationToOpacityConverter");
@@ -116,11 +115,11 @@ extern "C" Q_DECL_EXPORT int run(int argc, char *argv[])
 
     const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-                     &a, [url](const QObject * obj, const QUrl & objUrl)
+                     a, [url](const QObject * obj, const QUrl & objUrl)
     {
         if (!obj && url == objUrl)
             QCoreApplication::exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
-    return a.exec();
+    return a->exec();
 }

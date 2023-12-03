@@ -30,6 +30,7 @@ public slots:
 
 protected:
     static const QString currentVersion;
+
     QString newestVersion;
     QString changeLog;
 
@@ -40,6 +41,7 @@ protected:
 
 signals:
     void checkFinished(bool hasNewVersion);
+    void checkFinishedAndHasNewVersion();
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
     void downloadFinished();
 };
