@@ -1,5 +1,7 @@
 include(./ZhiNengTiKaCore.pri)
 
+TEMPLATE = lib
+
 QT += widgets gui quick quickcontrols2 webview sensors
 
 PRECOMPILED_HEADER = src/pchQML.h

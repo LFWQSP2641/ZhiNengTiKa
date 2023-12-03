@@ -21,7 +21,7 @@
 
 #include "Logic/FileTreeModel.h"
 
-int main(int argc, char *argv[])
+extern "C" Q_DECL_EXPORT int run(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QtWebView::initialize();
