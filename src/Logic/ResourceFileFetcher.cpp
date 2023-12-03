@@ -4,6 +4,8 @@
 #include "../StaticClass/Global.h"
 #include "JlCompress.h"
 
+const QString ResourceFileFetcher::resourcePath = Global::dataPath().append(QStringLiteral("/Resource"));
+
 ResourceFileFetcher::ResourceFileFetcher(QObject *parent)
     : QObject{parent},
       model(new ResourceFileModel(this))
@@ -121,6 +123,11 @@ void ResourceFileFetcher::downloadResourceFile(int index, const QString &subject
     fileNameHash.insert(reply, QStringList() << subject << edition << module);
 }
 
+QString ResourceFileFetcher::getResourcePath()
+{
+    return Global::dataPath().append(QStringLiteral("/Resource"));
+}
+
 QNetworkRequest ResourceFileFetcher::setRequest(const QUrl &url)
 {
     QNetworkRequest requestInfo;
@@ -160,6 +167,56 @@ QString ResourceFileFetcher::generateRandomString(qsizetype size)
         }
     }
     return randomString;
+}
+
+QString ResourceFileFetcher::findCommonPath(const QStringList &pathList)
+{
+    if (pathList.isEmpty())
+    {
+        // 如果路径列表为空，返回空字符串或其他适当的默认值
+        return getResourcePath();
+    }
+
+    // 将第一个路径分割为部分
+    QStringList firstPathParts = pathList.first().split(QStringLiteral("/"), Qt::SkipEmptyParts);
+
+    // 初始化最终路径
+    QString commonPath;
+
+    // 遍历每个路径部分
+    for (int i = 0; i < firstPathParts.size(); ++i)
+    {
+        QString currentPart = firstPathParts[i];
+
+        // 检查其他路径是否具有相同的部分
+        bool allHaveSamePart = true;
+        for (const QString& path : pathList)
+        {
+            QStringList parts = path.split(QStringLiteral("/"), Qt::SkipEmptyParts);
+            if (i >= parts.size() || parts[i] != currentPart)
+            {
+                allHaveSamePart = false;
+                break;
+            }
+        }
+
+        if (allHaveSamePart)
+        {
+            // 如果所有路径都有相同的部分，则更新最终路径
+            if (!commonPath.isEmpty())
+            {
+                commonPath += QStringLiteral("/");
+            }
+            commonPath += currentPart;
+        }
+        else
+        {
+            // 如果找到第一个不同的部分，退出循环
+            break;
+        }
+    }
+
+    return commonPath;
 }
 
 ResourceFileModel *ResourceFileFetcher::getModel() const
@@ -374,7 +431,7 @@ void ResourceFileFetcher::onDownloadFinished()
     QBuffer buffer(&rawData);
     buffer.open(QBuffer::ReadOnly);
 
-    auto savePath(Global::dataPath().append(QStringLiteral("/Resource")));
+    auto savePath(getResourcePath());
     for(const auto &i : fileNameHash.value(reply))
     {
         if(!i.isEmpty())
@@ -383,7 +440,9 @@ void ResourceFileFetcher::onDownloadFinished()
             savePath.append(i);
         }
     }
-    JlCompress::extractDir(&buffer, QTextCodec::codecForName("gbk"), savePath);
-    emit downloadResourceFileFinished(savePath);
+    auto result(JlCompress::extractDir(&buffer, QTextCodec::codecForName("gbk"), savePath));
+    auto commonPath(findCommonPath(result));
+    qDebug() << commonPath;
+    emit downloadResourceFileFinished(commonPath);
     reply->deleteLater();
 }

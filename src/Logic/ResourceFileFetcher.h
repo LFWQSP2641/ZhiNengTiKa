@@ -23,8 +23,11 @@ public slots:
     void downloadResourceFile(int index, const QString &subject, const QString &edition, const QString &module);
 
 protected:
+    static const QString resourcePath;
+    static QString getResourcePath();
     static QNetworkRequest setRequest(const QUrl &url);
     static QString generateRandomString(qsizetype size = 1);
+    static QString findCommonPath(const QStringList &pathList);
 
     QJsonObject catalogDetail;
 
@@ -37,6 +40,8 @@ protected:
     QHash<QNetworkReply *, QStringList> fileNameHash;
 
 protected slots:
+
+
     void onCatalogArrayReplyFinished();
     void onCatalogDetailReplyFinished();
     void onCatalogReplyFinished();
