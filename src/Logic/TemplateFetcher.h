@@ -9,17 +9,17 @@ class TemplateFetcher : public QObject
 public:
     explicit TemplateFetcher(QObject *parent = nullptr);
 public slots:
-    void handleTemplateRequest(TemplateSummary *templateSummary);
+    void handleTemplateRequest(const TemplateSummary &templateSummary);
     void handleTemplateRequestByCode(const QString &templateCode);
-    void handleTemplateRequestNetwork(TemplateSummary *templateSummary);
+    void handleTemplateRequestNetwork(const TemplateSummary &templateSummary);
     void handleTemplateRequestByCodeNetwork(const QString &templateCode);
 protected:
-    TemplateAnalysis *templateAnalysisfromNetwork = nullptr;
+    QHash<QNetworkReply*, TemplateAnalysis> hash;
 protected slots:
     void onHandleTemplateReplyFinished();
 signals:
     void obtainTemplateFromNetwork();
-    void templateAnalysisReady(TemplateAnalysis *templateAnalysis, const QByteArray &rawData = QByteArray());
+    void templateAnalysisReady(TemplateAnalysis templateAnalysis, const QByteArray &rawData = QByteArray());
     void error(const QString &msg);
 };
 

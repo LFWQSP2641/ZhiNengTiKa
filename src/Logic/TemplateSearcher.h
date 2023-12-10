@@ -20,7 +20,7 @@ protected:
     void run() override;
 
 signals:
-    void searchResult(TemplateSummary *templateSummary);
+    void searchResult(TemplateSummary templateSummary);
     void searchFinished(bool success);
     void searchStoped();
 };

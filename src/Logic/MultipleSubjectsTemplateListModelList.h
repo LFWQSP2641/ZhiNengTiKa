@@ -24,10 +24,10 @@ public:
         return templateListModelList.at(index);
     }
 public slots:
-    void addNewTemplate(TemplateSummary *templateSummary);
+    void addNewTemplate(const TemplateSummary &templateSummary);
     void addNewTemplate(const QString &templateName, const QString &templateCode);
 
-    void addTemplateList(TemplateSummary *templateSummary);
+    void addTemplateList(const TemplateSummary &templateSummary);
     void addTemplateList(const QString &templateName, const QString &templateCode);
 
 protected:

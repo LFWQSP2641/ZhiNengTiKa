@@ -111,8 +111,6 @@ Item {
         }
     }
     Component.onDestruction: {
-        if(templateAnalysisPointer != null)
-            templateAnalysisPointer.deleteLater()
     }
 
     function setTemplateRawDataQML(newTemplateAnalysisPointer){

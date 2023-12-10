@@ -6,18 +6,17 @@
 
 class TemplateAnalysis : public TemplateSummary
 {
-    Q_OBJECT
+    Q_GADGET
     friend class TemplateFetcher;
 public:
-    explicit TemplateAnalysis(QObject *parent = nullptr)
-        : TemplateSummary{parent} {}
+    explicit TemplateAnalysis() = default;
 
     Q_INVOKABLE QString getAnswerAndAnalysisHtml(const qsizetype index = -1) const;
     Q_INVOKABLE QString getAnswerHtml(const qsizetype index = -1) const;
     Q_INVOKABLE QString getQuestionHtml(const qsizetype index = -1) const;
     QList<AnswerDetailData> getCountAndAnswer(const qsizetype index = -1) const;
 
-    QStringList getQuestionsCountsStrList() const
+    Q_INVOKABLE QStringList getQuestionsCountsStrList() const
     {
         return questionsCountsStrList;
     }
@@ -32,11 +31,7 @@ public:
 
     bool getValid() const;
 
-public slots:
     void analyze(const QByteArray &rawData);
-    void deleteLater();
-
-signals:
 
 protected:
     QStringList questionsCountsStrList;

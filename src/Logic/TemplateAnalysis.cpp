@@ -211,11 +211,6 @@ void TemplateAnalysis::analyze(const QByteArray &rawData)
     this->valid = true;
 }
 
-void TemplateAnalysis::deleteLater()
-{
-    this->QObject::deleteLater();
-}
-
 template<typename f>
 void TemplateAnalysis::callFunc(const QJsonArray &jsonArray, const qsizetype index, f func)
 {

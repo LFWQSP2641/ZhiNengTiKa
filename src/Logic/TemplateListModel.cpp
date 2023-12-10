@@ -5,9 +5,7 @@ TemplateListModel::TemplateListModel(const QList<QString> &templateNameList, con
 {
     for(auto it1{templateNameList.begin()}, it2{templateCodeList.begin()}; (it1 < templateNameList.end() && it2 < templateCodeList.end()); ++it1, ++it2)
     {
-        auto templateSummary(new TemplateSummary(*it1, *it2));
-        templateSummary->setParent(this);
-        templateList.append(templateSummary);
+        templateList.append(TemplateSummary(*it1, *it2));
     }
 }
 
@@ -28,7 +26,7 @@ QVariant TemplateListModel::data(const QModelIndex &index, int role) const
     }
     if(role == Qt::DisplayRole)
     {
-        return templateList.at(index.row())->getTemplateName();
+        return templateList.at(index.row()).getTemplateName();
     }
     else
     {
@@ -52,25 +50,25 @@ QVariant TemplateListModel::headerData(int section, Qt::Orientation orientation,
     }
 }
 
-TemplateSummary *TemplateListModel::getTemplateSummary(const QModelIndex &index)
+TemplateSummary TemplateListModel::getTemplateSummary(const QModelIndex &index)
 {
     if(!index.isValid())
     {
-        return (new TemplateSummary(this));
+        return TemplateSummary();
     }
     return getTemplateSummary(index.row());
 }
 
-TemplateSummary *TemplateListModel::getTemplateSummary(int index)
+TemplateSummary TemplateListModel::getTemplateSummary(int index)
 {
     if(index >= templateList.size())
     {
-        return (new TemplateSummary(this));
+        return TemplateSummary();
     }
     return templateList.at(index);
 }
 
-void TemplateListModel::addNewTemplate(TemplateSummary *templateSummary)
+void TemplateListModel::addNewTemplate(const TemplateSummary &templateSummary)
 {
     beginInsertRows(QModelIndex(), 0, 0);
     this->templateList.append(templateSummary);
@@ -90,7 +88,7 @@ void TemplateListModel::clear()
 
 QString TemplateListModel::getTemplateCode(const QModelIndex &index)
 {
-    return getTemplateSummary(index)->getTemplateCode();
+    return getTemplateSummary(index).getTemplateCode();
 }
 
 QString TemplateListModel::getTemplateCode(int index) const
@@ -99,16 +97,16 @@ QString TemplateListModel::getTemplateCode(int index) const
     {
         return QString();
     }
-    return templateList.at(index)->getTemplateCode();
+    return templateList.at(index).getTemplateCode();
 }
 
 bool TemplateListModel::hasTemplateName(const QString &templateName) const
 {
     const auto result{std::any_of(
                           this->templateList.begin(), this->templateList.end(),
-                          [&templateName](TemplateSummary * templateInfo)
+                          [&templateName](const TemplateSummary & templateInfo)
     {
-        return templateInfo->getTemplateName() == templateName;
+        return templateInfo.getTemplateName() == templateName;
     })};
     return result;
 }
@@ -117,9 +115,9 @@ bool TemplateListModel::hasTemplateCode(const QString &templateCode) const
 {
     const auto result{std::any_of(
                           this->templateList.begin(), this->templateList.end(),
-                          [&templateCode](TemplateSummary * templateInfo)
+                          [&templateCode](const TemplateSummary & templateInfo)
     {
-        return templateInfo->getTemplateCode() == templateCode;
+        return templateInfo.getTemplateCode() == templateCode;
     })};
     return result;
 }
