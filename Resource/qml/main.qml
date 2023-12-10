@@ -120,7 +120,6 @@ ApplicationWindow {
                             buttonText: "列表"
                             backgroundColor: QMLUtils.generateRandomBrightColor()
                             onClickedLeft: {
-                                messageDialog.show("存在空指针异常和对象树关系异常, 如非必要, 请勿使用")
                                 stackView.push(selectWidgetComponent)
                             }
                         }
@@ -143,7 +142,6 @@ ApplicationWindow {
                             buttonText: "搜素"
                             backgroundColor: QMLUtils.generateRandomBrightColor()
                             onClickedLeft: {
-                                messageDialog.show("存在内存泄漏和对象树关系异常, 如非必要, 请勿使用")
                                 stackView.push(searchWidgetComponent)
                             }
                         }
