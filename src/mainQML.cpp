@@ -3,6 +3,7 @@
 #include "Singleton/Settings.h"
 #include "Logic/AccountManager.h"
 #include "Logic/AnnouncementManager.h"
+#include "Logic/FileTreeModel.h"
 #include "Logic/ImageProvider.h"
 #include "Logic/QRCodeScanner.h"
 #include "Logic/ResourceFileFetcher.h"
@@ -11,14 +12,14 @@
 #include "Logic/TemplateFetcher.h"
 #include "Logic/TemplateSearcher.h"
 #include "Logic/TemplateListModel.h"
+#include "Logic/UserData.h"
 #include "QMLIntermediary/AccelerometerSingleton.h"
 #include "QMLIntermediary/AnimeImageProvider.h"
 #include "QMLIntermediary/MultipleSubjectsTemplateListModelListSingleton.h"
 #include "QMLIntermediary/QMLUtils.h"
 #include "QMLIntermediary/ZAccelerationToOpacityConverter.h"
 #include "QMLIntermediary/SettingOperator.h"
-
-#include "Logic/FileTreeModel.h"
+#include "LibZXingCpp/ZXingResult.h"
 
 extern "C" Q_DECL_EXPORT const char *getVersion()
 {
@@ -74,8 +75,10 @@ extern "C" Q_DECL_EXPORT int run(QApplication *a)
     qmlRegisterSingletonInstance("AccountManager", 1, 0, "AccountManager", settings->getAccountManager());
     qmlRegisterSingletonInstance("QMLUtils", 1, 0, "QMLUtils", new QMLUtils);
     qmlRegisterSingletonInstance("AnimeImageProvider", 1, 0, "AnimeImageProvider", animeImageProvider);
-    qmlRegisterType<TemplateSummary>("TemplateSummary", 1, 0, "TemplateSummary");
-    qmlRegisterType<TemplateAnalysis>("TemplateAnalysis", 1, 0, "TemplateAnalysis");
+    qRegisterMetaType<TemplateSummary>("TemplateSummary");
+    qRegisterMetaType<TemplateAnalysis>("TemplateAnalysis");
+    qRegisterMetaType<UserData>("UserData");
+    qRegisterMetaType<ZXingResult>("ZXingResult");
     qmlRegisterType<TemplateFetcher>("TemplateFetcher", 1, 0, "TemplateFetcher");
     qmlRegisterType<TemplateSearcher>("TemplateSearcher", 1, 0, "TemplateSearcher");
     qmlRegisterType<TemplateListModel>("TemplateListModel", 1, 0, "TemplateListModel");
