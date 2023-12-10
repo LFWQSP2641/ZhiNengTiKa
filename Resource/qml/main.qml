@@ -35,7 +35,14 @@ ApplicationWindow {
     }
 
     header: ToolBar {
-        visible: stackView.depth > 1
+        id: headerToolBar
+        Behavior on height {
+            NumberAnimation {
+                duration: 100
+                easing.type: Easing.InOutQuad
+            }
+        }
+
         ToolButton {
             id: navigateBackButton
             action: navigateBackAction
@@ -193,6 +200,7 @@ ApplicationWindow {
         onDepthChanged: {
             if(stackView.depth === 1)
             {
+                headerToolBar.height = 0
                 if((!waitingForTemplateDetailWidget) && imageRefreshTimer.needToRefresh)
                 {
                     refreshImage()
@@ -202,6 +210,7 @@ ApplicationWindow {
             }
             else
             {
+                headerToolBar.height = headerToolBar.implicitHeight
                 converter.stop()
             }
         }
