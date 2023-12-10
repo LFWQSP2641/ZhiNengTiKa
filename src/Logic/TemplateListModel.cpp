@@ -71,7 +71,7 @@ TemplateSummary TemplateListModel::getTemplateSummary(int index)
 void TemplateListModel::addNewTemplate(const TemplateSummary &templateSummary)
 {
     beginInsertRows(QModelIndex(), 0, 0);
-    this->templateList.append(templateSummary);
+    this->templateList.prepend(templateSummary);
     endInsertRows();
 }
 
