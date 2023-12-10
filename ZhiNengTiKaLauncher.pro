@@ -65,3 +65,25 @@ SOURCES += \
     $$PWD/src/StaticClass/Global.cpp \
     $$PWD/src/mainLauncher.cpp \
     src/Logic/LibraryUpdateChecker.cpp
+
+android{
+DISTFILES += \
+    $$PWD/android/AndroidManifest.xml \
+    $$PWD/android/build.gradle \
+    $$PWD/android/gradle.properties \
+    $$PWD/android/gradle/wrapper/gradle-wrapper.jar \
+    $$PWD/android/gradle/wrapper/gradle-wrapper.properties \
+    $$PWD/android/gradlew \
+    $$PWD/android/gradlew.bat \
+    $$PWD/android/res/drawable-hdpi/icon.png \
+    $$PWD/android/res/drawable-ldpi/icon.png \
+    $$PWD/android/res/drawable-mdpi/icon.png \
+    $$PWD/android/res/drawable-xhdpi/icon.png \
+    $$PWD/android/res/drawable-xxhdpi/icon.png \
+    $$PWD/android/res/drawable-xxxhdpi/icon.png \
+    $$PWD/android/res/values/libs.xml \
+    $$PWD/android/src/com/LFWQSP2641/zhinengtika/CallNativeComponent.java \
+    $$PWD/android/src/com/LFWQSP2641/zhinengtika/IntentActivity.java \
+    $$PWD/android/src/com/LFWQSP2641/zhinengtika/Util.java \
+    $$PWD/android/res/xml/provider_paths.xml
+}

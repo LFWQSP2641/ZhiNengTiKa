@@ -5,12 +5,7 @@ QT += core network multimedia core5compat
 android{
 QT += core-private
 
-ANDROID_VERSION_NAME = $$VERSION
-
 include($$PWD/3rd/android_openssl/openssl.pri)
-
-ANDROID_PACKAGE_SOURCE_DIR = \
-    $$PWD/android
 
 }
 win32{
@@ -123,25 +118,3 @@ SOURCES += \
 RESOURCES += \
     $$PWD/Resource/Resource.qrc \
     $$PWD/Resource/Template.qrc
-
-android{
-DISTFILES += \
-    $$PWD/android/AndroidManifest.xml \
-    $$PWD/android/build.gradle \
-    $$PWD/android/gradle.properties \
-    $$PWD/android/gradle/wrapper/gradle-wrapper.jar \
-    $$PWD/android/gradle/wrapper/gradle-wrapper.properties \
-    $$PWD/android/gradlew \
-    $$PWD/android/gradlew.bat \
-    $$PWD/android/res/drawable-hdpi/icon.png \
-    $$PWD/android/res/drawable-ldpi/icon.png \
-    $$PWD/android/res/drawable-mdpi/icon.png \
-    $$PWD/android/res/drawable-xhdpi/icon.png \
-    $$PWD/android/res/drawable-xxhdpi/icon.png \
-    $$PWD/android/res/drawable-xxxhdpi/icon.png \
-    $$PWD/android/res/values/libs.xml \
-    $$PWD/android/src/com/LFWQSP2641/zhinengtika/CallNativeComponent.java \
-    $$PWD/android/src/com/LFWQSP2641/zhinengtika/IntentActivity.java \
-    $$PWD/android/src/com/LFWQSP2641/zhinengtika/Util.java \
-    $$PWD/android/res/xml/provider_paths.xml
-}
