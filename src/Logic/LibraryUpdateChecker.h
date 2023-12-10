@@ -6,23 +6,26 @@ class LibraryUpdateChecker : public QThread
 {
     Q_OBJECT
 public:
+    explicit LibraryUpdateChecker(QObject *parent = nullptr);
     explicit LibraryUpdateChecker(const QString &currentVersion, QObject *parent = nullptr);
 
-    Q_INVOKABLE QString getCurrentVersion() const;
+    QString getCurrentVersion() const;
 
-    Q_INVOKABLE QString getNewestVersion() const;
+    void setCurrentVersion(const QString &newCurrentVersion);
 
-    Q_INVOKABLE QString getChangeLog() const;
+    QString getNewestVersion() const;
 
-    Q_INVOKABLE bool getRunning() const;
+    QString getChangeLog() const;
 
-    Q_INVOKABLE bool getHasNewVersion() const;
+    bool getRunning() const;
+
+    bool getHasNewVersion() const;
 
 public slots:
     void downloadNewestVersion();
 
 protected:
-    const QString currentVersion;
+    QString currentVersion;
 
     QString newestVersion;
     QString changeLog;

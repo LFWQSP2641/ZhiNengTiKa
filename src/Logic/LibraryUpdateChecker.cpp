@@ -4,6 +4,12 @@
 #include "../StaticClass/Global.h"
 #include "../Singleton/Network.h"
 
+LibraryUpdateChecker::LibraryUpdateChecker(QObject *parent)
+    : LibraryUpdateChecker{QStringLiteral("0.0.0"), parent}
+{
+
+}
+
 LibraryUpdateChecker::LibraryUpdateChecker(const QString &currentVersion, QObject *parent)
     : QThread{parent}, currentVersion(currentVersion)
 {
@@ -53,6 +59,11 @@ void LibraryUpdateChecker::downloadNewestVersion()
 
         emit this->downloadFinished();
     });
+}
+
+void LibraryUpdateChecker::setCurrentVersion(const QString &newCurrentVersion)
+{
+    currentVersion = newCurrentVersion;
 }
 
 void LibraryUpdateChecker::run()

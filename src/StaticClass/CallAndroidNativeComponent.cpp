@@ -94,4 +94,27 @@ QString CallAndroidNativeComponent::getAndroidId()
                activity.object<jobject>()).toString();
 }
 
+void CallAndroidNativeComponent::showToast(const QString &message)
+{
+    QJniObject activity = QtAndroidPrivate::activity();
+    QJniObject::callStaticMethod<void>(
+        "com/LFWQSP2641/ZhiNengTiKa/ToastUtils",
+        "show",
+        "(Lorg/qtproject/qt/android/bindings/QtActivity;Ljava/lang/String;)V",
+        activity.object<jobject>(),
+        QJniObject::fromString(message).object<jstring>());
+}
+
+void CallAndroidNativeComponent::showToast(const QString &message, int duration)
+{
+    QJniObject activity = QtAndroidPrivate::activity();
+    QJniObject::callStaticMethod<void>(
+        "com/LFWQSP2641/ZhiNengTiKa/ToastUtils",
+        "show",
+        "(Lorg/qtproject/qt/android/bindings/QtActivity;Ljava/lang/String;I)V",
+        activity.object<jobject>(),
+        QJniObject::fromString(message).object<jstring>(),
+        jint(duration));
+}
+
 #endif // Q_OS_ANDROID

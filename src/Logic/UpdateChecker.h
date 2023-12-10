@@ -10,19 +10,18 @@ public:
     // version1 = version2, 返回0
     // version1 > version2, 返回1
     static int compareVersion(const QString &version1, const QString &version2);
-    // checkMinimumVersion和getCurrentVersion能static
-    // 但是QML要调用
-    Q_INVOKABLE bool checkMinimumVersion() const;
 
-    Q_INVOKABLE QString getCurrentVersion() const;
+    bool checkMinimumVersion() const;
 
-    Q_INVOKABLE QString getNewestVersion() const;
+    QString getCurrentVersion() const;
 
-    Q_INVOKABLE QString getChangeLog() const;
+    QString getNewestVersion() const;
 
-    Q_INVOKABLE bool getRunning() const;
+    QString getChangeLog() const;
 
-    Q_INVOKABLE bool getHasNewVersion() const;
+    bool getRunning() const;
+
+    bool getHasNewVersion() const;
 
 public slots:
     void downloadNewestVersion();

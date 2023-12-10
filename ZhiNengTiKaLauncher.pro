@@ -84,6 +84,9 @@ DISTFILES += \
     $$PWD/android/res/values/libs.xml \
     $$PWD/android/src/com/LFWQSP2641/zhinengtika/CallNativeComponent.java \
     $$PWD/android/src/com/LFWQSP2641/zhinengtika/IntentActivity.java \
+    $$PWD/android/src/com/LFWQSP2641/zhinengtika/ToastUtils.java \
     $$PWD/android/src/com/LFWQSP2641/zhinengtika/Util.java \
     $$PWD/android/res/xml/provider_paths.xml
 }
+
+DISTFILES += \

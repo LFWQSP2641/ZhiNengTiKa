@@ -1,8 +1,19 @@
-#include <QMessageBox>
 #include "Logic/LibraryUpdateChecker.h"
 #include "Logic/UpdateChecker.h"
 #include "StaticClass/Global.h"
 #include "Singleton/Network.h"
+#ifdef Q_OS_ANDROID
+#include "StaticClass/CallAndroidNativeComponent.h"
+#endif
+
+void showMessage(const QString &message)
+{
+#ifdef Q_OS_ANDROID
+    CallAndroidNativeComponent::showToast(message);
+#else // Q_OS_ANDROID
+    QMessageBox::information(nullptr, {}, message);
+#endif // Q_OS_ANDROID
+}
 
 int main(int argc, char *argv[])
 {
@@ -16,29 +27,52 @@ int main(int argc, char *argv[])
     UpdateChecker updateChecker(&a);
     if(!updateChecker.checkMinimumVersion())
     {
-        QMessageBox::critical(nullptr, {}, QStringLiteral("请检查网络状态或更新"));
+        showMessage(QStringLiteral("请检查网络状态或更新"));
         return 1;
     }
-    QObject::connect(&updateChecker, &UpdateChecker::checkFinishedAndHasNewVersion, [&updateChecker]()
+    LibraryUpdateChecker libraryUpdateChecker(&a);
+
+    QObject::connect(&updateChecker, &UpdateChecker::checkFinished, &a, [&updateChecker, &a, &libraryUpdateChecker](bool hasNewVersion)
     {
-        QMessageBox::information(nullptr, {}, QStringLiteral("启动器有新版本, 请更新\n\n")
-                                 .append(updateChecker.getChangeLog()));
-        updateChecker.downloadNewestVersion();
+        if(hasNewVersion)
+        {
+            updateChecker.downloadNewestVersion();
+            showMessage(QStringLiteral("启动器有新版本, 下载中..."));
+            a.exec();
+            return;
+        }
+        if(libraryUpdateChecker.isFinished() && libraryUpdateChecker.getHasNewVersion())
+        {
+            libraryUpdateChecker.downloadNewestVersion();
+            return;
+        }
     });
     QObject::connect(&updateChecker, &UpdateChecker::downloadFinished, &updateChecker, &UpdateChecker::installNewestVersion);
+
+    QObject::connect(&libraryUpdateChecker, &LibraryUpdateChecker::checkFinishedAndHasNewVersion, &a, [&updateChecker, &libraryUpdateChecker]
+    {
+        if((!updateChecker.isFinished()) || updateChecker.getHasNewVersion())
+            return;
+        if(libraryUpdateChecker.getHasNewVersion())
+        {
+            libraryUpdateChecker.downloadNewestVersion();
+            return;
+        }
+    });
     updateChecker.start();
 
-    QFile libraryFile(Global::dataPath().append(QStringLiteral("/libZhiNengTiKaQML_arm64-v8a.so")));
+    const QString libraryFilePath(Global::dataPath().append(QStringLiteral("/libZhiNengTiKaQML_arm64-v8a.so")));
+    const QString libraryPath(Global::dataPath().append(QStringLiteral("/libZhiNengTiKaQML_arm64-v8a")));
+
+    QFile libraryFile(libraryFilePath);
     if(!libraryFile.exists())
     {
         QEventLoop eventLoop;
-        LibraryUpdateChecker libraryUpdateChecker(QStringLiteral("0.0.0"), &a);
-        QObject::connect(&libraryUpdateChecker, &LibraryUpdateChecker::checkFinished, &libraryUpdateChecker, &LibraryUpdateChecker::downloadNewestVersion);
-        QObject::connect(&libraryUpdateChecker, &LibraryUpdateChecker::downloadFinished, [&eventLoop]
+        QObject::connect(&libraryUpdateChecker, &LibraryUpdateChecker::downloadFinished, &eventLoop, [&eventLoop]
         {
-            QMessageBox::information(nullptr, {}, QStringLiteral("下载主程序动态库文件成功"));
+            showMessage(QStringLiteral("下载主程序动态库文件成功"));
             eventLoop.quit();
-        });
+        }, Qt::SingleShotConnection);
         libraryUpdateChecker.start();
         eventLoop.exec();
     }
@@ -46,21 +80,23 @@ int main(int argc, char *argv[])
     if(newVersionLibraryFile.exists())
     {
         libraryFile.remove();
-        newVersionLibraryFile.copy(Global::dataPath().append(QStringLiteral("/libZhiNengTiKaQML_arm64-v8a.so")));
+        newVersionLibraryFile.copy(libraryFilePath);
         newVersionLibraryFile.remove();
     }
 
+    QObject::connect(&libraryUpdateChecker, &LibraryUpdateChecker::downloadFinished, &a, []
+    {
+        showMessage(QStringLiteral("下载主程序动态库文件成功, 将在下次启动时自动更新"));
+    });
 
-    QLibrary library(Global::dataPath().append(QStringLiteral("/libZhiNengTiKaQML_arm64-v8a")));
+    QLibrary library(libraryPath);
     if(!library.load())
     {
-        QMessageBox::critical(nullptr, {}, QStringLiteral("load library failed\n")
-                              .append(library.errorString()));
+        showMessage(QStringLiteral("load library failed\n")
+                    .append(library.errorString()));
     }
     else
     {
-        LibraryUpdateChecker *libraryUpdateChecker;
-
         typedef const char * (*GetZhiNengTiKaQMLVersion)();
         GetZhiNengTiKaQMLVersion getZhiNengTiKaQMLVersion = (GetZhiNengTiKaQMLVersion)library.resolve("getVersion");
 
@@ -68,13 +104,8 @@ int main(int argc, char *argv[])
         {
             const QString currentVersion(getZhiNengTiKaQMLVersion());
             qDebug() << "Library Version:" << currentVersion;
-            libraryUpdateChecker = new LibraryUpdateChecker(currentVersion, &a);
-            QObject::connect(libraryUpdateChecker, &LibraryUpdateChecker::checkFinishedAndHasNewVersion, libraryUpdateChecker, &LibraryUpdateChecker::downloadNewestVersion);
-            QObject::connect(libraryUpdateChecker, &LibraryUpdateChecker::downloadFinished, []
-            {
-                QMessageBox::information(nullptr, {}, QStringLiteral("下载主程序动态库文件成功, 将在下次启动时自动更新"));
-            });
-            libraryUpdateChecker->start();
+            libraryUpdateChecker.setCurrentVersion(currentVersion);
+            libraryUpdateChecker.start();
         }
 
         typedef int (*ZhiNengTiKaQML)(QApplication *);
@@ -83,10 +114,10 @@ int main(int argc, char *argv[])
         if(zhiNengTiKaQML)
         {
             auto result(zhiNengTiKaQML(&a));
-            if(libraryUpdateChecker)
+            if(!libraryUpdateChecker.isFinished())
             {
-                libraryUpdateChecker->quit();
-                libraryUpdateChecker->wait();
+                libraryUpdateChecker.quit();
+                libraryUpdateChecker.wait();
             }
             return result;
         }
