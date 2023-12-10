@@ -443,7 +443,7 @@ void ResourceFileFetcher::onDownloadFinished()
     buffer.open(QBuffer::ReadOnly);
 
     auto savePath(getResourcePath());
-    for(const auto &i : fileNameHash.value(reply))
+    for(const auto &i : fileNameHash.take(reply))
     {
         if(!i.isEmpty())
         {

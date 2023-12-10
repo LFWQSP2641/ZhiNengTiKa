@@ -5,9 +5,9 @@
 
 AccountManager::AccountManager(QObject *parent)
     : QObject{parent},
-      publicUserData(new UserData(this))
+      publicUserData(UserData())
 {
-    publicUserData->publicUserData = true;
+    publicUserData.publicUserData = true;
     initPublicUserData();
 }
 
@@ -26,7 +26,7 @@ void AccountManager::loginUtf8(const QByteArray &username, const QByteArray &pas
 void AccountManager::relogin(qsizetype index)
 {
     const auto userData(this->at(index));
-    auto reply(getLoginReplyUtf8(userData->getUsername(), userData->getPassword()));
+    auto reply(getLoginReplyUtf8(userData.getUsername(), userData.getPassword()));
     connect(reply, &QNetworkReply::finished, this, &AccountManager::onReloginReplyFinished);
     reloginHash.insert(reply, userData);
 }
@@ -99,12 +99,12 @@ QNetworkReply *AccountManager::getLoginReplyUtf8(const QByteArray &username, con
     return reply;
 }
 
-UserData *AccountManager::getPublicUserData() const
+UserData AccountManager::getPublicUserData() const
 {
     return publicUserData;
 }
 
-UserData *AccountManager::getCurrentUserData() const
+UserData AccountManager::getCurrentUserData() const
 {
     if(isLoggedin())
         return this->at(0);
@@ -124,12 +124,12 @@ QVariant AccountManager::getDescriptionOfUserDatas() const
     {
         for(const auto &i : *this)
         {
-            descriptionList.append(i->getDescription());
+            descriptionList.append(i.getDescription());
         }
     }
     else
     {
-        descriptionList.append(publicUserData->getDescription());
+        descriptionList.append(publicUserData.getDescription());
     }
     return QVariant::fromValue(descriptionList);
 }
@@ -139,16 +139,14 @@ void AccountManager::onLoginReplyFinished()
     auto reply(qobject_cast<QNetworkReply *>(sender()));
     const auto returnData{reply->readAll()};
     reply->deleteLater();
-    auto list(loginHash.value(reply));
-    loginHash.remove(reply);
-    UserData *userData(nullptr);
+    auto list(loginHash.take(reply));
     if(returnData.startsWith("{\"code\":200,"))
     {
         const auto rootObject{QJsonDocument::fromJson(returnData).object()};
         auto dataObject{rootObject.value(QStringLiteral("data")).toObject()};
         const auto userDataJsonObject = dataObject.value(QStringLiteral("info")).toObject();
         const auto userSchoolDataJsonObject = userDataJsonObject.value(QStringLiteral("school")).toObject();
-        userData = new UserData(
+        UserData userData(
             dataObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
             QByteArrayLiteral("JBY ").append(dataObject.value(QStringLiteral("token")).toString().toUtf8()),
             list.at(2),
@@ -161,7 +159,7 @@ void AccountManager::onLoginReplyFinished()
     }
     else
     {
-        emit loginFinished(false, nullptr);
+        emit loginFinished(false, UserData());
         emit error(QStringLiteral("登录失败\n"
                                   "服务器返回信息:\n").append(returnData));
     }
@@ -172,29 +170,27 @@ void AccountManager::onReloginReplyFinished()
     auto reply(qobject_cast<QNetworkReply *>(sender()));
     const auto returnData{reply->readAll()};
     reply->deleteLater();
-    auto list(loginHash.value(reply));
-    loginHash.remove(reply);
-    auto userData(reloginHash.value(reply));
-    reloginHash.remove(reply);
+    auto list(loginHash.take(reply));
+    auto userData(reloginHash.take(reply));
     if(returnData.startsWith("{\"code\":200,"))
     {
         const auto rootObject{QJsonDocument::fromJson(returnData).object()};
         auto dataObject{rootObject.value(QStringLiteral("data")).toObject()};
         const auto userDataJsonObject = dataObject.value(QStringLiteral("info")).toObject();
         const auto userSchoolDataJsonObject = userDataJsonObject.value(QStringLiteral("school")).toObject();
-        userData->setAccessToken(dataObject.value(QStringLiteral("accessToken")).toString().toUtf8());
-        userData->setAuthorization(QByteArrayLiteral("JBY ").append(dataObject.value(QStringLiteral("token")).toString().toUtf8()));
-        userData->setClientSession(list.at(2));
-        userData->setStudentId(userSchoolDataJsonObject.value(QStringLiteral("studentId")).toString().toUtf8());
-        userData->setDetailDataJsonObject(userDataJsonObject);
-        userData->setPassword(list.at(1));
-        userData->setSchoolId(userSchoolDataJsonObject.value(QStringLiteral("schoolId")).toString().toUtf8());
-        userData->setUsername(list.at(0));
+        userData.setAccessToken(dataObject.value(QStringLiteral("accessToken")).toString().toUtf8());
+        userData.setAuthorization(QByteArrayLiteral("JBY ").append(dataObject.value(QStringLiteral("token")).toString().toUtf8()));
+        userData.setClientSession(list.at(2));
+        userData.setStudentId(userSchoolDataJsonObject.value(QStringLiteral("studentId")).toString().toUtf8());
+        userData.setDetailDataJsonObject(userDataJsonObject);
+        userData.setPassword(list.at(1));
+        userData.setSchoolId(userSchoolDataJsonObject.value(QStringLiteral("schoolId")).toString().toUtf8());
+        userData.setUsername(list.at(0));
         emit reloginFinished(true, userData);
     }
     else
     {
-        emit reloginFinished(false, nullptr);
+        emit reloginFinished(false, UserData());
         emit error(QStringLiteral("重新登录失败\n"
                                   "服务器返回信息:\n").append(returnData));
     }
@@ -218,10 +214,10 @@ void AccountManager::onPublicUserDataReplyFinished()
         return;
     }
     const auto publicUserDataJson(QJsonDocument::fromJson(Network::getGlobalNetworkManager()->replyReadAll(reply)).object());
-    publicUserData->setAccessToken(publicUserDataJson.value(QStringLiteral("accessToken")).toString().toUtf8());
-    publicUserData->setAuthorization(publicUserDataJson.value(QStringLiteral("authorization")).toString().toUtf8());
-    publicUserData->setClientSession(publicUserDataJson.value(QStringLiteral("clientSession")).toString().toUtf8());
-    publicUserData->setStudentId(publicUserDataJson.value(QStringLiteral("studentId")).toString().toUtf8());
+    publicUserData.setAccessToken(publicUserDataJson.value(QStringLiteral("accessToken")).toString().toUtf8());
+    publicUserData.setAuthorization(publicUserDataJson.value(QStringLiteral("authorization")).toString().toUtf8());
+    publicUserData.setClientSession(publicUserDataJson.value(QStringLiteral("clientSession")).toString().toUtf8());
+    publicUserData.setStudentId(publicUserDataJson.value(QStringLiteral("studentId")).toString().toUtf8());
 
     emit initPublicUserDataFinished(publicUserData);
 }

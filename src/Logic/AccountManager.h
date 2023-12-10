@@ -3,15 +3,15 @@
 
 #include "UserData.h"
 
-class AccountManager : public QObject, public QList<UserData *>
+class AccountManager : public QObject, public QList<UserData>
 {
     Q_OBJECT
 public:
     explicit AccountManager(QObject *parent = nullptr);
 
-    UserData *getPublicUserData() const;
+    UserData getPublicUserData() const;
 
-    Q_INVOKABLE UserData *getCurrentUserData() const;
+    Q_INVOKABLE UserData getCurrentUserData() const;
     Q_INVOKABLE bool isLoggedin() const;
     Q_INVOKABLE QVariant getDescriptionOfUserDatas() const;
 
@@ -30,9 +30,9 @@ protected:
     QNetworkReply *getLoginReply(const QString &username, const QString &password);
     QNetworkReply *getLoginReplyUtf8(const QByteArray &username, const QByteArray &password);
     QHash<QNetworkReply *, QList<QByteArray>> loginHash;
-    QHash<QNetworkReply *, UserData *> reloginHash;
+    QHash<QNetworkReply *, UserData> reloginHash;
 
-    UserData *publicUserData;
+    UserData publicUserData;
 
 protected slots:
     void onLoginReplyFinished();
@@ -41,13 +41,13 @@ protected slots:
     void onPublicUserDataReplyFinished();
 
 signals:
-    void loginFinished(bool success, UserData *object);
-    void reloginFinished(bool success, UserData *object);
+    void loginFinished(bool success, UserData object);
+    void reloginFinished(bool success, UserData object);
     void checkCurrentAccountValidFinished(bool valid);
-    void initPublicUserDataFinished(UserData *object);
+    void initPublicUserDataFinished(UserData object);
     void error(const QString &msg);
 private:
-    Q_PROPERTY(UserData *publicUserData READ getPublicUserData CONSTANT FINAL)
+    Q_PROPERTY(UserData publicUserData READ getPublicUserData CONSTANT FINAL)
 };
 
 #endif // ACCOUNTMANAGER_H

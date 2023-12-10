@@ -3,18 +3,16 @@
 
 class AccountManager;
 
-class UserData : public QObject
+class UserData
 {
-    Q_OBJECT
+    Q_GADGET
 public:
-    UserData(QObject *parent = nullptr)
-        : QObject{parent} {}
+    UserData() = default;
     UserData(const QByteArray &accessToken, const QByteArray &authorization,
              const QByteArray &clientSession, const QByteArray &studentId,
              const QJsonObject &detailData = QJsonObject(), const QByteArray &password = QByteArray(),
-             const QByteArray &schoolId = QByteArray(), const QByteArray &username = QByteArray(),
-             QObject *parent = nullptr)
-        : QObject{parent}, accessToken(accessToken),
+             const QByteArray &schoolId = QByteArray(), const QByteArray &username = QByteArray())
+        : accessToken(accessToken),
           authorization(authorization), clientSession(clientSession),
           detailDataJsonObject(detailData),
           password(password), schoolId(schoolId),
@@ -27,7 +25,7 @@ public:
                clientSession.isEmpty();
     }
 
-    QString getDescription() const;
+    Q_INVOKABLE QString getDescription() const;
 
     QByteArray getAccessToken() const;
     void setAccessToken(const QByteArray &newAccessToken);
@@ -66,32 +64,15 @@ protected:
 
     bool publicUserData = false;
 
-signals:
-    void accessTokenChanged();
-
-    void authorizationChanged();
-
-    void clientSessionChanged();
-
-    void detailDataJsonObjectChanged();
-
-    void passwordChanged();
-
-    void schoolIdChanged();
-
-    void studentIdChanged();
-
-    void usernameChanged();
-
 private:
-    Q_PROPERTY(QByteArray accessToken READ getAccessToken WRITE setAccessToken NOTIFY accessTokenChanged FINAL)
-    Q_PROPERTY(QByteArray authorization READ getAuthorization WRITE setAuthorization NOTIFY authorizationChanged FINAL)
-    Q_PROPERTY(QByteArray clientSession READ getClientSession WRITE setClientSession NOTIFY clientSessionChanged FINAL)
-    Q_PROPERTY(QJsonObject detailDataJsonObject READ getDetailDataJsonObject WRITE setDetailDataJsonObject NOTIFY detailDataJsonObjectChanged FINAL)
-    Q_PROPERTY(QByteArray password READ getPassword WRITE setPassword NOTIFY passwordChanged FINAL)
-    Q_PROPERTY(QByteArray schoolId READ getSchoolId WRITE setSchoolId NOTIFY schoolIdChanged FINAL)
-    Q_PROPERTY(QByteArray studentId READ getStudentId WRITE setStudentId NOTIFY studentIdChanged FINAL)
-    Q_PROPERTY(QByteArray username READ getUsername WRITE setUsername NOTIFY usernameChanged FINAL)
+    Q_PROPERTY(QByteArray accessToken READ getAccessToken WRITE setAccessToken FINAL)
+    Q_PROPERTY(QByteArray authorization READ getAuthorization WRITE setAuthorization FINAL)
+    Q_PROPERTY(QByteArray clientSession READ getClientSession WRITE setClientSession FINAL)
+    Q_PROPERTY(QJsonObject detailDataJsonObject READ getDetailDataJsonObject WRITE setDetailDataJsonObject FINAL)
+    Q_PROPERTY(QByteArray password READ getPassword WRITE setPassword FINAL)
+    Q_PROPERTY(QByteArray schoolId READ getSchoolId WRITE setSchoolId FINAL)
+    Q_PROPERTY(QByteArray studentId READ getStudentId WRITE setStudentId FINAL)
+    Q_PROPERTY(QByteArray username READ getUsername WRITE setUsername FINAL)
 };
 
 #endif // USERDATA_H

@@ -33,7 +33,7 @@ Settings::Settings(QObject *parent)
         {
             continue;
         }
-        accountManager->append(new UserData(
+        accountManager->append(UserData(
                                    jsonObject.value(QStringLiteral("accessToken")).toString().toUtf8(),
                                    jsonObject.value(QStringLiteral("authorization")).toString().toUtf8(),
                                    jsonObject.value(QStringLiteral("clientSession")).toString(QUuid::createUuid().toString(QUuid::WithoutBraces)).toUtf8(),
@@ -41,8 +41,7 @@ Settings::Settings(QObject *parent)
                                    QJsonDocument::fromJson(QByteArray::fromBase64(jsonObject.value(QStringLiteral("detailData")).toString().toUtf8())).object(),
                                    jsonObject.value(QStringLiteral("password")).toString().toUtf8(),
                                    jsonObject.value(QStringLiteral("schoolId")).toString().toUtf8(),
-                                   jsonObject.value(QStringLiteral("username")).toString().toUtf8(),
-                                   accountManager));
+                                   jsonObject.value(QStringLiteral("username")).toString().toUtf8()));
     }
 
     fontPointSize = settingJsonObject.value(QStringLiteral("fontPointSize")).toInt();
@@ -203,14 +202,14 @@ void Settings::saveToFile() const
     for(const auto &i : *accountManager)
     {
         QJsonObject jsonObject;
-        jsonObject.insert(QStringLiteral("accessToken"), QString(i->getAccessToken()));
-        jsonObject.insert(QStringLiteral("authorization"), QString(i->getAuthorization()));
-        jsonObject.insert(QStringLiteral("clientSession"), QString(i->getClientSession()));
-        jsonObject.insert(QStringLiteral("password"), QString(i->getPassword()));
-        jsonObject.insert(QStringLiteral("schoolId"), QString(i->getSchoolId()));
-        jsonObject.insert(QStringLiteral("detailData"), QString(QJsonDocument(i->getDetailDataJsonObject()).toJson(QJsonDocument::Compact).toBase64()));
-        jsonObject.insert(QStringLiteral("studentId"), QString(i->getStudentId()));
-        jsonObject.insert(QStringLiteral("username"), QString(i->getUsername()));
+        jsonObject.insert(QStringLiteral("accessToken"), QString(i.getAccessToken()));
+        jsonObject.insert(QStringLiteral("authorization"), QString(i.getAuthorization()));
+        jsonObject.insert(QStringLiteral("clientSession"), QString(i.getClientSession()));
+        jsonObject.insert(QStringLiteral("password"), QString(i.getPassword()));
+        jsonObject.insert(QStringLiteral("schoolId"), QString(i.getSchoolId()));
+        jsonObject.insert(QStringLiteral("detailData"), QString(QJsonDocument(i.getDetailDataJsonObject()).toJson(QJsonDocument::Compact).toBase64()));
+        jsonObject.insert(QStringLiteral("studentId"), QString(i.getStudentId()));
+        jsonObject.insert(QStringLiteral("username"), QString(i.getUsername()));
 
         accountsJsonArray.append(jsonObject);
     }

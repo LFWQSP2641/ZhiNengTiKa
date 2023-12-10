@@ -22,7 +22,6 @@ void UserData::setAccessToken(const QByteArray &newAccessToken)
     if (accessToken == newAccessToken)
         return;
     accessToken = newAccessToken;
-    emit accessTokenChanged();
 }
 
 QByteArray UserData::getAuthorization() const
@@ -35,7 +34,6 @@ void UserData::setAuthorization(const QByteArray &newAuthorization)
     if (authorization == newAuthorization)
         return;
     authorization = newAuthorization;
-    emit authorizationChanged();
 }
 
 QByteArray UserData::getClientSession() const
@@ -48,7 +46,6 @@ void UserData::setClientSession(const QByteArray &newClientSession)
     if (clientSession == newClientSession)
         return;
     clientSession = newClientSession;
-    emit clientSessionChanged();
 }
 
 QJsonObject UserData::getDetailDataJsonObject() const
@@ -61,7 +58,6 @@ void UserData::setDetailDataJsonObject(const QJsonObject &newDetailDataJsonObjec
     if (detailDataJsonObject == newDetailDataJsonObject)
         return;
     detailDataJsonObject = newDetailDataJsonObject;
-    emit detailDataJsonObjectChanged();
 }
 
 QByteArray UserData::getPassword() const
@@ -74,7 +70,6 @@ void UserData::setPassword(const QByteArray &newPassword)
     if (password == newPassword)
         return;
     password = newPassword;
-    emit passwordChanged();
 }
 
 QByteArray UserData::getSchoolId() const
@@ -87,7 +82,6 @@ void UserData::setSchoolId(const QByteArray &newSchoolId)
     if (schoolId == newSchoolId)
         return;
     schoolId = newSchoolId;
-    emit schoolIdChanged();
 }
 
 QByteArray UserData::getStudentId() const
@@ -100,7 +94,6 @@ void UserData::setStudentId(const QByteArray &newStudentId)
     if (studentId == newStudentId)
         return;
     studentId = newStudentId;
-    emit studentIdChanged();
 }
 
 QByteArray UserData::getUsername() const
@@ -113,5 +106,4 @@ void UserData::setUsername(const QByteArray &newUsername)
     if (username == newUsername)
         return;
     username = newUsername;
-    emit usernameChanged();
 }

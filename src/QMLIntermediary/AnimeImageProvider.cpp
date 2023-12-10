@@ -80,8 +80,7 @@ void AnimeImageProvider::fillCacheList()
 void AnimeImageProvider::onFillCacheReplyFinished()
 {
     auto reply(qobject_cast<QNetworkReply *>(sender()));
-    auto index(fillCacheHash.value(reply));
-    fillCacheHash.remove(reply);
+    auto index(fillCacheHash.take(reply));
     if(reply->error() != QNetworkReply::NoError)
     {
         qWarning() << Q_FUNC_INFO << QStringLiteral("reply->error() != QNetworkReply::NoError") << reply->errorString() << reply->readAll();
@@ -102,8 +101,7 @@ void AnimeImageProvider::onttloliPageReplyFinished()
     const auto resultData(reply->readAll());
     reply->deleteLater();
 
-    auto index(fillCacheHash.value(reply));
-    fillCacheHash.remove(reply);
+    auto index(fillCacheHash.take(reply));
 
     const auto beginIndex(resultData.indexOf(QByteArrayLiteral("background:url('https://cdn2.ttloli.com/pic3/")) + 16);
     const auto endIndex(resultData.indexOf(QByteArrayLiteral("'"), beginIndex));
