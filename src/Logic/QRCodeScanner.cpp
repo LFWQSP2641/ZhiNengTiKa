@@ -65,7 +65,7 @@ void QRCodeScanner::run()
         const auto videoFrame(videoSink->videoFrame());
         if(videoFrame.isValid())
         {
-            const auto success(!qrCodeReader->decodeFrame(videoFrame)->getText().isEmpty());
+            const auto success(!qrCodeReader->decodeFrame(videoFrame).getText().isEmpty());
             if(success && autoStopOnSuccess)
                 break;
         }

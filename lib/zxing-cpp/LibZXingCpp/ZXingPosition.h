@@ -5,11 +5,11 @@
 #include <QPoint>
 #include "ZXingCpp_global.h"
 
-class ZXINGCPP_EXPORT ZXingPosition : public QObject
+class ZXINGCPP_EXPORT ZXingPosition
 {
-    Q_OBJECT
+    Q_GADGET
 public:
-    explicit ZXingPosition(QObject *parent = nullptr);
+    ZXingPosition() = default;
 
     QPoint getTopLeft() const;
     void setTopLeft(QPoint newTopLeft);
@@ -23,26 +23,21 @@ public:
     QPoint getBottomLeft() const;
     void setBottomLeft(QPoint newBottomLeft);
 
+    bool operator==(const ZXingPosition &other) const;
+
 protected:
     QPoint topLeft;
     QPoint topRight;
     QPoint bottomRight;
     QPoint bottomLeft;
 
-signals:
-
-    void topLeftChanged();
-    void topRightChanged();
-
-    void bottomRightChanged();
-
-    void bottomLeftChanged();
-
 private:
-    Q_PROPERTY(QPoint topLeft READ getTopLeft WRITE setTopLeft NOTIFY topLeftChanged FINAL)
-    Q_PROPERTY(QPoint topRight READ getTopRight WRITE setTopRight NOTIFY topRightChanged FINAL)
-    Q_PROPERTY(QPoint bottomRight READ getBottomRight WRITE setBottomRight NOTIFY bottomRightChanged FINAL)
-    Q_PROPERTY(QPoint bottomLeft READ getBottomLeft WRITE setBottomLeft NOTIFY bottomLeftChanged FINAL)
+    Q_PROPERTY(QPoint topLeft READ getTopLeft WRITE setTopLeft FINAL)
+    Q_PROPERTY(QPoint topRight READ getTopRight WRITE setTopRight FINAL)
+    Q_PROPERTY(QPoint bottomRight READ getBottomRight WRITE setBottomRight FINAL)
+    Q_PROPERTY(QPoint bottomLeft READ getBottomLeft WRITE setBottomLeft FINAL)
 };
+
+Q_DECLARE_METATYPE(ZXingPosition)
 
 #endif // ZXINGPOSITION_H

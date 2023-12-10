@@ -5,32 +5,27 @@
 #include "ZXingCpp_global.h"
 #include "ZXingPosition.h"
 
-class ZXINGCPP_EXPORT ZXingResult : public QObject
+class ZXINGCPP_EXPORT ZXingResult
 {
-    Q_OBJECT
+    Q_GADGET
 public:
-    explicit ZXingResult(QObject *parent = nullptr);
+    ZXingResult() = default;
 
     QString getText() const;
     void setText(const QString &newText);
 
-    ZXingPosition *getPosition() const;
-    void setPosition(ZXingPosition *newPosition);
-
-public slots:
-    void deleteLater();
+    ZXingPosition getPosition() const;
+    void setPosition(const ZXingPosition &newPosition);
 
 protected:
     QString text;
-    ZXingPosition *position;
-
-signals:
-    void textChanged();
-    void positionChanged();
+    ZXingPosition position;
 
 private:
-    Q_PROPERTY(QString text READ getText WRITE setText NOTIFY textChanged FINAL)
-    Q_PROPERTY(ZXingPosition *position READ getPosition WRITE setPosition NOTIFY positionChanged FINAL)
+    Q_PROPERTY(QString text READ getText WRITE setText FINAL)
+    Q_PROPERTY(ZXingPosition position READ getPosition WRITE setPosition FINAL)
 };
+
+Q_DECLARE_METATYPE(ZXingResult)
 
 #endif // ZXINGRESULT_H

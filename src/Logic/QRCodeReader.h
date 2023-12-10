@@ -22,9 +22,9 @@ public:
     void resetSmoothTransformation();
 
 public slots:
-    ZXingResult *decodeImageByPath(const QUrl &imagePath);
-    ZXingResult *decodeImage(const QImage &image);
-    ZXingResult *decodeFrame(const QVideoFrame &frame);
+    ZXingResult decodeImageByPath(const QUrl &imagePath);
+    ZXingResult decodeImage(const QImage &image);
+    ZXingResult decodeFrame(const QVideoFrame &frame);
 
 protected:
     int maxWidth = -1;
@@ -35,7 +35,7 @@ protected:
     void frameErrorWarning(const QString &errMsg);
 
 signals:
-    void decodingFinished(bool succeeded, ZXingResult *result);
+    void decodingFinished(bool succeeded, ZXingResult result);
     void error(const QString &msg);
     void frameError(const QString &msg);
     void maxWidthChanged();

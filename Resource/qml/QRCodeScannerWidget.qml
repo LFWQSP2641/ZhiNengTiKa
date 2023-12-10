@@ -51,7 +51,6 @@ Item {
                 camera.stop()
                 scanFinished(result.text)
             }
-            result.deleteLater()
         }
         onError: function(msg){
             console.log(msg)
