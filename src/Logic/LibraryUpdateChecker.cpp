@@ -10,6 +10,31 @@ LibraryUpdateChecker::LibraryUpdateChecker(const QString &currentVersion, QObjec
 
 }
 
+QString LibraryUpdateChecker::getCurrentVersion() const
+{
+    return currentVersion;
+}
+
+QString LibraryUpdateChecker::getNewestVersion() const
+{
+    return newestVersion;
+}
+
+QString LibraryUpdateChecker::getChangeLog() const
+{
+    return changeLog;
+}
+
+bool LibraryUpdateChecker::getRunning() const
+{
+    return running;
+}
+
+bool LibraryUpdateChecker::getHasNewVersion() const
+{
+    return hasNewVersion;
+}
+
 void LibraryUpdateChecker::downloadNewestVersion()
 {
     qDebug() << Q_FUNC_INFO;

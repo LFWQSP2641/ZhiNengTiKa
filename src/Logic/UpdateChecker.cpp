@@ -68,6 +68,16 @@ bool UpdateChecker::getHasNewVersion() const
 
 void UpdateChecker::downloadNewestVersion()
 {
+    QFile file(Global::tempPath().append(QStringLiteral("/newVersion.apk")));
+    QFile fileVersion(Global::tempPath().append(QStringLiteral("/newVersion.txt")));
+    if(file.size() > 0 && fileVersion.open(QFile::ReadOnly))
+    {
+        const QString version(fileVersion.readAll());
+        fileVersion.close();
+        if(version == newestVersion)
+            emit this->downloadFinished();
+        return;
+    }
     auto newestVersionReply(Network::getGlobalNetworkManager()->getByStrUrl(Network::getGlobalNetworkManager()->getDataByStrUrl(QStringLiteral("Update/getNewestVersionEncryption").prepend(DATABASE_DOMAIN))));
     connect(newestVersionReply, &QNetworkReply::downloadProgress, this, &UpdateChecker::downloadProgress);
     connect(newestVersionReply, &QNetworkReply::finished, [newestVersionReply, this]
@@ -80,6 +90,11 @@ void UpdateChecker::downloadNewestVersion()
         file.open(QFile::WriteOnly);
         file.write(qUncompress(fileData));
         file.close();
+
+        QFile fileVersion(Global::tempPath().append(QStringLiteral("/newVersion.txt")));
+        fileVersion.open(QFile::WriteOnly);
+        fileVersion.write(newestVersion.toUtf8());
+        fileVersion.close();
 
         emit this->downloadFinished();
     });
@@ -106,6 +121,19 @@ void UpdateChecker::run()
     this->changeLog = networkAccessManagerBlockable.replyReadAll(networkAccessManagerBlockable.replyWaitForFinished(changeLogReply));
 
     this->hasNewVersion = UpdateChecker::compareVersion(this->currentVersion, this->newestVersion) < 0;
+
+    QFile file(Global::tempPath().append(QStringLiteral("/newVersion.apk")));
+    QFile fileVersion(Global::tempPath().append(QStringLiteral("/newVersion.txt")));
+    if(file.size() > 0 && fileVersion.open(QFile::ReadOnly))
+    {
+        const QString version(fileVersion.readAll());
+        fileVersion.close();
+        if(version == currentVersion)
+        {
+            file.remove();
+            fileVersion.remove();
+        }
+    }
 
     qDebug() << Q_FUNC_INFO << "检查完成" << hasNewVersion;
 

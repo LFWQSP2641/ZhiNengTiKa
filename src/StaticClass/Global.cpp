@@ -6,7 +6,6 @@ QString Global::appTempPath;
 
 void Global::initOnce()
 {
-
 #ifdef Q_OS_WINDOWS
     Global::appConfigPath = QApplication::applicationDirPath().append(QStringLiteral("/Config"));
     Global::appDataPath = QApplication::applicationDirPath().append(QStringLiteral("/Data"));

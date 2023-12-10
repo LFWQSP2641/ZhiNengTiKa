@@ -8,6 +8,16 @@ class LibraryUpdateChecker : public QThread
 public:
     explicit LibraryUpdateChecker(const QString &currentVersion, QObject *parent = nullptr);
 
+    Q_INVOKABLE QString getCurrentVersion() const;
+
+    Q_INVOKABLE QString getNewestVersion() const;
+
+    Q_INVOKABLE QString getChangeLog() const;
+
+    Q_INVOKABLE bool getRunning() const;
+
+    Q_INVOKABLE bool getHasNewVersion() const;
+
 public slots:
     void downloadNewestVersion();
 

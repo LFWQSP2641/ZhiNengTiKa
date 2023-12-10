@@ -65,16 +65,6 @@ extern "C" Q_DECL_EXPORT int run(QApplication *a)
     if (settings->getQmlStyle().isEmpty())
         settings->setQmlStyle(QQuickStyle::name());
 
-#ifdef Q_OS_ANDROID
-    //删除新版本文件
-    QFile file(Global::tempPath().append(QStringLiteral("/newVersion.apk")));
-    if(file.exists())
-    {
-        file.remove();
-    }
-#else
-#endif // Q_OS_ANDROID
-
     auto animeImageProvider(new AnimeImageProvider);
 
     qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0,
