@@ -75,4 +75,6 @@ private:
     Q_PROPERTY(QByteArray username READ getUsername WRITE setUsername FINAL)
 };
 
+Q_DECLARE_METATYPE(UserData)
+
 #endif // USERDATA_H
