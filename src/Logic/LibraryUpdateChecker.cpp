@@ -1,5 +1,4 @@
 #include "LibraryUpdateChecker.h"
-#include "UpdateChecker.h"
 #include "NetworkAccessManagerBlockable.h"
 #include "../StaticClass/Global.h"
 #include "../Singleton/Network.h"
@@ -16,12 +15,12 @@ LibraryUpdateChecker::LibraryUpdateChecker(const QString &currentVersion, QObjec
 
 }
 
-QString LibraryUpdateChecker::getCurrentVersion() const
+Version LibraryUpdateChecker::getCurrentVersion() const
 {
     return currentVersion;
 }
 
-QString LibraryUpdateChecker::getNewestVersion() const
+Version LibraryUpdateChecker::getNewestVersion() const
 {
     return newestVersion;
 }
@@ -61,7 +60,7 @@ void LibraryUpdateChecker::downloadNewestVersion()
     });
 }
 
-void LibraryUpdateChecker::setCurrentVersion(const QString &newCurrentVersion)
+void LibraryUpdateChecker::setCurrentVersion(const Version &newCurrentVersion)
 {
     currentVersion = newCurrentVersion;
 }
@@ -76,10 +75,12 @@ void LibraryUpdateChecker::run()
     auto newestVersionReply{networkAccessManagerBlockable.getByStrUrl(QStringLiteral("LibraryUpdate/newestVersion").prepend(DATABASE_DOMAIN))};
     auto changeLogReply{networkAccessManagerBlockable.getByStrUrl(QStringLiteral("LibraryUpdate/changeLog").prepend(DATABASE_DOMAIN))};
 
-    this->newestVersion = networkAccessManagerBlockable.replyReadAll(networkAccessManagerBlockable.replyWaitForFinished(newestVersionReply));
+    this->newestVersion = Version(networkAccessManagerBlockable.replyReadAll(networkAccessManagerBlockable.replyWaitForFinished(newestVersionReply)));
     this->changeLog = networkAccessManagerBlockable.replyReadAll(networkAccessManagerBlockable.replyWaitForFinished(changeLogReply));
 
-    this->hasNewVersion = UpdateChecker::compareVersion(this->currentVersion, this->newestVersion) < 0;
+    this->hasNewVersion = (this->currentVersion < this->newestVersion);
+
+    this->running = false;
 
     qDebug() << Q_FUNC_INFO << "检查完成" << hasNewVersion;
 

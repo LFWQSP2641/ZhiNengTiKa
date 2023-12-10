@@ -55,7 +55,8 @@ HEADERS += \
     $$PWD/src/Singleton/Network.h \
     $$PWD/src/StaticClass/CallAndroidNativeComponent.h \
     $$PWD/src/StaticClass/Global.h \
-    src/Logic/LibraryUpdateChecker.h
+    src/Logic/LibraryUpdateChecker.h \
+    src/Logic/Version.h
 
 SOURCES += \
     $$PWD/src/Logic/NetworkAccessManagerBlockable.cpp \
@@ -64,7 +65,8 @@ SOURCES += \
     $$PWD/src/StaticClass/CallAndroidNativeComponent.cpp \
     $$PWD/src/StaticClass/Global.cpp \
     $$PWD/src/mainLauncher.cpp \
-    src/Logic/LibraryUpdateChecker.cpp
+    src/Logic/LibraryUpdateChecker.cpp \
+    src/Logic/Version.cpp
 
 android{
 DISTFILES += \

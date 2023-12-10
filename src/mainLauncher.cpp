@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         {
             const QString currentVersion(getZhiNengTiKaQMLVersion());
             qDebug() << "Library Version:" << currentVersion;
-            libraryUpdateChecker.setCurrentVersion(currentVersion);
+            libraryUpdateChecker.setCurrentVersion(Version(currentVersion));
             libraryUpdateChecker.start();
         }
 

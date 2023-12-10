@@ -6,7 +6,7 @@
 #include "../StaticClass/CallAndroidNativeComponent.h"
 #endif // Q_OS_ANDROID
 
-const QString UpdateChecker::currentVersion = QStringLiteral(APP_VERSION);
+const Version UpdateChecker::currentVersion = Version(QStringLiteral(APP_VERSION));
 
 UpdateChecker::UpdateChecker(QObject *parent)
     : QThread{parent}
@@ -14,39 +14,19 @@ UpdateChecker::UpdateChecker(QObject *parent)
 
 }
 
-int UpdateChecker::compareVersion(const QString &version1, const QString &version2)
-{
-    QStringList list1 = version1.split(".");
-    QStringList list2 = version2.split(".");
-    if(list1.size() >= 3 && list2.size() >= 3)
-    {
-        qint32 ver1 = (list1.at(0).toInt() << 16) | (list1.at(1).toInt() << 8) | list1.at(2).toInt();
-        qint32 ver2 = (list2.at(0).toInt() << 16) | (list2.at(1).toInt() << 8) | list2.at(2).toInt();
-        if(ver1 > ver2)
-        {
-            return 1;
-        }
-        else if(ver1 < ver2)
-        {
-            return -1;
-        }
-    }
-    return 0;
-}
-
 bool UpdateChecker::checkMinimumVersion() const
 {
     auto minimumVersionStr{ Network::Network::getGlobalNetworkManager()->getDataByStrUrl(QStringLiteral("Update/minimumVersion").prepend(DATABASE_DOMAIN)) };
     qDebug() << minimumVersionStr;
-    return compareVersion(minimumVersionStr, UpdateChecker::currentVersion) < 0;
+    return Version(minimumVersionStr) < UpdateChecker::currentVersion;
 }
 
-QString UpdateChecker::getCurrentVersion() const
+Version UpdateChecker::getCurrentVersion() const
 {
     return currentVersion;
 }
 
-QString UpdateChecker::getNewestVersion() const
+Version UpdateChecker::getNewestVersion() const
 {
     return newestVersion;
 }
@@ -74,7 +54,7 @@ void UpdateChecker::downloadNewestVersion()
     {
         const QString version(fileVersion.readAll());
         fileVersion.close();
-        if(version == newestVersion)
+        if(Version(version) == newestVersion)
             emit this->downloadFinished();
         return;
     }
@@ -93,7 +73,7 @@ void UpdateChecker::downloadNewestVersion()
 
         QFile fileVersion(Global::tempPath().append(QStringLiteral("/newVersion.txt")));
         fileVersion.open(QFile::WriteOnly);
-        fileVersion.write(newestVersion.toUtf8());
+        fileVersion.write(newestVersion.toString().toUtf8());
         fileVersion.close();
 
         emit this->downloadFinished();
@@ -117,10 +97,10 @@ void UpdateChecker::run()
     auto newestVersionReply{networkAccessManagerBlockable.getByStrUrl(QStringLiteral("Update/newestVersion").prepend(DATABASE_DOMAIN))};
     auto changeLogReply{networkAccessManagerBlockable.getByStrUrl(QStringLiteral("Update/changeLog").prepend(DATABASE_DOMAIN))};
 
-    this->newestVersion = networkAccessManagerBlockable.replyReadAll(networkAccessManagerBlockable.replyWaitForFinished(newestVersionReply));
+    this->newestVersion = Version(networkAccessManagerBlockable.replyReadAll(networkAccessManagerBlockable.replyWaitForFinished(newestVersionReply)));
     this->changeLog = networkAccessManagerBlockable.replyReadAll(networkAccessManagerBlockable.replyWaitForFinished(changeLogReply));
 
-    this->hasNewVersion = UpdateChecker::compareVersion(this->currentVersion, this->newestVersion) < 0;
+    this->hasNewVersion = (this->currentVersion < this->newestVersion);
 
     QFile file(Global::tempPath().append(QStringLiteral("/newVersion.apk")));
     QFile fileVersion(Global::tempPath().append(QStringLiteral("/newVersion.txt")));
@@ -128,12 +108,14 @@ void UpdateChecker::run()
     {
         const QString version(fileVersion.readAll());
         fileVersion.close();
-        if(version == currentVersion)
+        if(Version(version) == currentVersion)
         {
             file.remove();
             fileVersion.remove();
         }
     }
+
+    this->running = false;
 
     qDebug() << Q_FUNC_INFO << "检查完成" << hasNewVersion;
 

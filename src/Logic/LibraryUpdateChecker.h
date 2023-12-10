@@ -1,6 +1,7 @@
 #ifndef LIBRARYUPDATECHECKER_H
 #define LIBRARYUPDATECHECKER_H
 
+#include "Version.h"
 
 class LibraryUpdateChecker : public QThread
 {
@@ -9,11 +10,11 @@ public:
     explicit LibraryUpdateChecker(QObject *parent = nullptr);
     explicit LibraryUpdateChecker(const QString &currentVersion, QObject *parent = nullptr);
 
-    QString getCurrentVersion() const;
+    Version getCurrentVersion() const;
 
-    void setCurrentVersion(const QString &newCurrentVersion);
+    void setCurrentVersion(const Version &newCurrentVersion);
 
-    QString getNewestVersion() const;
+    Version getNewestVersion() const;
 
     QString getChangeLog() const;
 
@@ -25,9 +26,9 @@ public slots:
     void downloadNewestVersion();
 
 protected:
-    QString currentVersion;
+    Version currentVersion;
 
-    QString newestVersion;
+    Version newestVersion;
     QString changeLog;
 
     bool running = false;
