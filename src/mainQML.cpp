@@ -26,6 +26,11 @@ extern "C" Q_DECL_EXPORT const char *getVersion()
     return APP_VERSION;
 }
 
+extern "C" Q_DECL_EXPORT void setLauncherVersion(const char *version)
+{
+    // QString launcherVersionStr(version);
+}
+
 extern "C" Q_DECL_EXPORT int run(QApplication *a)
 {
     AccelerometerSingleton::initOnce(a);

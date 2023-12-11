@@ -32,13 +32,12 @@ int main(int argc, char *argv[])
     }
     LibraryUpdateChecker libraryUpdateChecker(&a);
 
-    QObject::connect(&updateChecker, &UpdateChecker::checkFinished, &a, [&updateChecker, &a, &libraryUpdateChecker](bool hasNewVersion)
+    QObject::connect(&updateChecker, &UpdateChecker::checkFinished, &a, [&updateChecker, &libraryUpdateChecker](bool hasNewVersion)
     {
         if(hasNewVersion)
         {
-            updateChecker.downloadNewestVersion();
             showMessage(QStringLiteral("启动器有新版本, 下载中..."));
-            a.exec();
+            updateChecker.downloadNewestVersion();
             return;
         }
         if(libraryUpdateChecker.isFinished() && libraryUpdateChecker.getHasNewVersion())
@@ -97,6 +96,14 @@ int main(int argc, char *argv[])
     }
     else
     {
+        typedef void (*SetLauncherVersion)(const char *);
+        SetLauncherVersion setLauncherVersion = (SetLauncherVersion)library.resolve("setLauncherVersion");
+
+        if(setLauncherVersion)
+        {
+            setLauncherVersion(APP_VERSION);
+        }
+
         typedef const char * (*GetZhiNengTiKaQMLVersion)();
         GetZhiNengTiKaQMLVersion getZhiNengTiKaQMLVersion = (GetZhiNengTiKaQMLVersion)library.resolve("getVersion");
 
