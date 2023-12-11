@@ -11,6 +11,8 @@ void installApk(const QString &filePath);
 void toSelfSetting();
 QString getCacheDir();
 QString getAndroidId();
+QString getDeviceName();
+int getNetworkState();
 void showToast(const QString &message);
 void showToast(const QString &message, int duration);
 };

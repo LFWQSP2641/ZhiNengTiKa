@@ -94,6 +94,26 @@ QString CallAndroidNativeComponent::getAndroidId()
                activity.object<jobject>()).toString();
 }
 
+QString CallAndroidNativeComponent::getDeviceName()
+{
+    QJniObject activity = QtAndroidPrivate::activity();
+    return QJniObject::callStaticMethod<jstring>(
+               "com/LFWQSP2641/ZhiNengTiKa/Util",
+               "getDeviceName",
+               "(Lorg/qtproject/qt/android/bindings/QtActivity;)Ljava/lang/String;",
+               activity.object<jobject>()).toString();
+}
+
+int CallAndroidNativeComponent::getNetworkState()
+{
+    QJniObject activity = QtAndroidPrivate::activity();
+    return QJniObject::callStaticMethod<jint>(
+               "com/LFWQSP2641/ZhiNengTiKa/IntenetUtil",
+               "getNetworkState",
+               "(Lorg/qtproject/qt/android/bindings/QtActivity;)I",
+               activity.object<jobject>());
+}
+
 void CallAndroidNativeComponent::showToast(const QString &message)
 {
     QJniObject activity = QtAndroidPrivate::activity();
