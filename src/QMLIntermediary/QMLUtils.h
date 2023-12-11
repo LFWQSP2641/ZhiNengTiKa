@@ -10,8 +10,8 @@ public:
     Q_INVOKABLE QColor generateRandomColor();
     Q_INVOKABLE QColor generateRandomBrightColor();
     Q_INVOKABLE QString getResourceFilePath();
+public slots:
 signals:
-
 };
 
 #endif // QMLUTILS_H

@@ -33,7 +33,9 @@ extern "C" Q_DECL_EXPORT void setLauncherVersion(const char *version)
 
 extern "C" Q_DECL_EXPORT int run(QApplication *a)
 {
-    AccelerometerSingleton::initOnce(a);
+    QEventLoop libEventLoop;
+
+    AccelerometerSingleton::initOnce(&libEventLoop);
 
     Network::initOnce();
 
@@ -72,14 +74,16 @@ extern "C" Q_DECL_EXPORT int run(QApplication *a)
         settings->setQmlStyle(QQuickStyle::name());
 
     auto animeImageProvider(new AnimeImageProvider);
+    auto qmlUtils(new QMLUtils(&libEventLoop));
 
     qmlRegisterSingletonInstance("MultipleSubjectsTemplateListModelList", 1, 0,
                                  "MultipleSubjectsTemplateListModelList",
                                  MultipleSubjectsTemplateListModelListSingleton::getMultipleSubjectsTemplateListModelList());
     qmlRegisterSingletonInstance("Settings", 1, 0, "Settings", settings);
     qmlRegisterSingletonInstance("AccountManager", 1, 0, "AccountManager", settings->getAccountManager());
-    qmlRegisterSingletonInstance("QMLUtils", 1, 0, "QMLUtils", new QMLUtils);
+    qmlRegisterSingletonInstance("QMLUtils", 1, 0, "QMLUtils", qmlUtils);
     qmlRegisterSingletonInstance("AnimeImageProvider", 1, 0, "AnimeImageProvider", animeImageProvider);
+    qmlRegisterSingletonInstance("LibEventLoop", 1, 0, "LibEventLoop", &libEventLoop);
     qRegisterMetaType<TemplateSummary>("TemplateSummary");
     qRegisterMetaType<TemplateAnalysis>("TemplateAnalysis");
     qRegisterMetaType<UserData>("UserData");
@@ -113,11 +117,12 @@ extern "C" Q_DECL_EXPORT int run(QApplication *a)
 
     const QUrl url(QStringLiteral("qrc:/qml/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-                     a, [url](const QObject * obj, const QUrl & objUrl)
+                     &libEventLoop, [url, &libEventLoop](const QObject * obj, const QUrl & objUrl)
     {
         if (!obj && url == objUrl)
-            QCoreApplication::exit(-1);
+            libEventLoop.exit(-1);
     }, Qt::QueuedConnection);
     engine.load(url);
-    return a->exec();
+
+    return libEventLoop.exec();
 }

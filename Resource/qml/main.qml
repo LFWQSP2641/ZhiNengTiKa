@@ -7,6 +7,7 @@ import MultipleSubjectsTemplateListModelList
 import QMLUtils
 import ZAccelerationToOpacityConverter
 import AnimeImageProvider
+import LibEventLoop
 
 ApplicationWindow {
     id: applicationWindow
@@ -28,7 +29,8 @@ ApplicationWindow {
         id: navigateBackAction
         icon.source: "qrc:/svg/icon/angle-left.svg"
         onTriggered: {
-            if (stackView.depth > 1) {
+            if (stackView.depth > 1)
+            {
                 stackView.pop()
             }
         }
@@ -429,6 +431,12 @@ ApplicationWindow {
     Component.onDestruction: {
         converter.stop()
         converter.wait()
+    }
+
+    onClosing: function(closeEvent) {
+        //CloseEvent的accepted设置为false就能忽略该事件
+        closeEvent.accepted = false
+        LibEventLoop.quit()
     }
 
     function stackViewPopAll() {

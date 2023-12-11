@@ -121,13 +121,17 @@ int main(int argc, char *argv[])
         if(zhiNengTiKaQML)
         {
             auto result(zhiNengTiKaQML(&a));
+            showMessage(QStringLiteral("主程序函数退出, 本程序即将关闭"));
             if(!libraryUpdateChecker.isFinished())
             {
                 libraryUpdateChecker.quit();
                 libraryUpdateChecker.wait();
             }
-            return result;
+            QTimer::singleShot(3000, &a, [result]
+            {
+                QApplication::exit(result);
+            });
         }
     }
-    return -1;
+    return a.exec();
 }
