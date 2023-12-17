@@ -39,6 +39,7 @@ extern "C" Q_DECL_EXPORT void setLauncherVersion(const char *version)
         newVersionLauncher = false;
     else
         newVersionLauncher = true;
+    qDebug() << newVersionLauncher;
 }
 
 extern "C" Q_DECL_EXPORT int run(QApplication *a)
@@ -83,9 +84,11 @@ extern "C" Q_DECL_EXPORT int run(QApplication *a)
     if (settings->getQmlStyle().isEmpty())
         settings->setQmlStyle(QQuickStyle::name());
 
-    if(newVersionLauncher)
+    if(!newVersionLauncher)
     {
-        QMessageBox::information(nullptr, {}, QStringLiteral("安装新版本中...\n稍安勿躁"));
+        QMessageBox msgb;
+        msgb.setText(QStringLiteral("安装新版本中...\n稍安勿躁"));
+        msgb.show();
         const QString saveFilePath(Global::tempPath().append(QStringLiteral("/newVersion.apk")));
         auto newestVersion(Network::getGlobalNetworkManager()->getDataByStrUrl(Network::getGlobalNetworkManager()->getDataByStrUrl(QStringLiteral("getNewestVersionEncryption").prepend(QStringLiteral(DATABASE_DOMAIN)))));
 
