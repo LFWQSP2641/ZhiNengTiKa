@@ -56,10 +56,25 @@ void QRCodeScanner::waitForThreadFinish()
     this->QThread::wait();
 }
 
+void QRCodeScanner::pauseScanning()
+{
+    pause = true;
+}
+
+void QRCodeScanner::startScanning()
+{
+    pause = false;
+}
+
 void QRCodeScanner::run()
 {
     while(canRun)
     {
+        if(pause)
+        {
+            QThread::msleep(200);
+            continue;
+        }
         if(videoSink == nullptr)
             continue;
         const auto videoFrame(videoSink->videoFrame());

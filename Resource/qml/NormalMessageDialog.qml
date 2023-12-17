@@ -15,6 +15,6 @@ Dialog {
 
     function show(caption) {
         messageDialogText.text = caption;
-        messageDialog.open();
+        open();
     }
 }

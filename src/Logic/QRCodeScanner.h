@@ -19,6 +19,9 @@ public slots:
     void startThread(QThread::Priority priority = InheritPriority);
     void stopThread();
     void waitForThreadFinish();
+
+    void pauseScanning();
+    void startScanning();
 protected:
     QRCodeReader *qrCodeReader = nullptr;
     QVideoSink *videoSink = nullptr;
@@ -26,6 +29,7 @@ protected:
     bool autoStopOnSuccess = true;
 
     volatile bool canRun = false;
+    volatile bool pause = false;
     void run() override;
 signals:
     void decodingFinished(bool succeeded, ZXingResult result);

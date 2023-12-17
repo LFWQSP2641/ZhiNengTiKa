@@ -40,12 +40,6 @@ Item {
         id: qrCodeScanner
         videoSink: videoOutput.videoSink
         onDecodingFinished: function(succeeded, result){
-            console.log(succeeded)
-            console.log(result.text)
-            console.log(result.position.topLeft)
-            console.log(result.position.topRight)
-            console.log(result.position.bottomRight)
-            console.log(result.position.bottomLeft)
             if(succeeded)
             {
                 camera.stop()
@@ -64,6 +58,7 @@ Item {
         anchors {right: parent.right; bottom: parent.bottom; rightMargin: 10; bottomMargin: 10}
         z: parent.z + 1
         onClicked: {
+            qrCodeScanner.pauseScanning()
             camera.stop()
             fileDialog.open()
         }
@@ -94,11 +89,17 @@ Item {
         nameFilters:["Images (*.jpg *.jpeg *.png *.gif)"]
 
         onAccepted: {
-            qrCodeScanner.qrCodeReader.decodeImageByPath(currentFile)
-            camera.start()
+            var result = qrCodeScanner.qrCodeReader.decodeImageByPath(currentFile)
+            if(result.text == null || result.text === '')
+            {
+                scanFailedDialog.show("未检测到二维码")
+                camera.start()
+                qrCodeScanner.startScanning()
+            }
         }
         onRejected: {
             camera.start()
+            qrCodeScanner.startScanning()
         }
     }
 

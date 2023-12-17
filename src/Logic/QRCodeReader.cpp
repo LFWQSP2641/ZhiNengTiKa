@@ -16,7 +16,6 @@ ZXingResult QRCodeReader::decodeImage(const QImage &image)
     try
     {
         const auto result(ZXingReader::decodeImage(image, maxWidth, maxHeight, smoothTransformation));
-        qDebug() << Q_FUNC_INFO << "result:" << result.getText();
         emit decodingFinished(!result.getText().isEmpty(), result);
         return result;
     }
@@ -42,7 +41,6 @@ ZXingResult QRCodeReader::decodeFrame(const QVideoFrame &frame)
     try
     {
         const auto result(ZXingReader::decodeFrame(frame, maxWidth, maxHeight, smoothTransformation));
-        qDebug() << Q_FUNC_INFO << "result:" << result.getText();
         emit decodingFinished(!result.getText().isEmpty(), result);
         return result;
     }
