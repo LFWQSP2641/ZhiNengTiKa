@@ -5,12 +5,7 @@
 #endif // Q_OS_ANDROID
 
 ApplicationUpdateChecker::ApplicationUpdateChecker(QObject *parent)
-    : ApplicationUpdateChecker{Version(), parent}
-{
-}
-
-ApplicationUpdateChecker::ApplicationUpdateChecker(const Version &currentVersion, QObject *parent)
-    : UpdateChecker(currentVersion, parent),
+    : UpdateChecker(Version(QStringLiteral(APP_VERSION)), parent),
       domain(QStringLiteral(DATABASE_DOMAIN).append(QStringLiteral("Update/"))),
       saveFilePath(Global::tempPath().append(QStringLiteral("/newVersion.apk")))
 {
@@ -18,6 +13,7 @@ ApplicationUpdateChecker::ApplicationUpdateChecker(const Version &currentVersion
 
 void ApplicationUpdateChecker::installNewestVersion()
 {
+    qDebug() << Q_FUNC_INFO;
 #ifdef Q_OS_ANDROID
     CallAndroidNativeComponent::installApk(saveFilePath);
 #endif // Q_OS_ANDROID

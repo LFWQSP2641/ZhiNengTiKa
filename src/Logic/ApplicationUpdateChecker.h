@@ -8,7 +8,6 @@ class ApplicationUpdateChecker : public UpdateChecker
     Q_OBJECT
 public:
     explicit ApplicationUpdateChecker(QObject *parent = nullptr);
-    explicit ApplicationUpdateChecker(const Version &currentVersion, QObject *parent = nullptr);
 public slots:
     void installNewestVersion() override;
 protected:

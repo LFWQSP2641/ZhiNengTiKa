@@ -15,7 +15,7 @@ LibraryUpdateChecker::LibraryUpdateChecker(const Version &currentVersion, QObjec
 
 void LibraryUpdateChecker::installNewestVersion()
 {
-
+    qDebug() << Q_FUNC_INFO;
 }
 
 QString LibraryUpdateChecker::getDomain() const

@@ -18,7 +18,7 @@ bool UpdateChecker::checkMinimumVersion() const
     qDebug() << minimumVersionStr;
     if(minimumVersionStr.isEmpty())
         return false;
-    return Version(minimumVersionStr) < UpdateChecker::currentVersion;
+    return Version(minimumVersionStr) < currentVersion;
 }
 
 Version UpdateChecker::getCurrentVersion() const
@@ -71,6 +71,7 @@ void UpdateChecker::start()
 
 void UpdateChecker::downloadNewestVersion()
 {
+    qDebug() << Q_FUNC_INFO;
     auto downloadUrlRelpy(Network::getGlobalNetworkManager()->getByStrUrl(getDomain().append(QStringLiteral("getNewestVersionEncryption"))));
     connect(downloadUrlRelpy, &QNetworkReply::finished, this, &UpdateChecker::onFetchDownloadUrlRelpyFinished);
     // auto newestVersionReply(Network::getGlobalNetworkManager()->getByStrUrl(Network::getGlobalNetworkManager()->getDataByStrUrl(getDomain().append(QStringLiteral("getNewestVersionEncryption")))));
@@ -148,6 +149,7 @@ void UpdateChecker::taskFailing()
 
 void UpdateChecker::onFetchDownloadUrlRelpyFinished()
 {
+    qDebug() << Q_FUNC_INFO;
     auto reply(qobject_cast<QNetworkReply*>(sender()));
     if(reply->error() == QNetworkReply::NoError)
     {
@@ -163,6 +165,7 @@ void UpdateChecker::onFetchDownloadUrlRelpyFinished()
 
 void UpdateChecker::onDownloadNewestVersionRelpyFinished()
 {
+    qDebug() << Q_FUNC_INFO;
     auto reply(qobject_cast<QNetworkReply*>(sender()));
     if(reply->error() == QNetworkReply::NoError)
     {
