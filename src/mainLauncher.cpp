@@ -62,8 +62,21 @@ int main(int argc, char *argv[])
 
     const QString libraryFilePath(Global::dataPath().append(QStringLiteral("/libZhiNengTiKaQML_arm64-v8a.so")));
     const QString libraryPath(Global::dataPath().append(QStringLiteral("/libZhiNengTiKaQML_arm64-v8a")));
+    const QString newVersionlibraryFilePath(Global::tempPath().append(QStringLiteral("/newVersionLibrary")));
 
     QFile libraryFile(libraryFilePath);
+    QFile newVersionLibraryFile(newVersionlibraryFilePath);
+
+    const auto updateLibraryFile([&libraryFilePath, &newVersionLibraryFile, &newVersionlibraryFilePath]
+    {
+        if(newVersionLibraryFile.exists())
+        {
+            QFile::remove(libraryFilePath);
+            QFile::rename(newVersionlibraryFilePath, libraryFilePath);
+            qDebug() << QStringLiteral("更新动态库文件完成");
+        }
+    });
+
     if(!libraryFile.exists())
     {
         QEventLoop eventLoop;
@@ -75,13 +88,9 @@ int main(int argc, char *argv[])
         libraryUpdateChecker.start();
         eventLoop.exec();
     }
-    QFile newVersionLibraryFile(Global::dataPath().append(QStringLiteral("/newVersionLibrary")));
-    if(newVersionLibraryFile.exists())
-    {
-        libraryFile.remove();
-        newVersionLibraryFile.copy(libraryFilePath);
-        newVersionLibraryFile.remove();
-    }
+
+    updateLibraryFile();
+    QObject::connect(&a, &QApplication::aboutToQuit, &a, updateLibraryFile);
 
     QObject::connect(&libraryUpdateChecker, &LibraryUpdateChecker::downloadFinished, &a, []
     {
@@ -93,6 +102,7 @@ int main(int argc, char *argv[])
     {
         showMessage(QStringLiteral("load library failed\n")
                     .append(library.errorString()));
+        libraryUpdateChecker.start();
     }
     else
     {
@@ -112,8 +122,8 @@ int main(int argc, char *argv[])
             const QString currentVersion(getZhiNengTiKaQMLVersion());
             qDebug() << "Library Version:" << currentVersion;
             libraryUpdateChecker.setCurrentVersion(Version(currentVersion));
-            libraryUpdateChecker.start();
         }
+        libraryUpdateChecker.start();
 
         typedef int (*ZhiNengTiKaQML)(QApplication *);
         ZhiNengTiKaQML zhiNengTiKaQML = (ZhiNengTiKaQML)library.resolve("run");
