@@ -1,14 +1,14 @@
-#ifndef LIBRARYUPDATECHECKER_H
-#define LIBRARYUPDATECHECKER_H
+#ifndef APPLICATIONUPDATECHECKER_H
+#define APPLICATIONUPDATECHECKER_H
 
 #include "UpdateChecker.h"
 
-class LibraryUpdateChecker : public UpdateChecker
+class ApplicationUpdateChecker : public UpdateChecker
 {
     Q_OBJECT
 public:
-    explicit LibraryUpdateChecker(QObject *parent = nullptr);
-    explicit LibraryUpdateChecker(const Version &currentVersion, QObject *parent = nullptr);
+    explicit ApplicationUpdateChecker(QObject *parent = nullptr);
+    explicit ApplicationUpdateChecker(const Version &currentVersion, QObject *parent = nullptr);
 public slots:
     void installNewestVersion() override;
 protected:
@@ -22,4 +22,4 @@ private:
     Q_PROPERTY(QString saveFilePath READ getSaveFilePath CONSTANT FINAL)
 };
 
-#endif // LIBRARYUPDATECHECKER_H
+#endif // APPLICATIONUPDATECHECKER_H
