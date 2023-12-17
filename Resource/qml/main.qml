@@ -70,26 +70,88 @@ ApplicationWindow {
         anchors.fill: parent
 
         initialItem: Item {
-            Image {
-                id: backgroundImage
-                property bool rotated: false
-                anchors.centerIn: parent
-                height: rotated ? parent.width : parent.height
-                width: rotated ? parent.height : parent.width
-                z: parent.z - 1
-                rotation: rotated ? 90 : 0
-                asynchronous: true
-                cache: false
-                mipmap: true
-                fillMode: Image.PreserveAspectFit
-                source: "image://AnimeImageProvider/image"
-                onStatusChanged: {
-                    if (backgroundImage.status === Image.Ready)
+            id: stackViewRootItem
+            Repeater {
+                id: backgroundImageRepeater
+
+                property int currentBackgroundImageIndex: 0
+
+                anchors.fill: parent
+                z: -2
+
+                delegate: Image {
+                    property bool rotated: false
+                    anchors.centerIn: parent
+                    height: rotated ? parent.width : parent.height
+                    width: rotated ? parent.height : parent.width
+                    z: parent.z - 1
+                    rotation: rotated ? 90 : 0
+                    asynchronous: true
+                    cache: false
+                    mipmap: true
+                    fillMode: Image.PreserveAspectFit
+                    opacity: 0
+
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 500
+                            easing.type: Easing.InOutQuad
+                        }
+                    }
+
+                    Timer {
+                        id: delayResetSourceTimer
+                        interval: 500
+                        onTriggered: parent.source = ""
+                    }
+
+                    onStatusChanged: {
+                        if (status === Image.Ready)
+                        {
+                            rotated = (parent.height > parent.width && paintedHeight < paintedWidth) || (parent.height < parent.width && paintedHeight > paintedWidth)
+                        }
+                    }
+
+                    function delayResetSource() {
+                        delayResetSourceTimer.start()
+                    }
+                }
+                model: 2
+
+                function getCurrentBackgroundImage() {
+                    return backgroundImageRepeater.itemAt(backgroundImageRepeater.currentBackgroundImageIndex)
+                }
+
+                function refreshImage(first = false) {
+                    var previousImageItem = null
+                    if(!first)
                     {
-                        rotated = (parent.height > parent.width && paintedHeight < paintedWidth) || (parent.height < parent.width && paintedHeight > paintedWidth)
+                        previousImageItem = backgroundImageRepeater.itemAt(backgroundImageRepeater.currentBackgroundImageIndex)
+
+                        ++backgroundImageRepeater.currentBackgroundImageIndex
+                        if(backgroundImageRepeater.currentBackgroundImageIndex >= backgroundImageRepeater.count)
+                            backgroundImageRepeater.currentBackgroundImageIndex = 0
+                    }
+                    var imageItem = backgroundImageRepeater.itemAt(backgroundImageRepeater.currentBackgroundImageIndex)
+
+                    imageItem.source = "image://AnimeImageProvider/image"
+
+                    imageItem.z = -1
+                    if(previousImageItem != null)
+                        previousImageItem.z = -2
+
+                    imageItem.opacity = 1
+
+                    if(previousImageItem != null)
+                    {
+                        previousImageItem.opacity = 0
+
+                        previousImageItem.delayResetSource()
                     }
                 }
             }
+
+
             Item {
                 id: buttonsItem
                 anchors.fill: parent
@@ -193,10 +255,10 @@ ApplicationWindow {
                 }
             }
             onHeightChanged: {
-                backgroundImage.rotated = (height > width && backgroundImage.paintedHeight < backgroundImage.paintedWidth) || (height < width && backgroundImage.paintedHeight > backgroundImage.paintedWidth)
+                backgroundImageRepeater.getCurrentBackgroundImage().rotated = (height > width && backgroundImageRepeater.getCurrentBackgroundImage().paintedHeight < backgroundImageRepeater.getCurrentBackgroundImage().paintedWidth) || (height < width && backgroundImageRepeater.getCurrentBackgroundImage().paintedHeight > backgroundImageRepeater.getCurrentBackgroundImage().paintedWidth)
             }
             onWidthChanged: {
-                backgroundImage.rotated = (height > width && backgroundImage.paintedHeight < backgroundImage.paintedWidth) || (height < width && backgroundImage.paintedHeight > backgroundImage.paintedWidth)
+                backgroundImageRepeater.getCurrentBackgroundImage().rotated = (height > width && backgroundImageRepeater.getCurrentBackgroundImage().paintedHeight < backgroundImageRepeater.getCurrentBackgroundImage().paintedWidth) || (height < width && backgroundImageRepeater.getCurrentBackgroundImage().paintedHeight > backgroundImageRepeater.getCurrentBackgroundImage().paintedWidth)
             }
         }
         onDepthChanged: {
@@ -226,7 +288,7 @@ ApplicationWindow {
         onTriggered: {
             if(stackView.depth === 1)
             {
-                refreshImage()
+                applicationWindow.refreshImage(false)
             }
             else
             {
@@ -241,7 +303,7 @@ ApplicationWindow {
         function onFirstImageCached() {
             if(stackView.depth === 1)
             {
-                refreshImage()
+                applicationWindow.refreshImage(true)
             }
             else
             {
@@ -445,9 +507,8 @@ ApplicationWindow {
             stackView.pop()
         }
     }
-    function refreshImage() {
-        backgroundImage.source = ""
-        backgroundImage.source = "image://AnimeImageProvider/image"
+    function refreshImage(first = false) {
+        backgroundImageRepeater.refreshImage(first)
         imageRefreshTimer.needToRefresh = false
     }
 }
