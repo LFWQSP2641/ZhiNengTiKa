@@ -30,6 +30,11 @@ QString Version::toString() const
     return string;
 }
 
+bool Version::isEmpty() const
+{
+    return versionData.isEmpty();
+}
+
 bool Version::operator<(const Version &other) const
 {
     for (int i = 0; i < qMin(this->versionData.size(), other.versionData.size()); ++i)

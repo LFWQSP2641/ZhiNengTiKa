@@ -16,7 +16,8 @@ bool UpdateChecker::checkMinimumVersion() const
 {
     auto minimumVersionStr{ Network::Network::getGlobalNetworkManager()->getDataByStrUrl(getDomain().append(QStringLiteral("minimumVersion"))) };
     qDebug() << minimumVersionStr;
-    // WARNING Verson为空时未测试
+    if(minimumVersionStr.isEmpty())
+        return false;
     return Version(minimumVersionStr) < UpdateChecker::currentVersion;
 }
 

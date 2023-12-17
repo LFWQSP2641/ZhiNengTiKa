@@ -10,6 +10,7 @@ public:
     Version(int major, int minor, int revision);
 
     QString toString() const;
+    bool isEmpty() const;
 
     bool operator<(const Version &other) const;
     bool operator<=(const Version &other) const;
