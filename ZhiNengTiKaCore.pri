@@ -1,4 +1,4 @@
-VERSION = 3.0.1
+VERSION = 3.0.2
 
 QT += core network multimedia core5compat
 
@@ -82,6 +82,7 @@ HEADERS += \
     $$PWD/src/Logic/TemplateSearcher.h \
     $$PWD/src/Logic/TemplateSummary.h \
     $$PWD/src/Logic/UserData.h \
+    $$PWD/src/Logic/Version.h \
     $$PWD/src/Singleton/Network.h \
     $$PWD/src/Singleton/Settings.h \
     $$PWD/src/StaticClass/CallAndroidNativeComponent.h \
@@ -108,6 +109,7 @@ SOURCES += \
     $$PWD/src/Logic/TemplateSearcher.cpp \
     $$PWD/src/Logic/TemplateSummary.cpp \
     $$PWD/src/Logic/UserData.cpp \
+    $$PWD/src/Logic/Version.cpp \
     $$PWD/src/Singleton/Network.cpp \
     $$PWD/src/Singleton/Settings.cpp \
     $$PWD/src/StaticClass/CallAndroidNativeComponent.cpp \
