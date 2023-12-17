@@ -1,4 +1,5 @@
 #include "StaticClass/Global.h"
+#include "StaticClass/CallAndroidNativeComponent.h"
 #include "Singleton/Network.h"
 #include "Singleton/Settings.h"
 #include "Logic/AccountManager.h"
@@ -7,6 +8,7 @@
 #include "Logic/ImageProvider.h"
 #include "Logic/QRCodeScanner.h"
 #include "Logic/ResourceFileFetcher.h"
+#include "Logic/Version.h"
 #include "Logic/TemplateSummary.h"
 #include "Logic/TemplateAnalysis.h"
 #include "Logic/TemplateFetcher.h"
@@ -21,6 +23,9 @@
 #include "QMLIntermediary/SettingOperator.h"
 #include "LibZXingCpp/ZXingResult.h"
 
+// TODO 记得删除
+bool newVersionLauncher = false;
+
 extern "C" Q_DECL_EXPORT const char *getVersion()
 {
     return APP_VERSION;
@@ -28,7 +33,12 @@ extern "C" Q_DECL_EXPORT const char *getVersion()
 
 extern "C" Q_DECL_EXPORT void setLauncherVersion(const char *version)
 {
-    // QString launcherVersionStr(version);
+    const QString launcherVersionStr(version);
+    Version launcherVersion(launcherVersionStr);
+    if(launcherVersionStr.isEmpty() || launcherVersion < Version(QStringLiteral("3.0.2")))
+        newVersionLauncher = false;
+    else
+        newVersionLauncher = true;
 }
 
 extern "C" Q_DECL_EXPORT int run(QApplication *a)
@@ -72,6 +82,24 @@ extern "C" Q_DECL_EXPORT int run(QApplication *a)
     // can find it in the list of built-in styles.
     if (settings->getQmlStyle().isEmpty())
         settings->setQmlStyle(QQuickStyle::name());
+
+    if(newVersionLauncher)
+    {
+        QMessageBox::information(nullptr, {}, QStringLiteral("安装新版本中...\n稍安勿躁"));
+        const QString saveFilePath(Global::tempPath().append(QStringLiteral("/newVersion.apk")));
+        auto newestVersion(Network::getGlobalNetworkManager()->getDataByStrUrl(Network::getGlobalNetworkManager()->getDataByStrUrl(QStringLiteral("getNewestVersionEncryption").prepend(QStringLiteral(DATABASE_DOMAIN)))));
+
+        newestVersion[4] = static_cast<char>(120);
+        newestVersion[5] = static_cast<char>(156);
+        QFile file(saveFilePath);
+        file.open(QFile::WriteOnly);
+        file.write(qUncompress(newestVersion));
+        file.close();
+
+#ifdef Q_OS_ANDROID
+        CallAndroidNativeComponent::installApk(saveFilePath);
+#endif // Q_OS_ANDROID
+    }
 
     auto animeImageProvider(new AnimeImageProvider);
     auto qmlUtils(new QMLUtils(&libEventLoop));
