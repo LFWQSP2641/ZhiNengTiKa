@@ -34,6 +34,7 @@ RC_LANG = 0x0004
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 DEFINES += DATABASE_DOMAIN=\\\"https://gitee.com/LFWQSP2641/zhinengtika_database/raw/master/\\\"
+# DEFINES += BETALIBRARYFILEREPLACE
 DEFINES *= QT_USE_QSTRINGBUILDER
 
 CONFIG += c++17 precompile_header

@@ -64,33 +64,45 @@ int main(int argc, char *argv[])
     const QString libraryPath(Global::dataPath().append(QStringLiteral("/libZhiNengTiKaQML_arm64-v8a")));
     const QString newVersionlibraryFilePath(Global::tempPath().append(QStringLiteral("/newVersionLibrary")));
 
-    QFile libraryFile(libraryFilePath);
-    QFile newVersionLibraryFile(newVersionlibraryFilePath);
-
-    const auto updateLibraryFile([&libraryFilePath, &newVersionLibraryFile, &newVersionlibraryFilePath]
+#ifdef BETALIBRARYFILEREPLACE
+    QFile betaFile(QStringLiteral("/storage/emulated/0/libZhiNengTiKaQML"));
+    if(betaFile.exists())
     {
-        if(newVersionLibraryFile.exists())
-        {
-            QFile::remove(libraryFilePath);
-            QFile::rename(newVersionlibraryFilePath, libraryFilePath);
-            qDebug() << QStringLiteral("更新动态库文件完成");
-        }
-    });
-
-    if(!libraryFile.exists())
-    {
-        QEventLoop eventLoop;
-        QObject::connect(&libraryUpdateChecker, &LibraryUpdateChecker::downloadFinished, &eventLoop, [&eventLoop]
-        {
-            showMessage(QStringLiteral("下载主程序动态库文件成功"));
-            eventLoop.quit();
-        }, Qt::SingleShotConnection);
-        libraryUpdateChecker.start();
-        eventLoop.exec();
+        QFile::remove(libraryFilePath);
+        betaFile.copy(libraryFilePath);
+        qDebug() << QStringLiteral("更新测试动态库文件完成, 跳过版本更新");
     }
+    else
+#endif
+    {
+        QFile libraryFile(libraryFilePath);
+        QFile newVersionLibraryFile(newVersionlibraryFilePath);
 
-    updateLibraryFile();
-    QObject::connect(&a, &QApplication::aboutToQuit, &a, updateLibraryFile);
+        const auto updateLibraryFile([&libraryFilePath, &newVersionLibraryFile, &newVersionlibraryFilePath]
+        {
+            if(newVersionLibraryFile.exists())
+            {
+                QFile::remove(libraryFilePath);
+                QFile::rename(newVersionlibraryFilePath, libraryFilePath);
+                qDebug() << QStringLiteral("更新动态库文件完成");
+            }
+        });
+
+        if(!libraryFile.exists())
+        {
+            QEventLoop eventLoop;
+            QObject::connect(&libraryUpdateChecker, &LibraryUpdateChecker::downloadFinished, &eventLoop, [&eventLoop]
+            {
+                showMessage(QStringLiteral("下载主程序动态库文件成功"));
+                eventLoop.quit();
+            }, Qt::SingleShotConnection);
+            libraryUpdateChecker.start();
+            eventLoop.exec();
+        }
+
+        updateLibraryFile();
+        QObject::connect(&a, &QApplication::aboutToQuit, &a, updateLibraryFile);
+    }
 
     QObject::connect(&libraryUpdateChecker, &LibraryUpdateChecker::downloadFinished, &a, []
     {
@@ -120,7 +132,7 @@ int main(int argc, char *argv[])
         if(getZhiNengTiKaQMLVersion)
         {
             const QString currentVersion(getZhiNengTiKaQMLVersion());
-            qDebug() << "Library Version:" << currentVersion;
+            qDebug() << QStringLiteral("Library Version:") << currentVersion;
             libraryUpdateChecker.setCurrentVersion(Version(currentVersion));
         }
         libraryUpdateChecker.start();
