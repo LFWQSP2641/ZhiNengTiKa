@@ -272,7 +272,7 @@ ApplicationWindow {
                 }
                 converter.start()
             }
-            else
+            else(stackView.depth === 2)
             {
                 headerToolBar.height = headerToolBar.implicitHeight
                 converter.stop()
@@ -340,6 +340,7 @@ ApplicationWindow {
     TemplateFetcher {
         id: templateFetcher
         onError: function(msg) {
+            waitingForTemplateDetailWidget = false
             messageDialog.close()
             messageDialog.show(msg)
         }
