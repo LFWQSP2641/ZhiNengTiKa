@@ -149,6 +149,7 @@ int main(int argc, char *argv[])
                 QApplication::exit(result);
             });
         }
+        qDebug() << QStringLiteral("Library unload result:") << library.unload();
     }
     return a.exec();
 }
