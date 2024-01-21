@@ -32,7 +32,17 @@
 - AES加解密: [Qt-AES](https://github.com/bricke/Qt-AES)
 - 二维码扫描: [ZXing-C++](https://github.com/zxing-cpp/zxing-cpp)
 - zip解压: [Quazip](https://github.com/stachenov/quazip)
-    - zip解压: [zlib](https://github.com/madler/zlib)
+    - [zlib](https://github.com/madler/zlib)
+
+## 未来目标
+
+- 功能
+    - [ ] 启动器多平台支持
+    - [ ] 启动器可另下载所需的依赖库
+    - [ ] Qt Widgets
+    - [ ] 提交题卡相关改为MVC框架
+    - [ ] ~~全平台pdf显示(Qt 6.7 release)~~
+- 性能
 
 ## ⚡ Visitor count
 
