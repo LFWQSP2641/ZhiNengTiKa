@@ -70,6 +70,19 @@ TemplateSummary TemplateListModel::getTemplateSummary(int index)
 
 void TemplateListModel::addNewTemplate(const TemplateSummary &templateSummary)
 {
+    for(auto i(0); i < templateList.size(); ++i)
+    {
+        if(templateSummary == templateList.at(i))
+        {
+            if(i == 0)
+                return;
+            templateList[i] = templateSummary;
+            beginMoveRows(QModelIndex(), i, i, QModelIndex(), 0);
+            this->templateList.move(i, 0);
+            endMoveRows();
+            return;
+        }
+    }
     beginInsertRows(QModelIndex(), 0, 0);
     this->templateList.prepend(templateSummary);
     endInsertRows();

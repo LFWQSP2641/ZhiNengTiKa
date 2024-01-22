@@ -37,7 +37,7 @@ SelectWidget::SelectWidget(QWidget *parent)
     connect(OKButton, &QPushButton::clicked, this, &SelectWidget::onOKButtonPush);
     connect(searchButton, &QPushButton::clicked, this, &SelectWidget::onSearchButtonPush);
     connect(scanQRCodeButton, &QPushButton::clicked, this, &SelectWidget::onScanQRCodeButtonPush);
-    connect(templateCodeLineEdit, &QLineEdit::textChanged, [this]
+    connect(templateCodeLineEdit, &QLineEdit::editingFinished, [this]
     {
         currentListViewTemplateSummary = TemplateSummary();
         this->OKButton->setEnabled(true);
@@ -46,6 +46,7 @@ SelectWidget::SelectWidget(QWidget *parent)
     {
         currentListViewTemplateSummary = templateSummary;
         this->templateCodeLineEdit->setText(templateSummary.getTemplateCode());
+        this->OKButton->setEnabled(true);
     });
     connect(fetcher, &TemplateFetcher::templateAnalysisReady, this, &SelectWidget::showTemplateDetailWidget);
     connect(fetcher, &TemplateFetcher::error, this, [this](const QString & msg)
@@ -88,7 +89,7 @@ void SelectWidget::onScanQRCodeButtonPush()
 
 void SelectWidget::onOKButtonPush()
 {
-    if(currentListViewTemplateSummary.isEmpty())
+    if(!currentListViewTemplateSummary.isEmpty())
     {
         fetcher->handleTemplateRequest(currentListViewTemplateSummary);
     }
@@ -100,6 +101,11 @@ void SelectWidget::onOKButtonPush()
 
 void SelectWidget::showTemplateDetailWidget(const TemplateAnalysis &templateAnalysis)
 {
+    if(templateAnalysis.isEmpty())
+    {
+        return;
+    }
+
     obtainTemplateFromNetworkMessageBox->close();
 
     this->multipleSubjectsTemplateListView->addNewTemplate(templateAnalysis);
