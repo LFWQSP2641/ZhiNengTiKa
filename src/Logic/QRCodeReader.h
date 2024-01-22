@@ -35,7 +35,7 @@ protected:
     void frameErrorWarning(const QString &errMsg);
 
 signals:
-    void decodingFinished(bool succeeded, ZXingResult result);
+    void decodingFinished(bool success, const ZXingResult &result);
     void error(const QString &msg);
     void frameError(const QString &msg);
     void maxWidthChanged();

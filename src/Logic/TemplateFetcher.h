@@ -19,7 +19,7 @@ protected slots:
     void onHandleTemplateReplyFinished();
 signals:
     void obtainTemplateFromNetwork();
-    void templateAnalysisReady(TemplateAnalysis templateAnalysis, const QByteArray &rawData = QByteArray());
+    void templateAnalysisReady(const TemplateAnalysis &templateAnalysis, const QByteArray &rawData = QByteArray());
     void error(const QString &msg);
 };
 

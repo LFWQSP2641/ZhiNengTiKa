@@ -25,11 +25,11 @@ class WebViewWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit WebViewWidget(TemplateAnalysis *templateAnalysis, QWidget *parent = nullptr);
+    explicit WebViewWidget(const TemplateAnalysis &templateAnalysis, QWidget *parent = nullptr);
     virtual QString getAnalyzedHtml(const qsizetype index = -1) = 0;
 
-    TemplateAnalysis *getTemplateAnalysis() const;
-    void setTemplateAnalysis(TemplateAnalysis *newTemplateAnalysis);
+    const TemplateAnalysis &getTemplateAnalysis() const;
+    void setTemplateAnalysis(const TemplateAnalysis &newTemplateAnalysis);
 
 protected:
     QGridLayout *mainLayout;
@@ -43,7 +43,7 @@ protected:
 
     bool templateAnalysisStateChanged = false;
 
-    TemplateAnalysis *templateAnalysis;
+    TemplateAnalysis templateAnalysis;
     void showEvent(QShowEvent *event) override;
 
     void keyPressEvent(QKeyEvent *event) override;
@@ -59,7 +59,7 @@ signals:
 
     void templateAnalysisChanged();
 private:
-    Q_PROPERTY(TemplateAnalysis *templateAnalysis READ getTemplateAnalysis WRITE setTemplateAnalysis NOTIFY templateAnalysisChanged FINAL)
+    Q_PROPERTY(TemplateAnalysis templateAnalysis READ getTemplateAnalysis WRITE setTemplateAnalysis NOTIFY templateAnalysisChanged FINAL)
 };
 
 #endif // WEBVIEWWIDGET_H

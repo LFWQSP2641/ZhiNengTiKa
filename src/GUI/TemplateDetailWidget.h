@@ -12,7 +12,7 @@ class TemplateDetailWidget : public NavigationBarTabWidget
 {
     Q_OBJECT
 public:
-    explicit TemplateDetailWidget(TemplateAnalysis *templateAnalysis, QWidget *parent = nullptr);
+    explicit TemplateDetailWidget(const TemplateAnalysis &templateAnalysis, QWidget *parent = nullptr);
 
     enum TabIndex
     {
@@ -22,7 +22,7 @@ public:
     };
 
 public slots:
-    void setTemplateAnalysis(TemplateAnalysis *templateAnalysis);
+    void setTemplateAnalysis(const TemplateAnalysis &templateAnalysis);
 
 protected:
 

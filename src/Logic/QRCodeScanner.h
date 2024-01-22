@@ -32,7 +32,7 @@ protected:
     volatile bool pause = false;
     void run() override;
 signals:
-    void decodingFinished(bool succeeded, ZXingResult result);
+    void decodingFinished(bool success, const ZXingResult &result);
     void error(const QString &msg);
     void videoSinkChanged();
     void autoStopOnSuccessChanged();

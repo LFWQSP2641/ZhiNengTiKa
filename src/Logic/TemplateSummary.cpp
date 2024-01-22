@@ -48,6 +48,16 @@ void TemplateSummary::setSubject(const QString &newSubject)
     subject = newSubject;
 }
 
+bool TemplateSummary::isEmpty() const
+{
+    return templateCode.isEmpty();
+}
+
+bool TemplateSummary::operator==(const TemplateSummary &other) const
+{
+    return this->templateCode == other.templateCode;
+}
+
 QDebug operator<<(QDebug dbg, const TemplateSummary &templateSummary)
 {
     dbg.space() << QStringLiteral("TemplateName:") << templateSummary.getTemplateName()

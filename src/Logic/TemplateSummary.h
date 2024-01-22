@@ -27,6 +27,10 @@ public:
     QString getSubject() const;
     void setSubject(const QString &newSubject);
 
+    bool isEmpty() const;
+
+    bool operator==(const TemplateSummary &other) const;
+
 protected:
     QString templateName;
     QString templateCode;

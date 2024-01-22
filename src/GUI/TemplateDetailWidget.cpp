@@ -4,14 +4,9 @@
 #include "UploadWidget.h"
 #include "../Singleton/Settings.h"
 
-TemplateDetailWidget::TemplateDetailWidget(TemplateAnalysis *templateAnalysis, QWidget *parent)
+TemplateDetailWidget::TemplateDetailWidget(const TemplateAnalysis &templateAnalysis, QWidget *parent)
     : NavigationBarTabWidget{parent}
 {
-    if(templateAnalysis != nullptr)
-    {
-        templateAnalysis->setParent(this);
-    }
-
     answerAndAnalysisWidget = new AnswerAndAnalysisWidget(templateAnalysis);
     questionWidget = new QuestionWidget(templateAnalysis);
     uploadWidget = new UploadWidget(templateAnalysis);
@@ -21,7 +16,7 @@ TemplateDetailWidget::TemplateDetailWidget(TemplateAnalysis *templateAnalysis, Q
     this->addTabWithScrollArea(uploadWidget, "上传");
 }
 
-void TemplateDetailWidget::setTemplateAnalysis(TemplateAnalysis *templateAnalysis)
+void TemplateDetailWidget::setTemplateAnalysis(const TemplateAnalysis &templateAnalysis)
 {
     answerAndAnalysisWidget->setTemplateAnalysis(templateAnalysis);
     questionWidget->setTemplateAnalysis(templateAnalysis);

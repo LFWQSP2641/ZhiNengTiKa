@@ -23,7 +23,7 @@ protected slots:
     void onSelectingFileButtonPushed();
 
 signals:
-    void scanningFinished(bool succeeded, ZXingResult *result);
+    void scanningFinished(bool success, const ZXingResult &result);
 };
 
 #endif // QRCODESCANNERWIDGET_H

@@ -18,14 +18,14 @@ protected:
     QLineEdit *templateCodeLineEdit;
     QPushButton *scanQRCodeButton;
     TemplateFetcher *fetcher;
-    TemplateSummary *currentListViewTemplateSummary = nullptr;
+    TemplateSummary currentListViewTemplateSummary;
     QMessageBox *obtainTemplateFromNetworkMessageBox = nullptr;
 
 protected slots:
     void onSearchButtonPush();
     void onScanQRCodeButtonPush();
     void onOKButtonPush();
-    void showTemplateDetailWidget(TemplateAnalysis *templateAnalysis);
+    void showTemplateDetailWidget(const TemplateAnalysis &templateAnalysis);
 };
 
 #endif // SEARCHDIALOG_H

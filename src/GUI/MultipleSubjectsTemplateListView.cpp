@@ -7,10 +7,10 @@ MultipleSubjectsTemplateListView::MultipleSubjectsTemplateListView(QWidget *pare
       multipleSubjectsTabBar(new QTabBar(this)),
       templateListView(new TemplateListView(this))
 {
-    const QStringList subjects({QStringLiteral("语文"), QStringLiteral("数学"),
+    const QStringList subjects({QStringLiteral("用户历史"),
+                                QStringLiteral("语文"), QStringLiteral("数学"),
                                 QStringLiteral("英语"), QStringLiteral("物理"),
-                                QStringLiteral("化学"), QStringLiteral("生物"),
-                                QStringLiteral("undefined")});
+                                QStringLiteral("化学"), QStringLiteral("生物")});
     for(const auto &subjectName : subjects)
     {
         multipleSubjectsTabBar->addTab(subjectName);
@@ -35,16 +35,16 @@ MultipleSubjectsTemplateListView::MultipleSubjectsTemplateListView(QWidget *pare
     connect(templateListView, &TemplateListView::templateNameClicked, this, &MultipleSubjectsTemplateListView::templateNameClicked);
 }
 
-void MultipleSubjectsTemplateListView::addNewTemplate(TemplateSummary *templateSummary)
+void MultipleSubjectsTemplateListView::addNewTemplate(const TemplateSummary &templateSummary)
 {
     this->multipleSubjectsTemplateListModelList.addNewTemplate(templateSummary);
-    this->multipleSubjectsTabBar->setCurrentIndex(MultipleSubjectsTemplateListModelList::Subjects::Undefined);
+    this->multipleSubjectsTabBar->setCurrentIndex(MultipleSubjectsTemplateListModelList::Subjects::UserHistory);
     this->templateListView->setCurrentIndex(
         this->multipleSubjectsTemplateListModelList
-        .at(MultipleSubjectsTemplateListModelList::Subjects::Undefined)
+        .at(MultipleSubjectsTemplateListModelList::Subjects::UserHistory)
         ->index(this->multipleSubjectsTemplateListModelList
                 .at(MultipleSubjectsTemplateListModelList::Subjects::
-                    Undefined)
+                    UserHistory)
                 ->rowCount() - 1));
 }
 
@@ -53,7 +53,7 @@ MultipleSubjectsTemplateListModelList &MultipleSubjectsTemplateListView::getMult
     return multipleSubjectsTemplateListModelList;
 }
 
-TemplateSummary *MultipleSubjectsTemplateListView::getCurrentTemplateSummary()
+const TemplateSummary &MultipleSubjectsTemplateListView::getCurrentTemplateSummary()
 {
     return this->templateListView->getCurrentTemplateSummary();
 }

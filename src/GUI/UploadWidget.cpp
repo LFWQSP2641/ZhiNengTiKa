@@ -6,7 +6,7 @@
 #include "../Singleton/Network.h"
 #include "../StaticClass/XinjiaoyuNetwork.h"
 
-UploadWidget::UploadWidget(TemplateAnalysis *templateAnalysis, QWidget *parent)
+UploadWidget::UploadWidget(const TemplateAnalysis &templateAnalysis, QWidget *parent)
     : QWidget{parent}, templateAnalysis(templateAnalysis)
 {
     fetcher = new TemplateFetcher(this);
@@ -80,12 +80,12 @@ bool UploadWidget::upload()
 bool UploadWidget::uploadData(const QByteArray &data)
 {
     auto currentUserData(Settings::getSingletonSettings()->getAccountManager()->getCurrentUserData());
-    auto currentUserDataDetailData(currentUserData->getDetailDataJsonObject());
+    auto currentUserDataDetailData(currentUserData.getDetailDataJsonObject());
     auto ret{ QMessageBox::question(this,
                                     QStringLiteral(""),
                                     QStringLiteral("将提交到 %0 的账号\n"
                                             "且此操作不可撤回\n"
-                                            "是否继续?").arg(currentUserDataDetailData.value(QStringLiteral("realName")).toString().append(QStringLiteral("  ")).append(currentUserData->getUsername()))) };
+                                            "是否继续?").arg(currentUserData.getDescription())) };
     if(ret == QMessageBox::No)
     {
         return false;
@@ -248,7 +248,7 @@ QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)
     QJsonObject rootObject;
     rootObject.insert(QStringLiteral("schoolId"), QString(userData.getSchoolId()));
     rootObject.insert(QStringLiteral("studentId"), QString(userData.getStudentId()));
-    rootObject.insert(QStringLiteral("templateCode"), templateAnalysis->getTemplateCode());
+    rootObject.insert(QStringLiteral("templateCode"), templateAnalysis.getTemplateCode());
     QJsonArray array;
     for(auto &i : uploadChildWidgetList)
     {
@@ -259,7 +259,7 @@ QJsonObject UploadWidget::getAnswerJsonObject(const UserData &userData)
     return rootObject;
 }
 
-void UploadWidget::setTemplateAnalysis(TemplateAnalysis *templateAnalysis)
+void UploadWidget::setTemplateAnalysis(const TemplateAnalysis &templateAnalysis)
 {
     this->templateAnalysisStateChanged = true;
     this->templateAnalysis = templateAnalysis;
@@ -267,7 +267,7 @@ void UploadWidget::setTemplateAnalysis(TemplateAnalysis *templateAnalysis)
 
 void UploadWidget::analysis()
 {
-    if(!this->templateAnalysis->getValid())
+    if(!this->templateAnalysis.getValid())
     {
         return;
     }
@@ -288,7 +288,7 @@ void UploadWidget::analysis()
     }
 
     uploadChildWidgetList.clear();
-    const auto questionList{templateAnalysis->getCountAndAnswer()};
+    const auto questionList{templateAnalysis.getCountAndAnswer()};
 
     for(const auto &i : questionList)
     {
@@ -300,7 +300,7 @@ void UploadWidget::analysis()
     analysised = true;
 }
 
-void UploadWidget::analysisUserAnswer(TemplateAnalysis *templateAnalysis, const QByteArray &rawData)
+void UploadWidget::analysisUserAnswer(const TemplateAnalysis &templateAnalysis, const QByteArray &rawData)
 {
     Q_UNUSED(templateAnalysis);
     auto funCreateAnswerData{[](const QJsonObject & object)

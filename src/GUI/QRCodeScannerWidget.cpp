@@ -26,11 +26,13 @@ QRCodeScannerWidget::QRCodeScannerWidget(QWidget *parent)
     });
 
     camera->start();
+    scanner->startThread();
 }
 
 QRCodeScannerWidget::~QRCodeScannerWidget()
 {
     camera->stop();
+    scanner->stopThread();
 }
 
 void QRCodeScannerWidget::onSelectingFileButtonPushed()
@@ -38,6 +40,6 @@ void QRCodeScannerWidget::onSelectingFileButtonPushed()
     const auto imageFilePath{QFileDialog::getOpenFileName(this, QStringLiteral("选择图片文件"), {}, QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)"))};
     if(imageFilePath.isEmpty())
         return;
-    if(scanner->getQrCodeReader()->decodeImage(QImage(imageFilePath))->getText().isEmpty())
+    if(scanner->getQrCodeReader()->decodeImage(QImage(imageFilePath)).getText().isEmpty())
         QMessageBox::information(this, QStringLiteral("扫码失败"), QStringLiteral("扫码失败, 请尝试使用更清晰的图片"));
 }

@@ -1,6 +1,6 @@
 #include "QuestionWidget.h"
 
-QuestionWidget::QuestionWidget(TemplateAnalysis *templateAnalysis, QWidget *parent)
+QuestionWidget::QuestionWidget(const TemplateAnalysis &templateAnalysis, QWidget *parent)
     : WebViewWidget(templateAnalysis, parent)
 {
     showCurrentAnswerButton = new QPushButton(QStringLiteral("显示答案"), this);
@@ -10,10 +10,10 @@ QuestionWidget::QuestionWidget(TemplateAnalysis *templateAnalysis, QWidget *pare
 
 QString QuestionWidget::getAnalyzedHtml(const qsizetype index)
 {
-    return templateAnalysis->getQuestionHtml(index);
+    return templateAnalysis.getQuestionHtml(index);
 }
 
 void QuestionWidget::showCurrentAnswer()
 {
-    webView->setHtml(getAnalyzedHtml(currentPageIndex) + templateAnalysis->getAnswerAndAnalysisHtml(currentPageIndex));
+    webView->setHtml(getAnalyzedHtml(currentPageIndex) + templateAnalysis.getAnswerAndAnalysisHtml(currentPageIndex));
 }

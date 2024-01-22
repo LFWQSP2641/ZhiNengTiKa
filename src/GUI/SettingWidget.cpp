@@ -31,8 +31,6 @@ SettingWidget::SettingWidget(QWidget *parent)
     resultTestLabel = new QLabel(this);
     schoolNameComboBox = new QComboBox(this);
     levelComboBox = new QComboBox(this);
-    listLatestTemplatePreferentiallyCheckBox = new QCheckBox(QStringLiteral("优先显示最新题卡"), this);
-    compressQRCodeImageCheckBox = new QCheckBox(QStringLiteral("压缩二维码图片后解析"), this);
     cleanTempButton = new QPushButton(QStringLiteral("删除缓存"), this);
     showTempSize = new QLabel(this);
     commonProblemButton = new QPushButton(QStringLiteral("常见问题"), this);
@@ -58,9 +56,6 @@ SettingWidget::SettingWidget(QWidget *parent)
 
     schoolNameComboBox->addItem(QStringLiteral("金川高级中学"));
     levelComboBox->addItem(QStringLiteral("2021级"));
-    listLatestTemplatePreferentiallyCheckBox->setChecked(settings->getListLatestTemplatePreferentially());
-
-    compressQRCodeImageCheckBox->setChecked(settings->getCompressQRCodeImage());
 
     auto addTwoWidgetToHBoxLayout{[](QWidget * widget1, QWidget * widget2)
     {
@@ -76,8 +71,6 @@ SettingWidget::SettingWidget(QWidget *parent)
     appearanceLayout->addRow(QStringLiteral("字体大小:"), fontPointSizeSpinBox);
     appearanceLayout->addRow(QStringLiteral("效果:"), resultTestLabel);
     templateListLayout->addLayout(addTwoWidgetToHBoxLayout(schoolNameComboBox, levelComboBox));
-    templateListLayout->addWidget(listLatestTemplatePreferentiallyCheckBox);
-    aboutQRCodeLayout->addWidget(compressQRCodeImageCheckBox);
     cacheLayout->addLayout(addTwoWidgetToHBoxLayout(showTempSize, cleanTempButton));
     problemLayout->addLayout(addTwoWidgetToHBoxLayout(commonProblemButton, knownProblemButton));
     versionLayout->addLayout(addTwoWidgetToHBoxLayout(currentVersionLabel, checkNewVersionButton));
@@ -175,15 +168,6 @@ SettingWidget::SettingWidget(QWidget *parent)
         resultTestLabel->setFixedHeight(QFontMetrics(testFont).height());
         settings->setFontPointSize(i);
     });
-    QObject::connect(listLatestTemplatePreferentiallyCheckBox, &QCheckBox::stateChanged, [this](int state)
-    {
-        settings->setListLatestTemplatePreferentially(state == Qt::CheckState::Checked);
-        askRestart();
-    });
-    QObject::connect(compressQRCodeImageCheckBox, &QCheckBox::stateChanged, [this](int state)
-    {
-        settings->setCompressQRCodeImage(state == Qt::CheckState::Checked);
-    });
 
     connect(this->commonProblemButton, &QPushButton::clicked, [this]
     {
@@ -268,18 +252,14 @@ SettingWidget::SettingWidget(QWidget *parent)
 //        checkNewVersionButton->setText(QStringLiteral("检查更新"));
 //        checkNewVersionButton->setEnabled(true);
 //    });
-    connect(settings->getAccountManager(), &AccountManager::loginFinished, this, [this](bool success, UserData * object)
+    connect(settings->getAccountManager(), &AccountManager::loginFinished, this, [this](bool success, UserData object)
     {
         if(success)
         {
             QMessageBox::information(
-                this, QStringLiteral("information"),
+                this, {},
                 QStringLiteral("登录成功\n当前账号:")
-                .append(object->getDetailDataJsonObject()
-                        .value(QStringLiteral("realName"))
-                        .toString()
-                        .append(QStringLiteral("  "))
-                        .append(object->getUsername())));
+                .append(object.getDescription()));
             setUserList();
         }
         loginButton->setEnabled(true);
@@ -303,7 +283,7 @@ void SettingWidget::setUserList()
     {
         for(const auto &i : *settings->getAccountManager())
         {
-            userListComboBox->addItem(i->getDescription());
+            userListComboBox->addItem(i.getDescription());
         }
     }
     else

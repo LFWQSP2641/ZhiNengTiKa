@@ -1,6 +1,6 @@
 #include "AnswerAndAnalysisWidget.h"
 
-AnswerAndAnalysisWidget::AnswerAndAnalysisWidget(TemplateAnalysis *templateAnalysis, QWidget *parent)
+AnswerAndAnalysisWidget::AnswerAndAnalysisWidget(const TemplateAnalysis &templateAnalysis, QWidget *parent)
     : WebViewWidget(templateAnalysis, parent)
 {
     onlyAnswerCheckBox = new QCheckBox(QStringLiteral("Only Answer"), this);
@@ -11,17 +11,17 @@ AnswerAndAnalysisWidget::AnswerAndAnalysisWidget(TemplateAnalysis *templateAnaly
 
 QString AnswerAndAnalysisWidget::getAnalyzedHtml(const qsizetype index)
 {
-    if(!this->templateAnalysis->getValid())
+    if(!this->templateAnalysis.getValid())
     {
         return QString();
     }
     if(onlyAnswerCheckBox->isChecked())
     {
-        return this->templateAnalysis->getAnswerHtml(index);
+        return this->templateAnalysis.getAnswerHtml(index);
     }
     else
     {
-        return this->templateAnalysis->getAnswerAndAnalysisHtml(index);
+        return this->templateAnalysis.getAnswerAndAnalysisHtml(index);
     }
 }
 

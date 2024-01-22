@@ -39,13 +39,13 @@ SelectWidget::SelectWidget(QWidget *parent)
     connect(scanQRCodeButton, &QPushButton::clicked, this, &SelectWidget::onScanQRCodeButtonPush);
     connect(templateCodeLineEdit, &QLineEdit::textChanged, [this]
     {
-        currentListViewTemplateSummary = nullptr;
+        currentListViewTemplateSummary = TemplateSummary();
         this->OKButton->setEnabled(true);
     });
-    connect(this->multipleSubjectsTemplateListView, &MultipleSubjectsTemplateListView::templateNameClicked, [this](TemplateSummary * templateSummary)
+    connect(this->multipleSubjectsTemplateListView, &MultipleSubjectsTemplateListView::templateNameClicked, [this](const TemplateSummary & templateSummary)
     {
         currentListViewTemplateSummary = templateSummary;
-        this->templateCodeLineEdit->setText(templateSummary->getTemplateCode());
+        this->templateCodeLineEdit->setText(templateSummary.getTemplateCode());
     });
     connect(fetcher, &TemplateFetcher::templateAnalysisReady, this, &SelectWidget::showTemplateDetailWidget);
     connect(fetcher, &TemplateFetcher::error, this, [this](const QString & msg)
@@ -61,7 +61,7 @@ void SelectWidget::onSearchButtonPush()
     auto searchWidget{new SearchWidget};
     searchWidget->setAttribute(Qt::WA_DeleteOnClose);
     searchWidget->setAttribute(Qt::WA_QuitOnClose, false);
-    connect(searchWidget, &SearchWidget::searchFinished, [this, searchWidget](TemplateSummary * templateSummary)
+    connect(searchWidget, &SearchWidget::searchFinished, [this, searchWidget](const TemplateSummary & templateSummary)
     {
         searchWidget->close();
         fetcher->handleTemplateRequest(templateSummary);
@@ -74,14 +74,13 @@ void SelectWidget::onScanQRCodeButtonPush()
     auto scannerWidget{new QRCodeScannerWidget};
     scannerWidget->setAttribute(Qt::WA_DeleteOnClose);
     scannerWidget->setAttribute(Qt::WA_QuitOnClose, false);
-    connect(scannerWidget, &QRCodeScannerWidget::scanningFinished, [this, scannerWidget](bool success, ZXingResult * result)
+    connect(scannerWidget, &QRCodeScannerWidget::scanningFinished, [this, scannerWidget](bool success, const ZXingResult & result)
     {
         if(success)
         {
             scannerWidget->close();
-            fetcher->handleTemplateRequestByCode(result->getText());
+            fetcher->handleTemplateRequestByCode(result.getText());
         }
-        result->deleteLater();
     });
     scannerWidget->resize(this->size());
     scannerWidget->show();
@@ -89,7 +88,7 @@ void SelectWidget::onScanQRCodeButtonPush()
 
 void SelectWidget::onOKButtonPush()
 {
-    if(currentListViewTemplateSummary != nullptr)
+    if(currentListViewTemplateSummary.isEmpty())
     {
         fetcher->handleTemplateRequest(currentListViewTemplateSummary);
     }
@@ -99,30 +98,11 @@ void SelectWidget::onOKButtonPush()
     }
 }
 
-void SelectWidget::showTemplateDetailWidget(TemplateAnalysis *templateAnalysis)
+void SelectWidget::showTemplateDetailWidget(const TemplateAnalysis &templateAnalysis)
 {
     obtainTemplateFromNetworkMessageBox->close();
 
-    if(templateAnalysis->getExternal())
-    {
-        if (!this->multipleSubjectsTemplateListView
-                ->getMultipleSubjectsTemplateListModelList()
-                .at(MultipleSubjectsTemplateListModelList::Subjects::Undefined)
-                ->hasTemplateCode(templateAnalysis->getTemplateCode()))
-        {
-            this->multipleSubjectsTemplateListView->addNewTemplate(templateAnalysis);
-        }
-    }
-    else if(templateAnalysis->getNetwork())
-    {
-        if (!this->multipleSubjectsTemplateListView
-                ->getMultipleSubjectsTemplateListModelList()
-                .at(MultipleSubjectsTemplateListModelList::Subjects::Undefined)
-                ->hasTemplateCode(templateAnalysis->getTemplateCode()))
-        {
-            this->multipleSubjectsTemplateListView->addNewTemplate(templateAnalysis);
-        }
-    }
+    this->multipleSubjectsTemplateListView->addNewTemplate(templateAnalysis);
 
     auto templateDetailWidget{ new TemplateDetailWidget(templateAnalysis) };
     templateDetailWidget->setAttribute(Qt::WA_DeleteOnClose);

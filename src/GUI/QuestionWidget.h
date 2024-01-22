@@ -7,7 +7,7 @@ class QuestionWidget : public WebViewWidget
 {
     Q_OBJECT
 public:
-    explicit QuestionWidget(TemplateAnalysis *templateAnalysis, QWidget *parent = nullptr);
+    explicit QuestionWidget(const TemplateAnalysis &templateAnalysis, QWidget *parent = nullptr);
 
 private:
     QPushButton *showCurrentAnswerButton;

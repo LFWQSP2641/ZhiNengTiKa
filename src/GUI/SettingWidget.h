@@ -21,8 +21,6 @@ private:
     QLabel *resultTestLabel;
     QComboBox *schoolNameComboBox;
     QComboBox *levelComboBox;
-    QCheckBox *listLatestTemplatePreferentiallyCheckBox;
-    QCheckBox *compressQRCodeImageCheckBox;
     QPushButton *commonProblemButton;
     QPushButton *knownProblemButton;
     QPushButton *aboutButton;

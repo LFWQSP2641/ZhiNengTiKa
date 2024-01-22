@@ -10,7 +10,7 @@ class UploadWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit UploadWidget(TemplateAnalysis *templateAnalysis, QWidget *parent = nullptr);
+    explicit UploadWidget(const TemplateAnalysis &templateAnalysis, QWidget *parent = nullptr);
 
 protected:
     QVBoxLayout *mainLayout;
@@ -24,7 +24,7 @@ protected:
     TemplateFetcher *fetcher;
     QMessageBox *handleTemplateRequestMessageBox;
 
-    TemplateAnalysis *templateAnalysis;
+    TemplateAnalysis templateAnalysis;
     QList<UploadChildWidget*> uploadChildWidgetList;
     QList<QBitArray> rightAnswer;
 
@@ -39,11 +39,11 @@ protected:
     QJsonObject getAnswerJsonObject(const UserData &userData);
 
 public slots:
-    void setTemplateAnalysis(TemplateAnalysis *templateAnalysis);
+    void setTemplateAnalysis(const TemplateAnalysis &templateAnalysis);
 
 protected slots:
     void analysis();
-    void analysisUserAnswer(TemplateAnalysis *templateAnalysis, const QByteArray &rawData);
+    void analysisUserAnswer(const TemplateAnalysis &templateAnalysis, const QByteArray &rawData);
     bool upload();
     bool uploadData(const QByteArray &data);
     void getUserAnswer();

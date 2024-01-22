@@ -7,7 +7,7 @@ class AnswerAndAnalysisWidget : public WebViewWidget
 {
     Q_OBJECT
 public:
-    explicit AnswerAndAnalysisWidget(TemplateAnalysis *templateAnalysis, QWidget *parent = nullptr);
+    explicit AnswerAndAnalysisWidget(const TemplateAnalysis &templateAnalysis, QWidget *parent = nullptr);
 
 private:
     QCheckBox *onlyAnswerCheckBox;

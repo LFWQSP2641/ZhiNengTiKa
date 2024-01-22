@@ -1,7 +1,7 @@
 #include "WebViewWidget.h"
 #include "../StaticClass/Global.h"
 
-WebViewWidget::WebViewWidget(TemplateAnalysis *templateAnalysis, QWidget *parent)
+WebViewWidget::WebViewWidget(const TemplateAnalysis &templateAnalysis, QWidget *parent)
     : QWidget{parent}, templateAnalysis(templateAnalysis)
 {
     mainLayout = new QGridLayout(this);
@@ -34,12 +34,12 @@ WebViewWidget::WebViewWidget(TemplateAnalysis *templateAnalysis, QWidget *parent
     this->templateAnalysisStateChanged = true;
 }
 
-TemplateAnalysis *WebViewWidget::getTemplateAnalysis() const
+const TemplateAnalysis &WebViewWidget::getTemplateAnalysis() const
 {
     return templateAnalysis;
 }
 
-void WebViewWidget::setTemplateAnalysis(TemplateAnalysis *newTemplateAnalysis)
+void WebViewWidget::setTemplateAnalysis(const TemplateAnalysis &newTemplateAnalysis)
 {
     if (templateAnalysis == newTemplateAnalysis)
         return;
@@ -62,7 +62,7 @@ void WebViewWidget::keyPressEvent(QKeyEvent *event)
 {
     if(event->matches(QKeySequence::Copy))
     {
-        const QString path{Global::tempPath().append(QStringLiteral("/")).append(templateAnalysis->getTemplateName()).append(QStringLiteral(".html"))};
+        const QString path{Global::tempPath().append(QStringLiteral("/")).append(templateAnalysis.getTemplateName()).append(QStringLiteral(".html"))};
         saveToFile(path);
 
         QList<QUrl> copyfile;
@@ -79,7 +79,7 @@ void WebViewWidget::keyPressEvent(QKeyEvent *event)
 
 void WebViewWidget::analysis()
 {
-    if(!this->templateAnalysis->getValid())
+    if(!this->templateAnalysis.getValid())
     {
         return;
     }
@@ -90,7 +90,7 @@ void WebViewWidget::analysis()
     pagesSwitch->verticalScrollBar()->setSliderPosition(0);
     const auto allItem{new QListWidgetItem(QStringLiteral("ALL"), pagesSwitch)};
     allItem->setSelected(true);
-    const auto pageStrList{templateAnalysis->getQuestionsCountsStrList()};
+    const auto pageStrList{templateAnalysis.getQuestionsCountsStrList()};
     pagesSwitch->addItems(pageStrList);
     pageHash.insert(QStringLiteral("ALL"), -1);
     for(auto i{0}; i < pageStrList.size(); ++i)
@@ -102,7 +102,7 @@ void WebViewWidget::analysis()
 
 void WebViewWidget::saveToFile(const QString &pathName)
 {
-    if(!this->templateAnalysis->getValid() || pathName.isEmpty())
+    if(!this->templateAnalysis.getValid() || pathName.isEmpty())
     {
         return;
     }
@@ -116,7 +116,7 @@ void WebViewWidget::saveToFile(const QString &pathName)
             "<p>本文件由 ZhiNengTiKa 自动生成</p>"
             "<p>软件仓库: <a href=\"%2\">%2</a>.</p>"
             "</footer></body></html>")
-        .arg(templateAnalysis->getTemplateName(),
+        .arg(templateAnalysis.getTemplateName(),
              getAnalyzedHtml(currentPageIndex),
              QStringLiteral("https://github.com/LFWQSP2641/ZhiNengTiKa"))};
     QFile file(pathName);
