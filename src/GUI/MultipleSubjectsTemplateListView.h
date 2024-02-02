@@ -14,7 +14,11 @@ public:
     void addNewTemplate(const TemplateSummary &templateSummary);
 
     MultipleSubjectsTemplateListModelList &getMultipleSubjectsTemplateListModelList();
-    const TemplateSummary &getCurrentTemplateSummary();
+    TemplateSummary getCurrentTemplateSummary();
+
+    TemplateListView *getCurrentTemplateListView() const;
+
+    int getCurrentSubject() const;
 
 protected:
     QVBoxLayout *mainLayout;
@@ -22,8 +26,12 @@ protected:
     TemplateListView *templateListView;
     MultipleSubjectsTemplateListModelList multipleSubjectsTemplateListModelList;
 
+    int currentSubject = 0;
+
 signals:
     void templateNameClicked(const TemplateSummary &templateSummary);
+private:
+    Q_PROPERTY(int currentSubject READ getCurrentSubject CONSTANT FINAL)
 };
 
 #endif // MULTIPLESUBJECTSTEMPLATELISTVIEW_H

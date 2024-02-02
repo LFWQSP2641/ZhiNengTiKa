@@ -2,8 +2,8 @@
 #define SEARCHWIDGET_H
 
 #include "../Logic/TemplateSearcher.h"
-#include "../Logic/TemplateListModel.h"
 class TemplateListView;
+class TemplateListModel;
 
 class SearchWidget : public QWidget
 {
@@ -20,7 +20,7 @@ protected:
     QPushButton *OKButton;
     TemplateSearcher templateSearcher;
 
-    TemplateListModel searchResultTemplateListModel;
+    TemplateListModel *searchResultTemplateListModel;
     TemplateListView *searchResultTemplateListView;
 
     void setSearchingState(bool searching);

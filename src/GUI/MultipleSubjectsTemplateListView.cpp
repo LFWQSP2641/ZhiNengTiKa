@@ -25,11 +25,12 @@ MultipleSubjectsTemplateListView::MultipleSubjectsTemplateListView(QWidget *pare
     mainLayout->addWidget(multipleSubjectsTabBar);
     mainLayout->addWidget(templateListView);
 
-    connect(multipleSubjectsTabBar, &QTabBar::currentChanged, [this](int index)
+    connect(multipleSubjectsTabBar, &QTabBar::currentChanged, this, [this](int index)
     {
         if(index > -1)
         {
             templateListView->setTemplateListModel(this->multipleSubjectsTemplateListModelList.at(index));
+            currentSubject = index;
         }
     });
     connect(templateListView, &TemplateListView::templateNameClicked, this, &MultipleSubjectsTemplateListView::templateNameClicked);
@@ -38,14 +39,11 @@ MultipleSubjectsTemplateListView::MultipleSubjectsTemplateListView(QWidget *pare
 void MultipleSubjectsTemplateListView::addNewTemplate(const TemplateSummary &templateSummary)
 {
     this->multipleSubjectsTemplateListModelList.addNewTemplate(templateSummary);
-    this->multipleSubjectsTabBar->setCurrentIndex(MultipleSubjectsTemplateListModelList::Subjects::UserHistory);
-    this->templateListView->setCurrentIndex(
-        this->multipleSubjectsTemplateListModelList
-        .at(MultipleSubjectsTemplateListModelList::Subjects::UserHistory)
-        ->index(this->multipleSubjectsTemplateListModelList
-                .at(MultipleSubjectsTemplateListModelList::Subjects::
-                    UserHistory)
-                ->rowCount() - 1));
+    if(currentSubject == MultipleSubjectsTemplateListModelList::Subjects::UserHistory)
+    {
+        templateListView->setCurrentIndex(templateListView->indexAt(QPoint(0, 0)));
+    }
+
 }
 
 MultipleSubjectsTemplateListModelList &MultipleSubjectsTemplateListView::getMultipleSubjectsTemplateListModelList()
@@ -53,7 +51,17 @@ MultipleSubjectsTemplateListModelList &MultipleSubjectsTemplateListView::getMult
     return multipleSubjectsTemplateListModelList;
 }
 
-const TemplateSummary &MultipleSubjectsTemplateListView::getCurrentTemplateSummary()
+TemplateSummary MultipleSubjectsTemplateListView::getCurrentTemplateSummary()
 {
     return this->templateListView->getCurrentTemplateSummary();
+}
+
+TemplateListView *MultipleSubjectsTemplateListView::getCurrentTemplateListView() const
+{
+    return templateListView;
+}
+
+int MultipleSubjectsTemplateListView::getCurrentSubject() const
+{
+    return currentSubject;
 }

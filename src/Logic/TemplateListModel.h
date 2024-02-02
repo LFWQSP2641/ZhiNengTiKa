@@ -20,12 +20,15 @@ public:
 
     Q_INVOKABLE QString getTemplateCode(const QModelIndex &index);
     Q_INVOKABLE QString getTemplateCode(int index) const;
+
     Q_INVOKABLE bool hasTemplateName(const QString &templateName) const;
     Q_INVOKABLE bool hasTemplateCode(const QString &templateCode) const;
+
+    QByteArray exportData() const;
 public slots:
-    void addNewTemplate(const TemplateSummary &templateSummary);
     void clear();
-private:
+    void addNewTemplate(const TemplateSummary &templateSummary);
+protected:
     QList<TemplateSummary> templateList;
 };
 

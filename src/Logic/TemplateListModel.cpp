@@ -68,6 +68,18 @@ TemplateSummary TemplateListModel::getTemplateSummary(int index)
     return templateList.at(index);
 }
 
+
+void TemplateListModel::clear()
+{
+    if(this->templateList.size() == 0)
+    {
+        return;
+    }
+    beginRemoveRows(QModelIndex(), 0, this->templateList.size() - 1);
+    this->templateList.clear();
+    endRemoveRows();
+}
+
 void TemplateListModel::addNewTemplate(const TemplateSummary &templateSummary)
 {
     for(auto i(0); i < templateList.size(); ++i)
@@ -86,17 +98,6 @@ void TemplateListModel::addNewTemplate(const TemplateSummary &templateSummary)
     beginInsertRows(QModelIndex(), 0, 0);
     this->templateList.prepend(templateSummary);
     endInsertRows();
-}
-
-void TemplateListModel::clear()
-{
-    if(this->templateList.size() == 0)
-    {
-        return;
-    }
-    beginRemoveRows(QModelIndex(), 0, this->templateList.size() - 1);
-    this->templateList.clear();
-    endRemoveRows();
 }
 
 QString TemplateListModel::getTemplateCode(const QModelIndex &index)
@@ -133,4 +134,17 @@ bool TemplateListModel::hasTemplateCode(const QString &templateCode) const
         return templateInfo.getTemplateCode() == templateCode;
     })};
     return result;
+}
+
+QByteArray TemplateListModel::exportData() const
+{
+    QByteArray data;
+    for(const auto &i:templateList)
+    {
+        data.append(i.getTemplateName().toUtf8());
+        data.append(QByteArrayLiteral("\n"));
+        data.append(i.getTemplateCode().toUtf8());
+        data.append(QByteArrayLiteral("\n"));
+    }
+    return data;
 }

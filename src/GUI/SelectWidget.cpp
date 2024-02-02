@@ -4,6 +4,7 @@
 #include "../GUI/SearchWidget.h"
 #include "../GUI/MultipleSubjectsTemplateListView.h"
 #include "../GUI/QRCodeScannerWidget.h"
+#include "../GUI/TemplateListView.h"
 #include "LibZXingCpp/ZXingResult.h"
 
 SelectWidget::SelectWidget(QWidget *parent)
@@ -37,7 +38,7 @@ SelectWidget::SelectWidget(QWidget *parent)
     connect(OKButton, &QPushButton::clicked, this, &SelectWidget::onOKButtonPush);
     connect(searchButton, &QPushButton::clicked, this, &SelectWidget::onSearchButtonPush);
     connect(scanQRCodeButton, &QPushButton::clicked, this, &SelectWidget::onScanQRCodeButtonPush);
-    connect(templateCodeLineEdit, &QLineEdit::editingFinished, [this]
+    connect(templateCodeLineEdit, &QLineEdit::textEdited, [this]
     {
         currentListViewTemplateSummary = TemplateSummary();
         this->OKButton->setEnabled(true);

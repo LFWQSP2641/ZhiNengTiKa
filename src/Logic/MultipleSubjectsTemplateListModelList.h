@@ -26,12 +26,11 @@ public:
 public slots:
     void addNewTemplate(const TemplateSummary &templateSummary);
     void addNewTemplate(const QString &templateName, const QString &templateCode);
-
-    void addTemplateList(const TemplateSummary &templateSummary);
-    void addTemplateList(const QString &templateName, const QString &templateCode);
-
+    void writeUserHistoryToFile() const;
 protected:
     QList<TemplateListModel*> templateListModelList;
+protected slots:
+    void importTemplateList(const QString &filePath, bool split = true);
 };
 
 #endif // MULTIPLESUBJECTSTEMPLATELISTMODELLIST_H

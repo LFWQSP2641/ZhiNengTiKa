@@ -1,5 +1,6 @@
 #include "SearchWidget.h"
 #include "TemplateListView.h"
+#include "../Logic/TemplateListModel.h"
 
 SearchWidget::SearchWidget(QWidget *parent)
     : QWidget{parent},
@@ -9,6 +10,7 @@ SearchWidget::SearchWidget(QWidget *parent)
       searchStartButton(new QPushButton(QStringLiteral("搜索"), this)),
       searchStopButton(new QPushButton(QStringLiteral("停止"), this)),
       OKButton(new QPushButton(QStringLiteral("确定"), this)),
+      searchResultTemplateListModel(new TemplateListModel(this)),
       searchResultTemplateListView(new TemplateListView(this))
 {
     searchLineEdit->setPlaceholderText(QStringLiteral("题卡名称"));
@@ -16,7 +18,7 @@ SearchWidget::SearchWidget(QWidget *parent)
     stateShowLabel->setFixedHeight(this->fontMetrics().height());
     stateShowLabel->setVisible(false);
     OKButton->setEnabled(false);
-    searchResultTemplateListView->setTemplateListModel(&this->searchResultTemplateListModel);
+    searchResultTemplateListView->setTemplateListModel(this->searchResultTemplateListModel);
 
     auto tempHBoxLayout{new QHBoxLayout};
     tempHBoxLayout->addWidget(searchLineEdit);
@@ -58,7 +60,7 @@ void SearchWidget::closeEvent(QCloseEvent *event)
 
 void SearchWidget::searchStartButtonPush()
 {
-    this->searchResultTemplateListView->clear();
+    this->searchResultTemplateListModel->clear();
     this->stateShowLabel->setText(QStringLiteral("搜索中..."));
     this->stateShowLabel->setVisible(true);
     this->setSearchingState(true);
@@ -100,5 +102,5 @@ void SearchWidget::OKButtonPush()
 
 void SearchWidget::addToSearchResultListWidget(const TemplateSummary &templateSummary)
 {
-    this->searchResultTemplateListView->addNewTemplate(templateSummary);
+    this->searchResultTemplateListModel->addNewTemplate(templateSummary);
 }
