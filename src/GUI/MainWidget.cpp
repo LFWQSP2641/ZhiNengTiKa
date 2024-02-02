@@ -1,29 +1,27 @@
-#include "../Singleton/Settings.h"
 #include "MainWidget.h"
-#include "SettingWidget.h"
+
+#include "../Singleton/Settings.h"
 #include "SelectWidget.h"
+#include "SettingWidget.h"
 
 MainWidget::MainWidget(QWidget *parent)
-    : NavigationBarTabWidget{parent}
+    : NavigationBarTabWidget{ parent },
+      selectWidget(new SelectWidget(this)),
+      settingWidget(new SettingWidget(this))
 {
-    settingWidget = new SettingWidget(this);
-    searchWidget = new SelectWidget(this);
-
-    this->addTab(searchWidget, QStringLiteral("题卡"));
+    this->addTab(selectWidget, QStringLiteral("题卡"));
     this->addTabWithScrollArea(settingWidget, QStringLiteral("设置"));
 
     connect(this, &QTabWidget::currentChanged, [this](int index)
-    {
-        Settings::getSingletonSettings()->saveToFile();
-        switch (index)
-        {
-        case TabIndex::SettingWidgetIndex:
-            settingWidget->refreshTempSize();
-            break;
-        default:
-            break;
-        }
-    });
+            {
+                switch (index)
+                {
+                case TabIndex::SettingWidgetIndex:
+                    settingWidget->refreshTempSize();
+                    break;
+                default:
+                    break;
+                } });
 }
 
 void MainWidget::closeEvent(QCloseEvent *event)

@@ -9,6 +9,7 @@ class SettingWidget;
 class MainWidget : public NavigationBarTabWidget
 {
     Q_OBJECT
+
 public:
     explicit MainWidget(QWidget *parent = nullptr);
 
@@ -19,8 +20,8 @@ public:
     };
 
 protected:
-    SelectWidget *searchWidget;
-    SettingWidget *settingWidget;
+    SelectWidget *selectWidget = nullptr;
+    SettingWidget *settingWidget = nullptr;
 
     void closeEvent(QCloseEvent *event) override;
 };
