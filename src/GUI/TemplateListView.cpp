@@ -1,9 +1,11 @@
 #include "TemplateListView.h"
+
 #include "../Logic/TemplateListModel.h"
 
 TemplateListView::TemplateListView(QWidget *parent)
-    : QListView{parent}
+    : QListView{ parent }
 {
+    this->setUniformItemSizes(true);
     QScroller::grabGesture(this->viewport(), QScroller::TouchGesture);
     this->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -17,7 +19,7 @@ TemplateSummary TemplateListView::getCurrentTemplateSummary() const
 
 TemplateSummary TemplateListView::getTemplateSummary(const QModelIndex &templateNameIndex) const
 {
-    const auto templateSummary{this->templateListModel->getTemplateSummary(templateNameIndex)};
+    const auto templateSummary{ this->templateListModel->getTemplateSummary(templateNameIndex) };
     return templateSummary;
 }
 
