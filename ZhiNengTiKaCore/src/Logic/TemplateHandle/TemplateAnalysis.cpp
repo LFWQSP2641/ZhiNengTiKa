@@ -1,17 +1,24 @@
 #include "TemplateAnalysis.h"
 
+#include "src/Logic/TemplateHandle/TemplateModel/TemplateDataTreeModel.h"
+
+TemplateAnalysis::TemplateAnalysis()
+    : templateDataTreeModel(QSharedPointer<TemplateDataTreeModel>(new TemplateDataTreeModel, &QObject::deleteLater))
+{
+}
+
 QString TemplateAnalysis::getAnswerAndAnalysisHtml(const qsizetype index) const
 {
     if (index == -1)
     {
         QString data;
         for (const auto &i : templateDataList)
-            data.append(i.getAnswerAndAnalysisHtml());
+            data.append(i->getAnswerAndAnalysisHtml());
         return data;
     }
     else
     {
-        return templateDataList.at(index).getAnswerAndAnalysisHtml();
+        return templateDataList.at(index)->getAnswerAndAnalysisHtml();
     }
 }
 
@@ -22,12 +29,12 @@ QString TemplateAnalysis::getAnswerHtml(const qsizetype index) const
     if (index == -1)
     {
         for (const auto &i : templateDataList)
-            data.append(i.getAnswerHtml());
+            data.append(i->getAnswerHtml());
         return data;
     }
     else
     {
-        return templateDataList.at(index).getAnswerHtml();
+        return templateDataList.at(index)->getAnswerHtml();
     }
     data.append(QStringLiteral("</p>"));
 
@@ -40,12 +47,12 @@ QString TemplateAnalysis::getQuestionHtml(const qsizetype index) const
     {
         QString data;
         for (const auto &i : templateDataList)
-            data.append(i.getQuestionHtml());
+            data.append(i->getQuestionHtml());
         return data;
     }
     else
     {
-        return templateDataList.at(index).getQuestionHtml();
+        return templateDataList.at(index)->getQuestionHtml();
     }
 }
 
@@ -55,13 +62,18 @@ TemplateAnswerData TemplateAnalysis::getCountAndAnswer(const qsizetype index) co
     {
         TemplateAnswerData answerData;
         for (const auto &i : templateDataList)
-            answerData.addChild(i.getCountAndAnswer());
+            answerData.addChild(i->getCountAndAnswer());
         return answerData;
     }
     else
     {
-        return templateDataList.at(index).getCountAndAnswer();
+        return templateDataList.at(index)->getCountAndAnswer();
     }
+}
+
+TemplateDataTreeModel *TemplateAnalysis::getTemplateDataTreeModel() const
+{
+    return templateDataTreeModel.get();
 }
 
 bool TemplateAnalysis::getLocal() const
@@ -95,7 +107,7 @@ void TemplateAnalysis::analyze(const QByteArray &rawData)
         const auto count{ QString::number(jsonObject.toObject().value(QStringLiteral("ordered")).toInt()) };
 
         auto tempdateData{ createTemplateData(question, count) };
-        QList<TemplateData> childQuestionList;
+        QList<QSharedPointer<TemplateData>> childQuestionList;
 
         QString questionsCountsStr{ QString::number(i + 1) };
         if (!childQuestionArray.isEmpty())
@@ -112,13 +124,14 @@ void TemplateAnalysis::analyze(const QByteArray &rawData)
             questionsCountsStr.append(QStringLiteral("%0").arg(count));
         }
         questionsCountsStrList.append(questionsCountsStr);
-        tempdateData.childQuestionList = std::move(childQuestionList);
+        tempdateData->childQuestionList = std::move(childQuestionList);
         templateDataList.append(tempdateData);
     }
+    templateDataTreeModel->rootItem->addChildren(templateDataList);
     this->valid = true;
 }
 
-TemplateData TemplateAnalysis::createTemplateData(const QJsonObject &object, const QString &globalQuestionNumber, const QString &questionNumber)
+QSharedPointer<TemplateData> TemplateAnalysis::createTemplateData(const QJsonObject &object, const QString &globalQuestionNumber, const QString &questionNumber)
 {
     QStringList optionsArray;
     bool choiceQuestion{ !object.value(QStringLiteral("optionA")).toString().isEmpty() };
@@ -139,14 +152,19 @@ TemplateData TemplateAnalysis::createTemplateData(const QJsonObject &object, con
         }
     }
 
-    TemplateData data;
-    data.answerContent = object.value(QStringLiteral("answer")).toString();
-    data.answerExplanation = object.value(QStringLiteral("answerExplanation")).toString();
-    data.questionContent = object.value(QStringLiteral("content")).toString();
-    data.questionId = object.value(QStringLiteral("id")).toString();
-    data.globalQuestionNumber = globalQuestionNumber;
-    data.questionNumber = questionNumber;
-    data.options = std::move(optionsArray);
+    QSharedPointer<TemplateData> data(new TemplateData);
+    data->answerContent = object.value(QStringLiteral("answer")).toString();
+    data->answerExplanation = object.value(QStringLiteral("answerExplanation")).toString();
+    data->questionContent = object.value(QStringLiteral("content")).toString();
+    data->questionId = object.value(QStringLiteral("id")).toString();
+    data->globalQuestionNumber = globalQuestionNumber;
+    data->questionNumber = questionNumber;
+    data->options = std::move(optionsArray);
 
     return data;
+}
+
+QList<QSharedPointer<TemplateData>> TemplateAnalysis::getTemplateDataList() const
+{
+    return templateDataList;
 }

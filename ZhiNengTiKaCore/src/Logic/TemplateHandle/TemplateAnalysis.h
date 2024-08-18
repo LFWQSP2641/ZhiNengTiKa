@@ -3,6 +3,7 @@
 
 #include "TemplateSummary.h"
 #include "src/Logic/TemplateHandle/TemplateData.h"
+#include "src/Logic/TemplateHandle/TemplateModel/TemplateDataTreeModel.h"
 #include "src/Logic/TemplateHandle/UploadModel/TemplateAnswerData.h"
 #include "src/ZhiNengTiKaCore_global.h"
 
@@ -12,12 +13,14 @@ class ZHINENGTIKACORE_EXPORT TemplateAnalysis : public TemplateSummary
     friend class TemplateFetcher;
 
 public:
-    explicit TemplateAnalysis() = default;
+    explicit TemplateAnalysis();
 
     Q_INVOKABLE QString getAnswerAndAnalysisHtml(const qsizetype index = -1) const;
     Q_INVOKABLE QString getAnswerHtml(const qsizetype index = -1) const;
     Q_INVOKABLE QString getQuestionHtml(const qsizetype index = -1) const;
-    TemplateAnswerData getCountAndAnswer(const qsizetype index = -1) const;
+    Q_INVOKABLE TemplateAnswerData getCountAndAnswer(const qsizetype index = -1) const;
+
+    Q_INVOKABLE TemplateDataTreeModel *getTemplateDataTreeModel() const;
 
     Q_INVOKABLE QStringList getQuestionsCountsStrList() const
     {
@@ -34,13 +37,17 @@ public:
 
     bool getValid() const;
 
+    QList<QSharedPointer<TemplateData>> getTemplateDataList() const;
+
 public slots:
     void analyze(const QByteArray &rawData);
-    TemplateData createTemplateData(const QJsonObject &object, const QString &globalQuestionNumber, const QString &questionNumber = {});
+    QSharedPointer<TemplateData> createTemplateData(const QJsonObject &object, const QString &globalQuestionNumber, const QString &questionNumber = {});
 
 protected:
     QStringList questionsCountsStrList;
-    QList<TemplateData> templateDataList;
+    QList<QSharedPointer<TemplateData>> templateDataList;
+
+    QSharedPointer<TemplateDataTreeModel> templateDataTreeModel;
 
     bool local = false;
     bool network = false;

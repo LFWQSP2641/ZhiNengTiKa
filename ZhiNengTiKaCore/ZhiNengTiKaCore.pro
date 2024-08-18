@@ -40,6 +40,7 @@ HEADERS += \
     $$PWD/src/Logic/TemplateHandle/TemplateSummary.h \
     $$PWD/src/Logic/TemplateHandle/ListModel/MultipleSubjectsTemplateListModelList.h \
     $$PWD/src/Logic/TemplateHandle/ListModel/TemplateListModel.h \
+    $$PWD/src/Logic/TemplateHandle/TemplateModel/TemplateDataTreeModel.h \
     $$PWD/src/Logic/TemplateHandle/UploadModel/TemplateAnswerData.h \
     $$PWD/src/Logic/TemplateHandle/UploadModel/TemplateAnswerTreeModel.h \
     $$PWD/src/Logic/TemplateSearcher.h \
@@ -74,8 +75,9 @@ SOURCES += \
     $$PWD/src/Logic/TemplateHandle/TemplateSummary.cpp \
     $$PWD/src/Logic/TemplateHandle/ListModel/MultipleSubjectsTemplateListModelList.cpp \
     $$PWD/src/Logic/TemplateHandle/ListModel/TemplateListModel.cpp \
-    src/Logic/TemplateHandle/UploadModel/TemplateAnswerData.cpp \
-    src/Logic/TemplateHandle/UploadModel/TemplateAnswerTreeModel.cpp \
+    $$PWD/src/Logic/TemplateHandle/TemplateModel/TemplateDataTreeModel.cpp \
+    $$PWD/src/Logic/TemplateHandle/UploadModel/TemplateAnswerData.cpp \
+    $$PWD/src/Logic/TemplateHandle/UploadModel/TemplateAnswerTreeModel.cpp \
     $$PWD/src/Logic/TemplateSearcher.cpp \
     $$PWD/src/Logic/UserData.cpp \
     $$PWD/src/Logic/Version.cpp \
