@@ -169,21 +169,27 @@ TemplateData *TemplateData::child(int row) const
 
 void TemplateData::addChild(QSharedPointer<TemplateData> &&child)
 {
+    child->parentItem = this;
     childQuestionList.append(std::move(child));
 }
 
 void TemplateData::addChildren(QList<QSharedPointer<TemplateData>> &&children)
 {
+    for (const auto &i : children)
+        i->parentItem = this;
     childQuestionList.append(std::move(children));
 }
 
 void TemplateData::addChild(const QSharedPointer<TemplateData> &child)
 {
+    child->parentItem = this;
     childQuestionList.append(child);
 }
 
 void TemplateData::addChildren(const QList<QSharedPointer<TemplateData>> &children)
 {
+    for (const auto &i : children)
+        i->parentItem = this;
     childQuestionList.append(children);
 }
 

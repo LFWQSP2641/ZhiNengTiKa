@@ -41,9 +41,9 @@ public:
 protected:
     QString count;
     QByteArray questionId;
-    bool choiceQuestion;
+    bool choiceQuestion = false;
     bool multipleChoiceQuestion = false;
-    int choiceQuestionCount;
+    int choiceQuestionCount = 0;
     QString answer;
 
     TemplateAnswerData *parentItem;

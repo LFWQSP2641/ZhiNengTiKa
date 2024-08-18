@@ -8,6 +8,7 @@
 #include "src/Logic/TemplateHandle/ListModel/TemplateListModel.h"
 #include "src/Logic/TemplateHandle/TemplateAnalysis.h"
 #include "src/Logic/TemplateHandle/TemplateFetcher.h"
+#include "src/Logic/TemplateHandle/TemplateModel/TemplateDataTreeModel.h"
 #include "src/Logic/TemplateHandle/TemplateSummary.h"
 #include "src/Logic/TemplateSearcher.h"
 #include "src/Logic/UserData.h"
@@ -68,6 +69,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<TemplateFetcher>("TemplateFetcher", 1, 0, "TemplateFetcher");
     qmlRegisterType<TemplateSearcher>("TemplateSearcher", 1, 0, "TemplateSearcher");
     qmlRegisterType<TemplateListModel>("TemplateListModel", 1, 0, "TemplateListModel");
+    qmlRegisterType<TemplateDataTreeModel>("TemplateDataTreeModel", 1, 0, "TemplateDataTreeModel");
     qmlRegisterType<SettingOperator>("SettingOperator", 1, 0, "SettingOperator");
     qmlRegisterType<QRCodeScanner>("QRCodeScanner", 1, 0, "QRCodeScanner");
     qmlRegisterType<ImageProviderMultiThreading>("ImageProviderMultiThreading", 1, 0, "ImageProviderMultiThreading");

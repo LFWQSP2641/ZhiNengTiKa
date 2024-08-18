@@ -119,8 +119,8 @@ void PixmapLabel::previewPixmap()
 void PixmapLabel::showTipBox()
 {
     QMessageBox msgBox;
-    QPushButton *ylButton = msgBox.addButton(QStringLiteral("预览"), QMessageBox::YesRole);
-    QPushButton *deleteButton = msgBox.addButton(QStringLiteral("删除"), QMessageBox::DestructiveRole);
+    const QPushButton *ylButton = msgBox.addButton(QStringLiteral("预览"), QMessageBox::YesRole);
+    const QPushButton *deleteButton = msgBox.addButton(QStringLiteral("删除"), QMessageBox::DestructiveRole);
     QPushButton *cancelButton = msgBox.addButton(QStringLiteral("取消"), QMessageBox::NoRole);
     msgBox.setDefaultButton(cancelButton);
     msgBox.exec();

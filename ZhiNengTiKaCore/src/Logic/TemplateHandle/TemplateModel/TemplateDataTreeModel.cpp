@@ -56,6 +56,22 @@ Qt::ItemFlags TemplateDataTreeModel::flags(const QModelIndex &index) const
                : Qt::ItemFlags(Qt::NoItemFlags);
 }
 
+QVariant TemplateDataTreeModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (role != Qt::DisplayRole)
+    {
+        return QVariant();
+    }
+    if (orientation == Qt::Horizontal)
+    {
+        return QStringLiteral("C %0").arg(section);
+    }
+    else
+    {
+        return QStringLiteral("R %0").arg(section);
+    }
+}
+
 QModelIndex TemplateDataTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))

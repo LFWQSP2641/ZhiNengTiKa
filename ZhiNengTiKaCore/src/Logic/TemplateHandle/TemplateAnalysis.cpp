@@ -124,7 +124,7 @@ void TemplateAnalysis::analyze(const QByteArray &rawData)
             questionsCountsStr.append(QStringLiteral("%0").arg(count));
         }
         questionsCountsStrList.append(questionsCountsStr);
-        tempdateData->childQuestionList = std::move(childQuestionList);
+        tempdateData->addChildren(std::move(childQuestionList));
         templateDataList.append(tempdateData);
     }
     templateDataTreeModel->rootItem->addChildren(templateDataList);

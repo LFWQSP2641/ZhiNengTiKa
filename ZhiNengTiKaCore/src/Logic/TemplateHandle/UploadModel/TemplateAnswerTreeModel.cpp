@@ -62,6 +62,22 @@ Qt::ItemFlags TemplateAnswerTreeModel::flags(const QModelIndex &index) const
                : Qt::ItemFlags(Qt::NoItemFlags);
 }
 
+QVariant TemplateAnswerTreeModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (role != Qt::DisplayRole)
+    {
+        return QVariant();
+    }
+    if (orientation == Qt::Horizontal)
+    {
+        return QStringLiteral("C %0").arg(section);
+    }
+    else
+    {
+        return QStringLiteral("R %0").arg(section);
+    }
+}
+
 QModelIndex TemplateAnswerTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
