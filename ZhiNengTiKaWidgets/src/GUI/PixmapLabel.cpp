@@ -67,7 +67,7 @@ void PixmapLabel::uploadPixmap(const QPixmap &pixmap)
     buffer.open(QIODevice::WriteOnly);
     pixmap.save(&buffer, "JPG");
     auto reply{ XinjiaoyuNetwork::uploadFileReply(bytes, QStringLiteral("image.jpg")) };
-    connect(reply, &QNetworkReply::finished, [this, reply, pixmap]
+    connect(reply, &QNetworkReply::finished, this, [this, reply, pixmap]
             {
         QString infoStr;
         infoStr = XinjiaoyuNetwork::getUploadFileReplyUrl(reply);

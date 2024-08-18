@@ -33,7 +33,7 @@ SearchWidget::SearchWidget(QWidget *parent)
     connect(this->searchStartButton, &QPushButton::clicked, this, &SearchWidget::searchStartButtonPush);
     connect(this->searchStopButton, &QPushButton::clicked, this, &SearchWidget::searchStopButtonPush);
     connect(this->OKButton, &QPushButton::clicked, this, &SearchWidget::OKButtonPush);
-    connect(this->searchResultTemplateListView, &TemplateListView::templateNameClicked, [this]
+    connect(this->searchResultTemplateListView, &TemplateListView::templateNameClicked, this, [this]
             { this->OKButton->setEnabled(true); });
     connect(&this->templateSearcher, &TemplateSearcher::searchResult, this, &SearchWidget::addToSearchResultListWidget);
     connect(&this->templateSearcher, &TemplateSearcher::searchFinished, this, &SearchWidget::templateSearcherSearchFinish);

@@ -39,11 +39,11 @@ SelectWidget::SelectWidget(QWidget *parent)
     connect(OKButton, &QPushButton::clicked, this, &SelectWidget::onOKButtonPush);
     connect(searchButton, &QPushButton::clicked, this, &SelectWidget::onSearchButtonPush);
     connect(scanQRCodeButton, &QPushButton::clicked, this, &SelectWidget::onScanQRCodeButtonPush);
-    connect(templateCodeLineEdit, &QLineEdit::textEdited, [this]
+    connect(templateCodeLineEdit, &QLineEdit::textEdited, this, [this]
             {
         currentListViewTemplateSummary = TemplateSummary();
         this->OKButton->setEnabled(true); });
-    connect(this->multipleSubjectsTemplateListView, &MultipleSubjectsTemplateListView::templateNameClicked, [this](const TemplateSummary &templateSummary)
+    connect(this->multipleSubjectsTemplateListView, &MultipleSubjectsTemplateListView::templateNameClicked, this, [this](const TemplateSummary &templateSummary)
             {
         currentListViewTemplateSummary = templateSummary;
         this->templateCodeLineEdit->setText(templateSummary.getTemplateCode());
@@ -61,7 +61,7 @@ void SelectWidget::onSearchButtonPush()
     auto searchWidget{ new SearchWidget };
     searchWidget->setAttribute(Qt::WA_DeleteOnClose);
     searchWidget->setAttribute(Qt::WA_QuitOnClose, false);
-    connect(searchWidget, &SearchWidget::searchFinished, [this, searchWidget](const TemplateSummary &templateSummary)
+    connect(searchWidget, &SearchWidget::searchFinished, searchWidget, [this, searchWidget](const TemplateSummary &templateSummary)
             {
         searchWidget->close();
         fetcher->handleTemplateRequest(templateSummary); });
@@ -73,7 +73,7 @@ void SelectWidget::onScanQRCodeButtonPush()
     auto scannerWidget{ new QRCodeScannerWidget };
     scannerWidget->setAttribute(Qt::WA_DeleteOnClose);
     scannerWidget->setAttribute(Qt::WA_QuitOnClose, false);
-    connect(scannerWidget, &QRCodeScannerWidget::scanningFinished, [this, scannerWidget](bool success, const ZXingResult &result)
+    connect(scannerWidget, &QRCodeScannerWidget::scanningFinished, scannerWidget, [this, scannerWidget](bool success, const ZXingResult &result)
             {
         if(success)
         {

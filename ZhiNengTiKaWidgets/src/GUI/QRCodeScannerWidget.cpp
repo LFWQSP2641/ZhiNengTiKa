@@ -1,8 +1,9 @@
 #include "QRCodeScannerWidget.h"
+
 #include "src/Logic/QRCodeScanner.h"
 
 QRCodeScannerWidget::QRCodeScannerWidget(QWidget *parent)
-    : QWidget{parent},
+    : QWidget{ parent },
       mainLayout(new QVBoxLayout(this)),
       camera(new QCamera(QMediaDevices::defaultVideoInput(), this)),
       mediaCaptureSession(new QMediaCaptureSession(this)),
@@ -20,10 +21,8 @@ QRCodeScannerWidget::QRCodeScannerWidget(QWidget *parent)
 
     connect(selectingFileButton, &QPushButton::clicked, this, &QRCodeScannerWidget::onSelectingFileButtonPushed);
     connect(scanner, &QRCodeScanner::decodingFinished, this, &QRCodeScannerWidget::scanningFinished);
-    connect(scanner, &QRCodeScanner::error, [this](const QString & msg)
-    {
-        QMessageBox::warning(this, QStringLiteral("扫码失败"), msg);
-    });
+    connect(scanner, &QRCodeScanner::error, this, [this](const QString &msg)
+            { QMessageBox::warning(this, QStringLiteral("扫码失败"), msg); });
 
     camera->start();
     scanner->startThread();
@@ -37,9 +36,9 @@ QRCodeScannerWidget::~QRCodeScannerWidget()
 
 void QRCodeScannerWidget::onSelectingFileButtonPushed()
 {
-    const auto imageFilePath{QFileDialog::getOpenFileName(this, QStringLiteral("选择图片文件"), {}, QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)"))};
-    if(imageFilePath.isEmpty())
+    const auto imageFilePath{ QFileDialog::getOpenFileName(this, QStringLiteral("选择图片文件"), {}, QStringLiteral("Images (*.bmp *.gif *.jpg *.jpeg *.png *.tiff *.pbm *.pgm *.ppm *.xbm *.xpm)")) };
+    if (imageFilePath.isEmpty())
         return;
-    if(scanner->getQrCodeReader()->decodeImage(QImage(imageFilePath)).getText().isEmpty())
+    if (scanner->getQrCodeReader()->decodeImage(QImage(imageFilePath)).getText().isEmpty())
         QMessageBox::information(this, QStringLiteral("扫码失败"), QStringLiteral("扫码失败, 请尝试使用更清晰的图片"));
 }
