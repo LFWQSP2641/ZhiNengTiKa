@@ -39,6 +39,11 @@ TemplateData &TemplateData::operator=(const TemplateData &other)
         parentItem = other.parentItem;
 
         // 深拷贝 childQuestionList
+        if (!childQuestionList.isEmpty())
+        {
+            for (auto i : childQuestionList)
+                delete i;
+        }
         childQuestionList = other.cloneChildQuestionList();
     }
     return *this;
