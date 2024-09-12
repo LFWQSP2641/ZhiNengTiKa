@@ -1,8 +1,7 @@
 #include "TemplateDataTreeModel.h"
 
 TemplateDataTreeModel::TemplateDataTreeModel(QObject *parent)
-    : QAbstractItemModel{ parent },
-      rootItem(std::make_unique<TemplateData>())
+    : QAbstractItemModel{ parent }
 {
 }
 
@@ -13,7 +12,7 @@ QVariant TemplateDataTreeModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
     int row = index.row();
-    if (row < 0 || row >= rootItem->childCount())
+    if (row < 0 || row >= rootItem.childCount())
     {
         return QVariant();
     }
@@ -77,9 +76,9 @@ QModelIndex TemplateDataTreeModel::index(int row, int column, const QModelIndex 
     if (!hasIndex(row, column, parent))
         return {};
 
-    TemplateData *parentItem = parent.isValid()
-                                   ? static_cast<TemplateData *>(parent.internalPointer())
-                                   : rootItem.get();
+    const TemplateData *parentItem = parent.isValid()
+                                         ? static_cast<TemplateData *>(parent.internalPointer())
+                                         : &rootItem;
 
     if (auto *childItem = parentItem->child(row))
         return createIndex(row, column, childItem);
@@ -94,7 +93,7 @@ QModelIndex TemplateDataTreeModel::parent(const QModelIndex &index) const
     auto *childItem = static_cast<TemplateData *>(index.internalPointer());
     TemplateData *parentItem = childItem->getParentItem();
 
-    return parentItem != rootItem.get()
+    return parentItem != &rootItem
                ? createIndex(parentItem->row(), 0, parentItem)
                : QModelIndex{};
 }
@@ -106,7 +105,7 @@ int TemplateDataTreeModel::rowCount(const QModelIndex &parent) const
 
     const TemplateData *parentItem = parent.isValid()
                                          ? static_cast<const TemplateData *>(parent.internalPointer())
-                                         : rootItem.get();
+                                         : &rootItem;
 
     return parentItem->childCount();
 }

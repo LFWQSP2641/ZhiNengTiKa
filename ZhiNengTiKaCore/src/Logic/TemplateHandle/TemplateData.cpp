@@ -4,6 +4,46 @@ TemplateData::TemplateData()
 {
 }
 
+TemplateData::TemplateData(const TemplateData &other)
+{
+    answerContent = other.answerContent;
+    answerExplanation = other.answerExplanation;
+    questionContent = other.questionContent;
+    questionId = other.questionId;
+    options = other.options;
+    questionNumber = other.questionNumber;
+    globalQuestionNumber = other.globalQuestionNumber;
+    parentItem = other.parentItem;
+
+    // 深拷贝 childQuestionList
+    childQuestionList = other.cloneChildQuestionList();
+}
+
+TemplateData::~TemplateData()
+{
+    for (auto i : childQuestionList)
+        delete i;
+}
+
+TemplateData &TemplateData::operator=(const TemplateData &other)
+{
+    if (this != &other)
+    {
+        answerContent = other.answerContent;
+        answerExplanation = other.answerExplanation;
+        questionContent = other.questionContent;
+        questionId = other.questionId;
+        options = other.options;
+        questionNumber = other.questionNumber;
+        globalQuestionNumber = other.globalQuestionNumber;
+        parentItem = other.parentItem;
+
+        // 深拷贝 childQuestionList
+        childQuestionList = other.cloneChildQuestionList();
+    }
+    return *this;
+}
+
 QString TemplateData::getCommonQuestionNumberStr() const
 {
     if (questionNumber.isEmpty())
@@ -145,9 +185,28 @@ QString TemplateData::getGlobalQuestionNumber() const
     return globalQuestionNumber;
 }
 
-QList<QSharedPointer<TemplateData>> TemplateData::getChildQuestionList() const
+QList<TemplateData *> TemplateData::getChildQuestionList() const
 {
     return childQuestionList;
+}
+
+TemplateData *TemplateData::clone() const
+{
+    TemplateData *newObj = new TemplateData(*this);
+    newObj->childQuestionList = this->cloneChildQuestionList();
+    return newObj;
+}
+
+QList<TemplateData *> TemplateData::cloneChildQuestionList() const
+{
+    QList<TemplateData *> list;
+    for (auto i : childQuestionList)
+    {
+        list.append(i->clone());
+    }
+    if (!list.isEmpty())
+        qDebug() << childQuestionList << list;
+    return list;
 }
 
 int TemplateData::childCount() const
@@ -164,33 +223,35 @@ int TemplateData::row() const
 
 TemplateData *TemplateData::child(int row) const
 {
-    return row >= 0 && row < childCount() ? childQuestionList.at(row).get() : nullptr;
+    if (row < 0 || row >= childQuestionList.size())
+        return nullptr;
+    return childQuestionList.at(row);
 }
 
-void TemplateData::addChild(QSharedPointer<TemplateData> &&child)
+void TemplateData::addChild(TemplateData *child)
 {
     child->parentItem = this;
-    childQuestionList.append(std::move(child));
+    this->childQuestionList.append(child);
 }
 
-void TemplateData::addChildren(QList<QSharedPointer<TemplateData>> &&children)
+void TemplateData::addChildren(QList<TemplateData *> &&children)
 {
-    for (const auto &i : children)
+    for (auto i : children)
         i->parentItem = this;
-    childQuestionList.append(std::move(children));
+    this->childQuestionList.append(children);
 }
 
-void TemplateData::addChild(const QSharedPointer<TemplateData> &child)
+void TemplateData::addChild(const TemplateData &child)
 {
-    child->parentItem = this;
-    childQuestionList.append(child);
+    addChild(new TemplateData(child));
 }
 
-void TemplateData::addChildren(const QList<QSharedPointer<TemplateData>> &children)
+void TemplateData::addChildren(const QList<TemplateData> &children)
 {
+    QList<TemplateData *> list;
     for (const auto &i : children)
-        i->parentItem = this;
-    childQuestionList.append(children);
+        list.append(new TemplateData(i));
+    addChildren(std::move(list));
 }
 
 TemplateData *TemplateData::getParentItem() const

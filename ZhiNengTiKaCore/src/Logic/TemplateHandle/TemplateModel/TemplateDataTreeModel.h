@@ -35,7 +35,7 @@ public:
     int columnCount(const QModelIndex &parent = {}) const override;
 
 protected:
-    std::unique_ptr<TemplateData> rootItem;
+    TemplateData rootItem;
 
     QHash<int, QByteArray> roleNames() const override;
 };

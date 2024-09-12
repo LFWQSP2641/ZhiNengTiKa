@@ -6,13 +6,17 @@
 
 class TemplateAnalysis;
 
-class ZHINENGTIKACORE_EXPORT TemplateData : public QEnableSharedFromThis<TemplateData>
+class ZHINENGTIKACORE_EXPORT TemplateData
 {
     Q_GADGET
     friend TemplateAnalysis;
 
 public:
     TemplateData();
+    TemplateData(const TemplateData &other);
+    ~TemplateData();
+
+    TemplateData &operator=(const TemplateData &other);
 
     Q_INVOKABLE QString getCommonQuestionNumberStr() const;
     Q_INVOKABLE QString getAnswerAndAnalysisHtml() const;
@@ -28,15 +32,18 @@ public:
     QStringList getOptions() const;
     QString getQuestionNumber() const;
     QString getGlobalQuestionNumber() const;
-    QList<QSharedPointer<TemplateData>> getChildQuestionList() const;
+    QList<TemplateData *> getChildQuestionList() const;
+
+    TemplateData *clone() const;
+    QList<TemplateData *> cloneChildQuestionList() const;
 
     int childCount() const;
     int row() const;
     TemplateData *child(int row) const;
-    void addChild(QSharedPointer<TemplateData> &&child);
-    void addChildren(QList<QSharedPointer<TemplateData>> &&children);
-    void addChild(const QSharedPointer<TemplateData> &child);
-    void addChildren(const QList<QSharedPointer<TemplateData>> &children);
+    void addChild(TemplateData *child);
+    void addChildren(QList<TemplateData *> &&children);
+    void addChild(const TemplateData &child);
+    void addChildren(const QList<TemplateData> &children);
 
     TemplateData *getParentItem() const;
 
@@ -49,7 +56,7 @@ protected:
     QString questionNumber;
     QString globalQuestionNumber;
 
-    QList<QSharedPointer<TemplateData>> childQuestionList;
+    QList<TemplateData *> childQuestionList;
     TemplateData *parentItem = nullptr;
 
 private:
@@ -60,7 +67,7 @@ private:
     Q_PROPERTY(QStringList options READ getOptions CONSTANT FINAL)
     Q_PROPERTY(QString questionNumber READ getQuestionNumber CONSTANT FINAL)
     Q_PROPERTY(QString globalQuestionNumber READ getGlobalQuestionNumber CONSTANT FINAL)
-    Q_PROPERTY(QList<QSharedPointer<TemplateData>> childQuestionList READ getChildQuestionList CONSTANT FINAL)
+    Q_PROPERTY(QList<TemplateData *> childQuestionList READ getChildQuestionList CONSTANT FINAL)
     Q_PROPERTY(TemplateData *parentItem READ getParentItem CONSTANT FINAL)
 };
 

@@ -37,15 +37,13 @@ public:
 
     bool getValid() const;
 
-    QList<QSharedPointer<TemplateData>> getTemplateDataList() const;
-
 public slots:
     void analyze(const QByteArray &rawData);
-    QSharedPointer<TemplateData> createTemplateData(const QJsonObject &object, const QString &globalQuestionNumber, const QString &questionNumber = {});
+    TemplateData *createTemplateData(const QJsonObject &object, const QString &globalQuestionNumber, const QString &questionNumber = {});
 
 protected:
     QStringList questionsCountsStrList;
-    QList<QSharedPointer<TemplateData>> templateDataList;
+    TemplateData rootItem;
 
     QSharedPointer<TemplateDataTreeModel> templateDataTreeModel;
 

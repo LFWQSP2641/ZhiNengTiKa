@@ -12,13 +12,13 @@ QString TemplateAnalysis::getAnswerAndAnalysisHtml(const qsizetype index) const
     if (index == -1)
     {
         QString data;
-        for (const auto &i : templateDataList)
+        for (auto i : rootItem.getChildQuestionList())
             data.append(i->getAnswerAndAnalysisHtml());
         return data;
     }
     else
     {
-        return templateDataList.at(index)->getAnswerAndAnalysisHtml();
+        return rootItem.getChildQuestionList().at(index)->getAnswerAndAnalysisHtml();
     }
 }
 
@@ -28,13 +28,13 @@ QString TemplateAnalysis::getAnswerHtml(const qsizetype index) const
     data.append(QStringLiteral("<p>"));
     if (index == -1)
     {
-        for (const auto &i : templateDataList)
+        for (auto i : rootItem.getChildQuestionList())
             data.append(i->getAnswerHtml());
         return data;
     }
     else
     {
-        return templateDataList.at(index)->getAnswerHtml();
+        return rootItem.getChildQuestionList().at(index)->getAnswerHtml();
     }
     data.append(QStringLiteral("</p>"));
 
@@ -46,13 +46,13 @@ QString TemplateAnalysis::getQuestionHtml(const qsizetype index) const
     if (index == -1)
     {
         QString data;
-        for (const auto &i : templateDataList)
+        for (auto i : rootItem.getChildQuestionList())
             data.append(i->getQuestionHtml());
         return data;
     }
     else
     {
-        return templateDataList.at(index)->getQuestionHtml();
+        return rootItem.getChildQuestionList().at(index)->getQuestionHtml();
     }
 }
 
@@ -61,13 +61,13 @@ TemplateAnswerData TemplateAnalysis::getCountAndAnswer(const qsizetype index) co
     if (index == -1)
     {
         TemplateAnswerData answerData;
-        for (const auto &i : templateDataList)
+        for (auto i : rootItem.getChildQuestionList())
             answerData.addChild(i->getCountAndAnswer());
         return answerData;
     }
     else
     {
-        return templateDataList.at(index)->getCountAndAnswer();
+        return rootItem.getChildQuestionList().at(index)->getCountAndAnswer();
     }
 }
 
@@ -107,7 +107,6 @@ void TemplateAnalysis::analyze(const QByteArray &rawData)
         const auto count{ QString::number(jsonObject.toObject().value(QStringLiteral("ordered")).toInt()) };
 
         auto tempdateData{ createTemplateData(question, count) };
-        QList<QSharedPointer<TemplateData>> childQuestionList;
 
         QString questionsCountsStr{ QString::number(i + 1) };
         if (!childQuestionArray.isEmpty())
@@ -115,7 +114,7 @@ void TemplateAnalysis::analyze(const QByteArray &rawData)
             for (auto j{ 0 }; j < childQuestionArray.size(); ++j)
             {
                 QJsonObject childQuestion{ childQuestionArray.at(j).toObject().value(QStringLiteral("question")).toObject() };
-                childQuestionList.append(createTemplateData(childQuestion, QString::number(childQuestionArray.at(j).toObject().value(QStringLiteral("ordered")).toInt()), QString::number(j + 1)));
+                tempdateData->addChild(createTemplateData(childQuestion, QString::number(childQuestionArray.at(j).toObject().value(QStringLiteral("ordered")).toInt()), QString::number(j + 1)));
             }
             questionsCountsStr.append(QStringLiteral("(%0~%1)").arg(QString::number(childQuestionArray.at(0).toObject().value(QStringLiteral("ordered")).toInt()), QString::number(childQuestionArray.at(childQuestionArray.size() - 1).toObject().value(QStringLiteral("ordered")).toInt())));
         }
@@ -124,14 +123,13 @@ void TemplateAnalysis::analyze(const QByteArray &rawData)
             questionsCountsStr.append(QStringLiteral("%0").arg(count));
         }
         questionsCountsStrList.append(questionsCountsStr);
-        tempdateData->addChildren(std::move(childQuestionList));
-        templateDataList.append(tempdateData);
+        this->rootItem.addChild(tempdateData);
     }
-    templateDataTreeModel->rootItem->addChildren(templateDataList);
+    templateDataTreeModel->rootItem.addChildren(this->rootItem.cloneChildQuestionList());
     this->valid = true;
 }
 
-QSharedPointer<TemplateData> TemplateAnalysis::createTemplateData(const QJsonObject &object, const QString &globalQuestionNumber, const QString &questionNumber)
+TemplateData *TemplateAnalysis::createTemplateData(const QJsonObject &object, const QString &globalQuestionNumber, const QString &questionNumber)
 {
     QStringList optionsArray;
     bool choiceQuestion{ !object.value(QStringLiteral("optionA")).toString().isEmpty() };
@@ -152,7 +150,7 @@ QSharedPointer<TemplateData> TemplateAnalysis::createTemplateData(const QJsonObj
         }
     }
 
-    QSharedPointer<TemplateData> data(new TemplateData);
+    auto data(new TemplateData);
     data->answerContent = object.value(QStringLiteral("answer")).toString();
     data->answerExplanation = object.value(QStringLiteral("answerExplanation")).toString();
     data->questionContent = object.value(QStringLiteral("content")).toString();
@@ -162,9 +160,4 @@ QSharedPointer<TemplateData> TemplateAnalysis::createTemplateData(const QJsonObj
     data->options = std::move(optionsArray);
 
     return data;
-}
-
-QList<QSharedPointer<TemplateData>> TemplateAnalysis::getTemplateDataList() const
-{
-    return templateDataList;
 }
